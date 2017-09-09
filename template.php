@@ -5,6 +5,8 @@
  * Process theme data for uikit_admin.
  */
 
+use Drupal\uikit\UIkit;
+
 /**
  * Load UIkit Admin's include files for theme processing.
  */
@@ -17,7 +19,7 @@ uikit_load_include('inc', 'uikit_admin', 'alter', 'includes');
  * Returns a renderable array for the on-page link to add or remove a shortcut.
  */
 function _uikit_admin_shortcut_add_or_remove_link() {
-  uikit_get_cdn_asset('tooltip');
+  UIkit::getCdnAsset('tooltip');
   $link = current_path();
   $query_parameters = drupal_get_query_parameters();
 
