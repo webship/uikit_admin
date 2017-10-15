@@ -10,10 +10,10 @@ use Drupal\uikit\UIkit;
 /**
  * Load UIkit Admin's include files for theme processing.
  */
-uikit_load_include('inc', 'uikit_admin', 'preprocess', 'includes');
-uikit_load_include('inc', 'uikit_admin', 'process', 'includes');
-uikit_load_include('inc', 'uikit_admin', 'theme', 'includes');
-uikit_load_include('inc', 'uikit_admin', 'alter', 'includes');
+UIkit::loadIncludeFile('inc', 'uikit_admin', 'preprocess', 'includes');
+UIkit::loadIncludeFile('inc', 'uikit_admin', 'process', 'includes');
+UIkit::loadIncludeFile('inc', 'uikit_admin', 'theme', 'includes');
+UIkit::loadIncludeFile('inc', 'uikit_admin', 'alter', 'includes');
 
 /**
  * Returns a renderable array for the on-page link to add or remove a shortcut.
