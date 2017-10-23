@@ -136,14 +136,18 @@ function uikit_admin_js_alter(&$javascript) {
     $javascript[$autocomplete]['data'] = $uikit_admin . '/autocomplete.js';
   }
 
-  $block = drupal_get_path('module', 'block') . '/block.js';
-  if (isset($javascript[$block])) {
-    $javascript[$block]['data'] = $uikit_admin . '/block.js';
+  if (module_exists('block')) {
+    $block = drupal_get_path('module', 'block') . '/block.js';
+    if (isset($javascript[$block])) {
+      $javascript[$block]['data'] = $uikit_admin . '/block.js';
+    }
   }
 
-  $dashboard = drupal_get_path('module', 'dashboard') . '/dashboard.js';
-  if (isset($javascript[$dashboard])) {
-    $javascript[$dashboard]['data'] = $uikit_admin . '/dashboard.js';
+  if (module_exists('dashboard')) {
+    $dashboard = drupal_get_path('module', 'dashboard') . '/dashboard.js';
+    if (isset($javascript[$dashboard])) {
+      $javascript[$dashboard]['data'] = $uikit_admin . '/dashboard.js';
+    }
   }
 
   $machine_name = 'misc/machine-name.js';
@@ -151,9 +155,11 @@ function uikit_admin_js_alter(&$javascript) {
     $javascript[$machine_name]['data'] = $uikit_admin . '/machine-name.js';
   }
 
-  $module_filter = drupal_get_path('module', 'module_filter') . '/js/module_filter.js';
-  if (isset($javascript[$module_filter])) {
-    $javascript[$module_filter]['data'] = $uikit_admin . '/module_filter.js';
+  if (module_exists('module_filter')) {
+    $module_filter = drupal_get_path('module', 'module_filter') . '/js/module_filter.js';
+    if (isset($javascript[$module_filter])) {
+      $javascript[$module_filter]['data'] = $uikit_admin . '/module_filter.js';
+    }
   }
 
   $tabledrag = 'misc/tabledrag.js';
@@ -161,9 +167,11 @@ function uikit_admin_js_alter(&$javascript) {
     $javascript[$tabledrag]['data'] = $uikit_admin . '/tabledrag.js';
   }
 
-  $text = drupal_get_path('module', 'text') . '/text.js';
-  if (isset($javascript[$text])) {
-    $javascript[$text]['data'] = $uikit_admin . '/text.js';
+  if (module_exists('text')) {
+    $text = drupal_get_path('module', 'text') . '/text.js';
+    if (isset($javascript[$text])) {
+      $javascript[$text]['data'] = $uikit_admin . '/text.js';
+    }
   }
 
   $textarea = 'misc/textarea.js';
@@ -171,28 +179,30 @@ function uikit_admin_js_alter(&$javascript) {
     $javascript[$textarea]['data'] = $uikit_admin . '/textarea.js';
   }
 
-  $views_admin = drupal_get_path('module', 'views') . '/js/views-admin.js';
-  if (isset($javascript[$views_admin])) {
-    //$javascript[$views_admin]['data'] = $uikit_admin . '/views-admin.js';
+  if (module_exists('views')) {
+    $views_admin = drupal_get_path('module', 'views') . '/js/views-admin.js';
+    if (isset($javascript[$views_admin])) {
+      //$javascript[$views_admin]['data'] = $uikit_admin . '/views-admin.js';
 
-    // Views administration pages do not work with jQuery 2+. So we need to
-    // remove the jQuery, jQuery Migrate and UIkit javascript libraries. We also
-    // Remove the UIkit base theme overrides.js and UIkit Admin's
-    // uikit-admin.js, otherwise we end up conflicting with View's behaviors.
-    unset($javascript['//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js']);
-    unset($javascript['//cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js']);
-    unset($javascript['//cdnjs.cloudflare.com/ajax/libs/uikit/2.27.2/js/uikit.min.js']);
-    unset($javascript['sites/localhost.uikit-7.x-2.x/themes/contrib/uikit/uikit_core/js/overrides.js']);
-    unset($javascript[$uikit_admin . '/uikit-admin.js']);
+      // Views administration pages do not work with jQuery 2+. So we need to
+      // remove the jQuery, jQuery Migrate and UIkit javascript libraries. We also
+      // Remove the UIkit base theme overrides.js and UIkit Admin's
+      // uikit-admin.js, otherwise we end up conflicting with View's behaviors.
+      unset($javascript['//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js']);
+      unset($javascript['//cdnjs.cloudflare.com/ajax/libs/jquery-migrate/1.4.1/jquery-migrate.min.js']);
+      unset($javascript['//cdnjs.cloudflare.com/ajax/libs/uikit/2.27.2/js/uikit.min.js']);
+      unset($javascript['sites/localhost.uikit-7.x-2.x/themes/contrib/uikit/uikit_core/js/overrides.js']);
+      unset($javascript[$uikit_admin . '/uikit-admin.js']);
 
-    // Add UIkit Admin's uikit-admin.views.css stylesheet for basic styling
-    // overrides on Views administration pages.
-    drupal_add_css(drupal_get_path('theme', 'uikit_admin') . '/css/uikit-admin.views.css');
-  }
+      // Add UIkit Admin's uikit-admin.views.css stylesheet for basic styling
+      // overrides on Views administration pages.
+      drupal_add_css(drupal_get_path('theme', 'uikit_admin') . '/css/uikit-admin.views.css');
+    }
 
-  $views_ajax = drupal_get_path('module', 'views') . '/js/ajax.js';
-  if (isset($javascript[$views_ajax])) {
-    $javascript[$views_ajax]['data'] = $uikit_admin . '/ajax.js';
+    $views_ajax = drupal_get_path('module', 'views') . '/js/ajax.js';
+    if (isset($javascript[$views_ajax])) {
+      $javascript[$views_ajax]['data'] = $uikit_admin . '/ajax.js';
+    }
   }
 }
 
