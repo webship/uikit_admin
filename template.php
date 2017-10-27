@@ -5,6 +5,9 @@
  * Process theme data for uikit_admin.
  */
 
+// Include the UIkit class definition.
+include_once drupal_get_path('theme', 'uikit') . '/src/UIkit.php';
+
 use Drupal\uikit\UIkit;
 
 /**
