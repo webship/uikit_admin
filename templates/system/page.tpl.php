@@ -103,7 +103,7 @@
   <div<?php print $content_attributes; ?>>
 
     <?php if ($secondary_local_tasks = render($secondary_local_tasks)): ?>
-      <div class="tabs-secondary uk-clearfix"><?php print render($secondary_local_tasks); ?></div>
+      <div class="tabs-secondary uk-clearfix uk-margin"><?php print render($secondary_local_tasks); ?></div>
     <?php endif; ?>
 
     <?php if ($messages): ?>
