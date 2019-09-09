@@ -1,13 +1,8 @@
-/**
- * @file
- * UIkit Admin overrides of UIkit components.
- */
+/* UIkit Admin overrides of UIkit components. */
 
 /**
  * Accordion.
  */
-.uk-accordion {
-}
 .uk-accordion-title {
   background: #eee;
   border: 1px solid #aaa;
@@ -383,7 +378,7 @@
  * Icons.
  */
 .uk-icon-drupal {
-  color: #0077C0;
+  color: #0077c0;
 }
 .uk-icon-database {
   color: #f59620;

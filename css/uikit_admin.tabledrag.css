@@ -1,9 +1,4 @@
-/**
- * @file
- * Overrides Stable's table drag behavior.
- *
- * @see tabledrag.js
- */
+/* Overrides Stable's table drag behavior. */
 
 body.drag {
   cursor: move;

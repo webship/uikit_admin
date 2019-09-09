@@ -5,13 +5,12 @@
  * Provides theme settings for the UIkit Admin theme.
  */
 
-use Drupal\Core\Extension\InfoParser;
-use Drupal\uikit\UIkit;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_form_system_theme_settings_alter().
  */
-function uikit_admin_form_system_theme_settings_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id = NULL) {
+function uikit_admin_form_system_theme_settings_alter(&$form, FormStateInterface $form_state, $form_id = NULL) {
   // General "alters" use a form id. Settings should not be set here. The only
   // thing useful about this is if you need to alter the form for the running
   // theme and *not* the theme setting.
@@ -30,7 +29,7 @@ function uikit_admin_form_system_theme_settings_alter(&$form, \Drupal\Core\Form\
     'theme',
     'layout',
     'navigations',
-    'uikit_details'
+    'uikit_details',
   ];
 
   // Remove each UIkit vertical tab so the settings cannot be changed.

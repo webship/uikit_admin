@@ -1,7 +1,4 @@
-/**
- * @file
- * Discrete, reusable UI elements.
- */
+/* Discrete, reusable UI elements. */
 
 /**
  * UIkit Admin components.
@@ -96,7 +93,7 @@
   white-space: nowrap;
 }
 .uk-admin-theme-operations>*>* {
-  color: #07D;
+  color: #07d;
 }
 .uk-admin-theme-operations>*>a:focus,
 .uk-admin-theme-operations>*>a:hover {

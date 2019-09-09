@@ -1,7 +1,5 @@
-/**
- * @file
- * Override of Views UI styles.
- */
+/* Override of Views UI styles. */
+
 .views-admin .unit-title {
   font-weight: bold;
 }

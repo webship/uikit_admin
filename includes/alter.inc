@@ -55,7 +55,7 @@ function uikit_admin_form_node_form_alter(&$form, FormStateInterface $form_state
         'entity-meta__header',
         'uk-panel',
         'uk-panel-box',
-      ]
+      ],
     ],
     '#type' => 'container',
     '#group' => 'advanced',
@@ -88,7 +88,7 @@ function uikit_admin_form_node_form_alter(&$form, FormStateInterface $form_state
  * Implements hook_theme_suggestions_HOOK_alter() for details.html.twig.
  */
 function uikit_admin_theme_suggestions_details_alter(array &$suggestions, array $variables) {
-  $views_ui_tab_buckets = UIkitAdmin::getViewsUITabBuckets();
+  $views_ui_tab_buckets = UIkitAdmin::getViewsUiTabBuckets();
   $arguments = isset($variables['element']['arguments']) ? $variables['element']['arguments'] : [];
   $arguments_theme_wrappers = $arguments && isset($variables['element']['arguments']['#theme_wrappers']) ? $variables['element']['arguments']['#theme_wrappers'] : [];
 
@@ -104,8 +104,8 @@ function uikit_admin_theme_suggestions_details_alter(array &$suggestions, array 
  * Implements hook_theme_suggestions_HOOK_alter() for input.html.twig.
  */
 function uikit_admin_theme_suggestions_input_alter(array &$suggestions, array $variables) {
-  $views_ui_buttons = UIkitAdmin::getViewsUIButtons();
-  $views_ui_dispay_buttons = UIkitAdmin::getViewsUIDisplayButtons();
+  $views_ui_buttons = UIkitAdmin::getViewsUiButtons();
+  $views_ui_dispay_buttons = UIkitAdmin::getViewsUiDisplayButtons();
   $type = $variables['element']['#type'];
 
   if ($type == 'submit') {
@@ -130,14 +130,14 @@ function uikit_admin_theme_suggestions_input_alter(array &$suggestions, array $v
  * Implements hook_theme_suggestions_HOOK_alter() for links.html.twig.
  */
 function uikit_admin_theme_suggestions_links_alter(array &$suggestions, array $variables) {
-  $views_ui_links = UIkitAdmin::getViewsUILinks();
+  $views_ui_links = UIkitAdmin::getViewsUiLinks();
   $id = isset($variables['attributes']['id']) ? $variables['attributes']['id'] : '';
   $classes = $variables['attributes']['class'];
 
   if (array_intersect($views_ui_links['class'], $classes) || in_array($id, $views_ui_links['id'])) {
     $suggestions = [
       'links',
-      'links--views-ui'
+      'links--views-ui',
     ];
   }
 }

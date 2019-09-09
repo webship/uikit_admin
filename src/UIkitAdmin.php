@@ -9,11 +9,14 @@ use Drupal\Core\Template\Attribute;
  */
 class UIkitAdmin {
 
+  /**
+   * Get Page Template Attributes.
+   */
   public static function getPageTemplateAttributes() {
     $page_attributes = [];
 
     // Set the page container attributes.
-    $page_container_attributes = new Attribute;
+    $page_container_attributes = new Attribute();
     $page_container_attributes->setAttribute('id', 'page--content-wrapper');
     $page_container_attributes->addClass('uk-container');
     $page_container_attributes->addClass('uk-container-center');
@@ -21,7 +24,7 @@ class UIkitAdmin {
     $page_attributes['page_container_attributes'] = $page_container_attributes;
 
     // Set the content attributes.
-    $content_attributes = new Attribute;
+    $content_attributes = new Attribute();
     $content_attributes->setAttribute('id', 'page--content');
     $content_attributes->addClass('uk-width-1-1');
     $page_attributes['content_attributes'] = $content_attributes;
@@ -29,7 +32,10 @@ class UIkitAdmin {
     return $page_attributes;
   }
 
-  public static function getViewsUIButtons() {
+  /**
+   * Get Views UI Buttons.
+   */
+  public static function getViewsUiButtons() {
     return [
       'Add and configure @types',
       'Duplicate @display_title',
@@ -39,13 +45,19 @@ class UIkitAdmin {
     ];
   }
 
-  public static function getViewsUIDisplayButtons() {
+  /**
+   * Get Views UI Display Buttons.
+   */
+  public static function getViewsUiDisplayButtons() {
     return [
       'Add @display',
     ];
   }
 
-  public static function getViewsUILinks() {
+  /**
+   * Get Views UI Links.
+   */
+  public static function getViewsUiLinks() {
     return [
       'class' => [
         'views-ui-settings-bucket-operations',
@@ -56,9 +68,13 @@ class UIkitAdmin {
     ];
   }
 
-  public static function getViewsUITabBuckets() {
-    return[
+  /**
+   * Get Views UI Tab Buckets.
+   */
+  public static function getViewsUiTabBuckets() {
+    return [
       'views_ui_display_tab_bucket',
     ];
   }
+
 }

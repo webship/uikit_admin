@@ -1,7 +1,4 @@
-/**
- * @file
- * CSS reset/normalize plus HTML element styling.
- */
+/* CSS reset/normalize plus HTML element styling. */
 body,
 h1,
 h2,
@@ -18,7 +15,8 @@ dl dl {
   margin-bottom: 0;
   padding-top: 10px;
 }
-dt, dd {
+dt,
+dd {
   margin: 0;
 }
 dt {

@@ -24,7 +24,7 @@ function uikit_admin_preprocess_page(&$variables) {
  * Implements template_preprocess_admin_block_content().
  */
 function uikit_admin_preprocess_admin_block_content(&$variables) {
-  $attributes = new Attribute;
+  $attributes = new Attribute();
   $attributes->addClass('uk-list');
   $attributes->addClass('uk-list-line');
   $attributes->addClass('uk-margin-remove');
@@ -44,7 +44,7 @@ function uikit_admin_preprocess_admin_block_content(&$variables) {
 function uikit_admin_preprocess_details(&$variables) {
   // Set the accordion attributes.
   $attributes = $variables['attributes'];
-  $accordion_attributes = new Attribute;
+  $accordion_attributes = new Attribute();
 
   foreach ($attributes as $attribute => $value) {
     if ($attribute != 'class' && $attribute != 'open') {
@@ -66,30 +66,30 @@ function uikit_admin_preprocess_details(&$variables) {
   $variables['accordion_attributes'] = $accordion_attributes;
 
   // Set the accordion title attributes.
-  $accordion_title_attributes = new Attribute;
+  $accordion_title_attributes = new Attribute();
   $accordion_title_attributes->addClass('uk-accordion-title');
   $variables['accordion_title_attributes'] = $accordion_title_attributes;
 
   // Set the accordion content attributes.
-  $accordion_content_attributes = new Attribute;
+  $accordion_content_attributes = new Attribute();
   $accordion_content_attributes->addClass('uk-accordion-content');
   $variables['accordion_content_attributes'] = $accordion_content_attributes;
 
   // Set the error classes.
-  $error_classes = new Attribute;
+  $error_classes = new Attribute();
   $error_classes->addClass('uk-alert');
   $error_classes->addClass('uk-alert-danger');
   $variables['error_classes'] = $error_classes;
 
   // Set the description attributes.
-  $description_attributes = new Attribute;
+  $description_attributes = new Attribute();
   $description_attributes->addClass('uk-form-help-block');
   $description_attributes->addClass('uk-margin-small-bottom');
   $variables['description_attributes'] = $description_attributes;
 }
 
 /**
- * Implements hook_form_alter().
+ * Implements hook_preprocess_form().
  */
 function uikit_admin_preprocess_form(&$variables) {
   $form_id = $variables['element']['#form_id'];
@@ -114,7 +114,7 @@ function uikit_admin_preprocess_form_element(&$variables) {
   $classes = isset($variables['attributes']['class']) ? $variables['attributes']['class'] : [];
   $variables['inline_container'] = FALSE;
 
-  $variables['wrapper_attributes'] = new Attribute;
+  $variables['wrapper_attributes'] = new Attribute();
 
   if ($classes && in_array('container-inline', $classes)) {
     $variables['inline_container'] = TRUE;
@@ -140,7 +140,7 @@ function uikit_admin_preprocess_input(&$variables) {
       $value = $variables['element']['#value'];
     }
     $variables['value'] = t('@value', ['@value' => $value]);
-    $views_ui_dispay_buttons = UIkitAdmin::getViewsUIDisplayButtons();
+    $views_ui_dispay_buttons = UIkitAdmin::getViewsUiDisplayButtons();
 
     // Bypass doing anything with Views UI display buttons, which are assigned
     // a different template.
@@ -172,7 +172,7 @@ function uikit_admin_preprocess_links__dropbutton(&$variables) {
   $links_id = isset($variables['attributes']['id']) ? $variables['attributes']['id'] : '';
   $theme_hook = isset($variables['theme_hook_original']) ? $variables['theme_hook_original'] : [];
   $operations_links = $theme_hook && $theme_hook == 'links__dropbutton__operations';
-  $variables['dropdown_button_attributes'] = new Attribute;
+  $variables['dropdown_button_attributes'] = new Attribute();
   $variables['dropdown_button_attributes']->addClass('uk-button');
 
   // Add the uk-button-primary class based on the type of dropbutton is set,
@@ -191,7 +191,7 @@ function uikit_admin_preprocess_links__dropbutton(&$variables) {
   }
   elseif ($operations_links) {
     // Reset the attributes for operations links.
-    $variables['attributes'] = new Attribute;
+    $variables['attributes'] = new Attribute();
   }
 }
 
@@ -200,13 +200,13 @@ function uikit_admin_preprocess_links__dropbutton(&$variables) {
  */
 function uikit_admin_preprocess_menu_local_tasks(&$variables) {
   // Set primary tasks attributes.
-  $primary_attributes = new Attribute;
+  $primary_attributes = new Attribute();
   $primary_attributes->setAttribute('id', 'tasks--primary');
   $primary_attributes->addClass('uk-tab');
   $variables['primary_attributes'] = $primary_attributes;
 
   // Set secondary tasks attributes.
-  $secondary_attributes = new Attribute;
+  $secondary_attributes = new Attribute();
   $secondary_attributes->setAttribute('id', 'tasks--secondary');
   $secondary_attributes->addClass('uk-subnav');
   $secondary_attributes->addClass('uk-subnav-line');
@@ -224,7 +224,7 @@ function uikit_admin_preprocess_region(&$variabes) {
   switch ($region) {
     case 'pre_content':
     case 'breadcrumb':
-      $region_attributes = new Attribute;
+      $region_attributes = new Attribute();
       $region_attributes->setAttribute('id', $attributes['id']);
       $variabes['attributes'] = $region_attributes;
       break;
@@ -258,7 +258,7 @@ function uikit_admin_preprocess_status_report_general_info(&$variables) {
   if (isset($variables['cron']['description']) && $variables['cron']['description']) {
     $cron_links = $variables['cron']['description'];
 
-    foreach ($cron_links[0] as $index => $cron_link) {
+    foreach ($cron_links[0] as $cron_link) {
       if (isset($cron_link['#prefix']) && $cron_link['#prefix'] == '<span class="cron-description__run-cron">') {
         $variables['cron']['run_cron_link'] = $cron_link;
       }
