@@ -6,6 +6,7 @@ props:
   properties:
     links:
       title: Links
+      description: "Each item has a link render array (link), or a title and a url, or a text."
       type: array
       items:
         type: object

@@ -4,18 +4,23 @@
   {% endif %}
   <div class="uk-form-controls">
     {% if title_display == 'after' and label %}
+      {# The label follows the input: the summaries of core read "input:checked + label". #}
       <div class="uikit-admin-form-item__choice">
-        {{ prefix }}{{ input }}{{ suffix }}
-        <div class="uk-form-label">{{ label }}</div>
+        {%- if prefix is not empty %}<span class="field-prefix">{{ prefix }}</span>{% endif -%}
+        {{- input -}}
+        {{- label -}}
+        {%- if suffix is not empty %}<span class="field-suffix">{{ suffix }}</span>{% endif -%}
       </div>
     {% else %}
-      {{ prefix }}{{ input }}{{ suffix }}
+      {% if prefix is not empty %}<span class="field-prefix">{{ prefix }}</span>{% endif %}
+      {{ input }}
+      {% if suffix is not empty %}<span class="field-suffix">{{ suffix }}</span>{% endif %}
     {% endif %}
     {% if errors %}
-      <div class="uk-text-danger uikit-admin-form-item__errors" role="alert">{{ errors }}</div>
+      <div class="uk-text-danger uikit-admin-form-item__errors form-item--error-message" role="alert">{{ errors }}</div>
     {% endif %}
     {% if description %}
-      <div class="uk-text-meta uikit-admin-form-item__description"{% if description_id %} id="{{ description_id }}"{% endif %}>{{ description }}</div>
+      <div class="uk-text-meta uikit-admin-form-item__description description"{% if description_id %} id="{{ description_id }}"{% endif %}>{{ description }}</div>
     {% endif %}
   </div>
 </div>

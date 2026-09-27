@@ -60,6 +60,8 @@
         );
         const empty = palette.querySelector('[data-uikit-admin-palette-empty]');
         let active = 0;
+        // The element the palette was opened from gets the focus back.
+        let opener = null;
 
         const paint = () => {
           const shown = items.filter((item) => !item.hidden);
@@ -74,6 +76,10 @@
         };
 
         const open = () => {
+          opener =
+            document.activeElement && document.activeElement !== document.body
+              ? document.activeElement
+              : null;
           palette.hidden = false;
           document.documentElement.classList.add('uikit-admin-palette-open');
           input.value = '';
@@ -85,9 +91,13 @@
           input.focus();
         };
 
-        const close = () => {
+        const close = (restoreFocus = true) => {
           palette.hidden = true;
           document.documentElement.classList.remove('uikit-admin-palette-open');
+          if (restoreFocus && opener && document.contains(opener)) {
+            opener.focus();
+          }
+          opener = null;
         };
 
         document
@@ -98,7 +108,7 @@
         palette
           .querySelectorAll('[data-uikit-admin-palette-close]')
           .forEach((button) => {
-            button.addEventListener('click', close);
+            button.addEventListener('click', () => close());
           });
 
         input.addEventListener('input', () => {
@@ -114,6 +124,7 @@
         palette.addEventListener('keydown', (event) => {
           const shown = items.filter((item) => !item.hidden);
           if (event.key === 'Escape') {
+            event.preventDefault();
             close();
           } else if (event.key === 'ArrowDown') {
             event.preventDefault();
@@ -139,7 +150,7 @@
         items.forEach((item) => {
           const link = item.querySelector('a');
           if (link) {
-            link.addEventListener('click', close);
+            link.addEventListener('click', () => close(false));
           }
         });
 

@@ -34,6 +34,18 @@ messages:
     theme:
       assets/css/messages.css: {}
 
+# The dialogs of Drupal core.
+dialog:
+  css:
+    theme:
+      assets/css/dialog.css: {}
+
+# The edit screen of Views UI.
+views_ui:
+  css:
+    theme:
+      assets/css/views-ui.css: {}
+
 table:
   css:
     theme:

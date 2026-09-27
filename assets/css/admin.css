@@ -270,8 +270,10 @@ body {
   color: var(--uikit-admin-on-accent);
 }
 
+/* The table clips its rounded corners without becoming a scroll container,
+   so its header can stick. */
 .uk-table {
-  overflow: hidden;
+  overflow: clip;
   margin-bottom: 0;
   border: 1px solid var(--uikit-admin-border);
   border-radius: var(--uikit-admin-radius);
@@ -609,4 +611,390 @@ body {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 12px;
+}
+
+/* ------------------------------------------------------ Core form parts -- */
+
+/* UIkit colors every em; the placeholders of core (a title, a date) keep the
+   color of the text around them. */
+em,
+.placeholder {
+  color: inherit;
+}
+
+/* A required field carries a marker next to its label. */
+.form-required::after {
+  display: inline-block;
+  margin-left: 0.25em;
+  content: "*";
+  color: var(--uk-global-danger-background);
+  font-weight: 700;
+}
+
+/* The label of a checkbox or a radio sits after it. */
+.uikit-admin-form-item__choice > label {
+  margin: 0;
+  color: var(--uikit-admin-text);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.field-prefix,
+.field-suffix {
+  display: inline-block;
+  margin: 0 6px;
+  color: var(--uikit-admin-text-muted);
+  font-size: 13px;
+}
+
+/* A field in error. */
+.uk-input.error,
+.uk-select.error,
+.uk-textarea.error,
+.form-item--error .uk-input,
+.form-item--error .uk-select,
+.form-item--error .uk-textarea {
+  border-color: var(--uk-global-danger-background);
+}
+
+/* A number never needs the whole row. */
+.uikit-admin-main .uk-input[type="number"] {
+  width: 10em;
+}
+
+/* The fields of a table row (weights, parents) keep their own width. */
+.uk-table .uk-select,
+.uk-table .uk-input[type="number"],
+.uk-table .uk-input.form-number {
+  width: auto;
+  min-width: 5em;
+}
+
+/* A group of checkboxes or radios reads as a labelled group, not as a box
+   drawn by the browser. */
+fieldset {
+  min-width: 0;
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border: 1px solid var(--uikit-admin-border);
+  border-radius: var(--uikit-admin-radius);
+}
+
+fieldset.form-composite,
+fieldset.fieldgroup {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+
+legend {
+  padding: 0 4px;
+  color: var(--uk-global-emphasis-color);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+fieldset.form-composite > legend,
+fieldset.fieldgroup > legend {
+  margin-bottom: 6px;
+  padding: 0;
+}
+
+fieldset .uikit-admin-form-item {
+  margin-bottom: 8px;
+}
+
+/* The settings cog of the Field UI rows and the other image buttons. */
+.uikit-admin-image-button {
+  width: auto;
+  height: auto;
+  padding: 6px;
+  cursor: pointer;
+  vertical-align: middle;
+  border: 1px solid var(--uikit-admin-border);
+  border-radius: 6px;
+  background: var(--uikit-admin-surface);
+}
+
+.uikit-admin-image-button:hover,
+.uikit-admin-image-button:focus {
+  border-color: var(--uikit-admin-accent);
+}
+
+/* ------------------------------------------------------------ Tabledrag -- */
+
+.tabledrag-toggle-weight-wrapper {
+  margin-bottom: 8px;
+  text-align: right;
+}
+
+.tabledrag-toggle-weight {
+  padding: 4px 10px;
+  cursor: pointer;
+  color: var(--uikit-admin-accent);
+  border: 1px solid var(--uikit-admin-border);
+  border-radius: 6px;
+  background: var(--uikit-admin-surface);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tabledrag-toggle-weight:hover,
+.tabledrag-toggle-weight:focus {
+  border-color: var(--uikit-admin-accent);
+}
+
+.tabledrag-changed-warning {
+  margin-bottom: 12px;
+  padding: 10px 14px;
+  color: #8a4b12;
+  border-radius: var(--uikit-admin-radius);
+  background: var(--uk-alert-warning-background, #fff6ee);
+}
+
+.tabledrag-handle {
+  cursor: move;
+}
+
+/* ---------------------------------------------------------- Dropbuttons -- */
+
+/* A dropbutton made of buttons prints them in a row. */
+.uikit-admin-dropbutton {
+  display: inline-flex;
+  vertical-align: middle;
+}
+
+.uikit-admin-dropbutton > ul,
+.uikit-admin-dropbutton .dropbutton {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 6px;
+}
+
+.uikit-admin-dropbutton .uk-button {
+  font-size: 13px;
+}
+
+/* ---------------------------------------------------------------- Tables -- */
+
+/* The header of a long table stays in view while the rows scroll. */
+.uk-table.sticky-header {
+  overflow: visible;
+}
+
+.uk-table.sticky-header > thead > tr > th {
+  position: sticky;
+  z-index: 2;
+  top: var(--uikit-admin-bar-height, 0);
+}
+
+/* Under the bar, which sticks to the top of the screen on a wide one. */
+@media (min-width: 960px) {
+  :root {
+    --uikit-admin-bar-height: 77px;
+  }
+}
+
+/* ---------------------------------------------------------------- Pager -- */
+
+.uikit-admin-pager {
+  margin: 24px 0 8px;
+}
+
+.uikit-admin-pager > * > * {
+  min-width: 32px;
+  padding: 4px 8px;
+  text-align: center;
+  border-radius: 6px;
+}
+
+.uikit-admin-pager > .uk-active > * {
+  color: var(--uikit-admin-on-accent);
+  background: var(--uikit-admin-accent);
+}
+
+/* ------------------------------------------------------- Vertical tabs --- */
+
+/* The vertical tabs of core, drawn with the tokens of the theme: the menu
+   on the side, the pane next to it. */
+.vertical-tabs {
+  display: grid;
+  grid-template-columns: minmax(12rem, 16rem) minmax(0, 1fr);
+  margin: 0 0 20px;
+  gap: 0;
+}
+
+.vertical-tabs__menu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--uikit-admin-border);
+  border-right: 0;
+  border-radius: var(--uikit-admin-radius) 0 0 var(--uikit-admin-radius);
+  background: var(--uk-global-muted-background);
+}
+
+.vertical-tabs__menu-item {
+  border-bottom: 1px solid var(--uikit-admin-border);
+}
+
+.vertical-tabs__menu-item:last-child {
+  border-bottom: 0;
+}
+
+.vertical-tabs__menu-item > a {
+  display: block;
+  padding: 10px 14px;
+  text-decoration: none;
+  color: var(--uikit-admin-text);
+}
+
+.vertical-tabs__menu-item > a:hover {
+  text-decoration: none;
+  background: color-mix(in sRGB, var(--uikit-admin-accent) 6%, transparent);
+}
+
+.vertical-tabs__menu-item.is-selected > a {
+  margin-right: -1px;
+  color: var(--uikit-admin-accent);
+  background: var(--uikit-admin-surface);
+  box-shadow: inset 3px 0 0 var(--uikit-admin-accent);
+}
+
+.vertical-tabs__menu-item-title {
+  display: block;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.vertical-tabs__menu-item-summary {
+  display: block;
+  margin-top: 2px;
+  color: var(--uikit-admin-text-muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.vertical-tabs__panes {
+  min-width: 0;
+}
+
+.vertical-tabs__panes > .vertical-tabs__pane {
+  min-height: 100%;
+  margin: 0;
+  border-radius: 0 var(--uikit-admin-radius) var(--uikit-admin-radius) 0;
+  box-shadow: none;
+}
+
+/* The menu names the pane: its summary would say it twice. */
+.vertical-tabs__pane > summary {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .vertical-tabs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vertical-tabs__menu {
+    border-right: 1px solid var(--uikit-admin-border);
+    border-radius: var(--uikit-admin-radius) var(--uikit-admin-radius) 0 0;
+  }
+
+  .vertical-tabs__panes > .vertical-tabs__pane {
+    border-radius: 0 0 var(--uikit-admin-radius) var(--uikit-admin-radius);
+  }
+}
+
+/* ------------------------------------------------------ Content types --- */
+
+.uikit-admin-type-list {
+  margin-top: 0;
+  list-style: none;
+}
+
+.uikit-admin-type-tile {
+  position: relative;
+  height: 100%;
+}
+
+.uikit-admin-type-tile:hover {
+  border-color: var(--uikit-admin-accent);
+  box-shadow: var(--uikit-admin-shadow-raised);
+}
+
+.uikit-admin-type-tile__title {
+  margin-bottom: 6px;
+}
+
+.uikit-admin-type-tile__title a {
+  text-decoration: none;
+  color: var(--uikit-admin-accent);
+}
+
+/* The whole card follows the link. */
+.uikit-admin-type-tile__title a::after {
+  position: absolute;
+  content: "";
+  inset: 0;
+}
+
+/* ------------------------------------------------------- Status report --- */
+
+.uikit-admin-status-counter--error {
+  border-left: 4px solid var(--uk-global-danger-background);
+}
+
+.uikit-admin-status-counter--warning {
+  border-left: 4px solid var(--uk-global-warning-background);
+}
+
+.uikit-admin-status-counter--checked {
+  border-left: 4px solid var(--uk-global-success-background);
+}
+
+.system-status-report__entry {
+  margin-bottom: 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--uikit-admin-border);
+  border-radius: var(--uikit-admin-radius);
+  background: var(--uikit-admin-surface);
+}
+
+.system-status-report__status-title {
+  cursor: pointer;
+  color: var(--uk-global-emphasis-color);
+  font-weight: 650;
+}
+
+.system-status-report__status-icon--error {
+  border-left: 3px solid var(--uk-global-danger-background);
+}
+
+.system-status-report__status-icon--warning {
+  border-left: 3px solid var(--uk-global-warning-background);
+}
+
+.system-status-report__status-icon--error,
+.system-status-report__status-icon--warning {
+  padding-left: 8px;
+}
+
+.system-status-report__entry__value {
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+/* The action links core prints inside a page or a dialog. */
+.action-links {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  gap: 8px;
 }

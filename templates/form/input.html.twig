@@ -10,7 +10,7 @@
   'tel': 'uk-input',
   'number': 'uk-input',
   'password': 'uk-input',
-  'search': 'uk-search-input',
+  'search': 'uk-input',
   'url': 'uk-input',
   'date': 'uk-input',
   'file': 'uk-input',
@@ -18,13 +18,13 @@
   'radio': 'uk-radio',
   'submit': 'uk-button',
   'button': 'uk-button',
-  'image_button': 'uk-button',
+  'image_button': 'uikit-admin-image-button',
 } %}
-{% set is_button = element['#type'] in ['submit', 'button', 'image_button'] %}
-{% set button_style = element['#button_type'] == 'primary' or element['#id'] == 'edit-submit' ? 'uk-button-primary' : 'uk-button-default' %}
+{% set is_button = element['#type'] in ['submit', 'button'] %}
+{% set button_style = element['#button_type'] == 'primary' or element['#id'] == 'edit-submit' ? 'uk-button-primary' : (element['#button_type'] == 'danger' ? 'uk-button-danger' : 'uk-button-default') %}
 {% set attributes = attributes.addClass([
   classes[element['#type']]|default('uk-input'),
   is_button ? button_style,
-  has_error ? 'uk-form-danger',
+  has_error or attributes.hasClass('error') ? 'uk-form-danger',
 ]) %}
 <input{{ attributes }} />{{ children }}

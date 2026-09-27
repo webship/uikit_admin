@@ -33,3 +33,11 @@ Feature: The shell of the back office
      Then the element "html.uikit-admin-rail-collapsed" should exist
      When I go to "/admin/structure"
      Then the element "html.uikit-admin-rail-collapsed" should exist
+
+  Scenario: The rail offers a visible way to log out
+    Given I am logged in as the Drupal administrator
+     When I go to "/admin/content"
+     Then the element ".uikit-admin-rail__logout" should be visible
+      And I should see "Log out"
+     When I click on the element ".uikit-admin-rail__logout"
+     Then I should see "Log in"

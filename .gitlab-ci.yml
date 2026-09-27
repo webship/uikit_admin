@@ -60,11 +60,23 @@ composer:
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT config:set system.theme admin uikit_admin -y
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT config:set node.settings use_admin_theme 1 -y
     - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT cache:rebuild
+    # A test runner has no mail server: collect the mails instead of sending
+    # them, so account actions log no error.
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT config:set system.mail interface.default test_mail_collector -y
+    # Drush ran as root: give the files it created back to the web server, so
+    # image styles and uploads can write their directories.
+    - chown -R www-data:www-data $CI_PROJECT_DIR/$_WEB_ROOT/sites/default/files
     # Surface a server error before the browser suite runs.
     - 'curl -s -o /tmp/login.html -w "login page HTTP=%{http_code}\n" http://localhost/user/login || true'
     - '$CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT watchdog:show --count=25 --severity=Error --extended || true'
-    # Drush as the web server user, for the fixture steps.
-    - printf '#!/bin/sh\nexec su -s /bin/sh www-data -c "HOME=/tmp %s/vendor/bin/drush --root=%s/%s --uri=http://localhost $*"\n' "$CI_PROJECT_DIR" "$CI_PROJECT_DIR" "$_WEB_ROOT" > /usr/local/bin/drush-www
+    # Drush as the web server user, for the fixture steps. runuser runs the
+    # command itself, with no shell and no option parsing after "--", so every
+    # argument reaches Drush as it was given, PHP code included.
+    - |
+      cat > /usr/local/bin/drush-www <<EOF
+      #!/bin/sh
+      exec runuser -u www-data -- env HOME=/tmp $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT --uri=http://localhost "\$@"
+      EOF
     - chmod +x /usr/local/bin/drush-www
     # Node.js 22, which Cucumber needs.
     - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -

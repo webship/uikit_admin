@@ -54,5 +54,11 @@
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
       </a>
     </div>
+    {% if account.logout_url %}
+      <a href="{{ account.logout_url }}" class="uikit-admin-rail__logout" hx-boost="false">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/></svg>
+        <span class="uikit-admin-rail__logout-text">{{ 'Log out'|t }}</span>
+      </a>
+    {% endif %}
   {% endif %}
 </nav>

@@ -9,7 +9,7 @@
     <summary class="uk-card-title uk-h5 uikit-admin-details__summary">{{ title }}</summary>
   {% endif %}
   {% if errors %}
-    {{ include('uikit_admin:alert', { variant: 'danger', role: 'alert', content: errors }, with_context: false) }}
+    {{ include('uikit_admin:alert', { variant: 'danger', role: 'alert', message: errors }, with_context: false) }}
   {% endif %}
   {% if description %}<div class="uk-text-meta">{{ description }}</div>{% endif %}
   {{ children }}

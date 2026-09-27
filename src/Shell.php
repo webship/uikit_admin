@@ -136,6 +136,7 @@ class Shell {
       'name' => $name,
       'role' => $role,
       'url' => Url::fromRoute('entity.user.canonical', ['user' => $this->currentUser->id()])->toString(),
+      'logout_url' => Url::fromRoute('user.logout')->toString(),
     ];
   }
 

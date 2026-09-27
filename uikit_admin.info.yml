@@ -1,7 +1,7 @@
 name: 'UIkit Admin'
 type: theme
 description: 'The administration theme built with UIkit: every part of the administration screens is a single directory component. It stands on its own, with no base theme.'
-core_version_requirement: ^11.4 || ^12
+core_version_requirement: ^11.4.8 || ^12
 base theme: false
 package: 'UIkit'
 alt text: 'Screenshot of UIkit Admin, the UIkit administration theme.'
@@ -57,3 +57,7 @@ libraries-extend:
     - uikit_admin/messages
   core/drupal.tableheader:
     - uikit_admin/table
+  core/drupal.dialog:
+    - uikit_admin/dialog
+  views_ui/admin.styling:
+    - uikit_admin/views_ui

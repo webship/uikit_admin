@@ -12,7 +12,7 @@
     "homepage": "https://www.drupal.org/project/uikit_admin",
     "license": "GPL-2.0-or-later",
     "require": {
-        "drupal/core": "^11.4 || ^12"
+        "drupal/core": "^11.4.8 || ^12"
     },
     "support": {
         "issues": "https://www.drupal.org/project/issues/uikit_admin",

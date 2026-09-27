@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ * The mini pager of a view, rendered by the pagination component.
+ */
+#}
+{% if items.previous or items.next %}
+  {% set list = [] %}
+  {% if items.previous %}
+    {% set title %}<span class="uk-hidden-visually">{{ 'Previous page'|t }}</span><span aria-hidden="true">{{ items.previous.text|default('‹‹'|t) }}</span>{% endset %}
+    {% set list = list|merge([{ title: title, url: items.previous.href, link_attributes: items.previous.attributes|without('href') }]) %}
+  {% endif %}
+  {% if items.current %}
+    {% set list = list|merge([{ title: 'Page @page'|t({ '@page': items.current }), url: '' }]) %}
+  {% endif %}
+  {% if items.next %}
+    {% set title %}<span class="uk-hidden-visually">{{ 'Next page'|t }}</span><span aria-hidden="true">{{ items.next.text|default('››'|t) }}</span>{% endset %}
+    {% set list = list|merge([{ title: title, url: items.next.href, link_attributes: items.next.attributes|without('href') }]) %}
+  {% endif %}
+  {{ include('uikit_admin:pagination', {
+    items: list,
+    alignment: 'center',
+    attributes: create_attribute({ class: ['js-pager__items', 'uikit-admin-pager'] }),
+  }, with_context: false) }}
+{% endif %}

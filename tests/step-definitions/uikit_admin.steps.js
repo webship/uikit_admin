@@ -5,8 +5,18 @@
 
 const assert = require('node:assert');
 const { execSync } = require('node:child_process');
-// eslint-disable-next-line import/no-unresolved, import/no-extraneous-dependencies
-const { Given, When, Then, After } = require('@cucumber/cucumber');
+const path = require('node:path');
+const {
+  Given,
+  When,
+  Then,
+  Before,
+  BeforeAll,
+  BeforeStep,
+  After,
+  Status,
+  // eslint-disable-next-line import/no-unresolved, import/no-extraneous-dependencies
+} = require('@cucumber/cucumber');
 
 const DRUSH = process.env.DRUSH || 'drush';
 const PROJECT_DIR = process.env.DRUPAL_PROJECT_DIR || process.cwd();
@@ -21,6 +31,22 @@ function drush(command) {
     encoding: 'utf8',
     stdio: ['ignore', 'pipe', 'pipe'],
   }).trim();
+}
+
+/**
+ * Runs PHP on the site under test with Drush.
+ *
+ * The code is one shell word in single quotes, so it reaches Drush as it is
+ * written, through ddev and through the drush-www wrapper of the CI.
+ *
+ * @param {string} code
+ *   The PHP code, without the opening tag.
+ *
+ * @return {string}
+ *   What the code printed.
+ */
+function drushPhp(code) {
+  return drush(`php:eval '${code.replace(/'/g, "'\\''")}'`);
 }
 
 /**
@@ -61,6 +87,44 @@ Given(
 );
 
 /**
+ * Throws an uncaught error on the page, to prove that the listeners of
+ * webship-js catch it, so "there should be no JavaScript errors" fails on one.
+ *
+ * Example: When a script of the page throws "qa-probe"
+ */
+When(/^a script of the page throws "([^"]*)"$/, async function (message) {
+  await this.page.evaluate((text) => {
+    setTimeout(() => {
+      throw new Error(text);
+    });
+  }, message);
+});
+
+/**
+ * Waits for an error the page threw, then forgets it, so the error checks
+ * that follow only see the errors of the theme.
+ *
+ * Example: Then the JavaScript error "qa-probe" should have been caught
+ */
+Then(
+  /^the JavaScript error "([^"]*)" should have been caught$/,
+  async function (message) {
+    const caught = (error) =>
+      error.type === 'pageerror' && error.message.includes(message);
+    const deadline = Date.now() + 5000;
+    while (!(this._jsErrors || []).some(caught) && Date.now() < deadline) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.page.waitForTimeout(100);
+    }
+    assert.ok(
+      (this._jsErrors || []).some(caught),
+      `The page threw "${message}" and nothing caught it.`,
+    );
+    this._jsErrors = this._jsErrors.filter((error) => !caught(error));
+  },
+);
+
+/**
  * Example: Then the element ".uikit-admin-rail" should exist
  */
 Then(/^the element "([^"]*)" should exist$/, async function (selector) {
@@ -88,11 +152,16 @@ Given(
   /^the content type "([^"]*)" exists$/,
   { timeout: 60000 },
   function (type) {
-    const code = `if (!\\Drupal\\node\\Entity\\NodeType::load('${type}')) { \\Drupal\\node\\Entity\\NodeType::create(['type' => '${type}', 'name' => ucfirst('${type}')])->save(); node_add_body_field(\\Drupal\\node\\Entity\\NodeType::load('${type}')); }`;
     if (process.env.DRUPAL_SKIP_FIXTURES) {
       return;
     }
-    drush(`php:eval "${code}"`);
+    drushPhp(`
+      if (!\\Drupal\\node\\Entity\\NodeType::load("${type}")) {
+        $type = \\Drupal\\node\\Entity\\NodeType::create(["type" => "${type}", "name" => ucfirst("${type}")]);
+        $type->save();
+        node_add_body_field($type);
+      }
+    `);
   },
 );
 
@@ -229,5 +298,1051 @@ Then(
       .first()
       .getAttribute(attribute);
     assert.strictEqual(actual, value, `${selector} ${attribute}="${actual}"`);
+  },
+);
+
+/**
+ * Clears every cache, so the next page is rendered cold.
+ *
+ * Example: Given the caches are cleared
+ */
+Given(/^the caches are cleared$/, { timeout: 120000 }, function () {
+  drush('cache:rebuild');
+});
+
+/**
+ * The settings of this theme a scenario changed, restored after it.
+ */
+const changedSettings = {};
+
+/**
+ * Example: Given the UIkit Admin setting "accent_color" is "#c0392b"
+ */
+Given(
+  /^the UIkit Admin setting "([^"]*)" is "([^"]*)"$/,
+  { timeout: 120000 },
+  function (key, value) {
+    if (!(key in changedSettings)) {
+      changedSettings[key] = drush(
+        `config:get uikit_admin.settings ${key} --format=string`,
+      );
+    }
+    drush(`config:set uikit_admin.settings ${key} '${value}' -y`);
+  },
+);
+
+After({ tags: '@settings', timeout: 120000 }, function () {
+  Object.entries(changedSettings).forEach(([key, value]) => {
+    drush(`config:set uikit_admin.settings ${key} '${value}' -y`);
+    delete changedSettings[key];
+  });
+});
+
+/**
+ * The content items a scenario created, deleted after it.
+ */
+let createdNodes = [];
+
+/**
+ * Makes sure a listing has more than one page.
+ *
+ * Example: Given there are at least 51 content items
+ */
+Given(
+  /^there are at least (\d+) content items$/,
+  { timeout: 120000 },
+  function (count) {
+    const ids = drushPhp(`
+      $type = array_key_first(\\Drupal\\node\\Entity\\NodeType::loadMultiple());
+      $count = \\Drupal::entityQuery("node")->accessCheck(FALSE)->count()->execute();
+      $ids = [];
+      for ($i = $count; $i < ${Number(count)}; $i++) {
+        $node = \\Drupal\\node\\Entity\\Node::create(["type" => $type, "title" => "qa-pager " . $i]);
+        $node->save();
+        $ids[] = $node->id();
+      }
+      print implode(",", $ids);
+    `);
+    createdNodes = ids ? ids.split(',') : [];
+  },
+);
+
+After({ tags: '@pager', timeout: 120000 }, function () {
+  if (createdNodes.length) {
+    drushPhp(`
+      $storage = \\Drupal::entityTypeManager()->getStorage("node");
+      $storage->delete($storage->loadMultiple([${createdNodes.map(Number).join(',')}]));
+    `);
+  }
+  createdNodes = [];
+});
+
+/**
+ * The messages of a page: the alerts of this theme, and the messages of the
+ * front-end theme, printed its own way.
+ */
+const MESSAGES = '.uk-alert, [data-drupal-messages] [role]';
+
+/**
+ * The steps that may load a new page or print new messages.
+ */
+const TRIGGER_STEP = /^(I |we )*(press|click|submit|follow|reload)\b/;
+
+/**
+ * Marks the messages on the page before a step that may replace them, so a
+ * status message step reads the messages of the next page only, never a
+ * message the page showed before a save.
+ */
+BeforeStep(async function (scope) {
+  if (!this.page || !TRIGGER_STEP.test(scope.pickleStep?.text || '')) {
+    return;
+  }
+  await this.page
+    .evaluate((selector) => {
+      document.querySelectorAll(selector).forEach((element) => {
+        element.setAttribute('data-uikit-admin-seen', '');
+      });
+    }, MESSAGES)
+    .catch(() => {
+      // The page is being replaced already: its messages go with it.
+    });
+});
+
+/**
+ * Waits for a message the last action printed: on the page it loaded, or
+ * in the dialog or the listing it updated. A message the page showed before
+ * the action does not count.
+ *
+ * Example: Then the status messages should read "Caches cleared."
+ */
+Then(
+  /^the status messages should read "([^"]*)"$/,
+  { timeout: 60000 },
+  async function (text) {
+    const alert = this.page
+      .locator(`:is(${MESSAGES}):not([data-uikit-admin-seen])`, {
+        hasText: text,
+      })
+      .first();
+    await alert.waitFor({ state: 'visible', timeout: 45000 });
+    await this.page.waitForLoadState('load');
+  },
+);
+
+/**
+ * The page keeps the page state of HTMX out of its URL, its links and its
+ * forms: a full page load with it would miss every library.
+ *
+ * Example: Then the page should not carry the HTMX page state
+ */
+Then(/^the page should not carry the HTMX page state$/, async function () {
+  const found = await this.page.evaluate(() => ({
+    url: window.location.href.includes('ajax_page_state'),
+    markup: document
+      .querySelector('[data-off-canvas-main-canvas]')
+      .outerHTML.includes('ajax_page_state'),
+  }));
+  assert.deepStrictEqual(found, { url: false, markup: false });
+});
+
+/**
+ * Example: Then the page should have its styles and its scripts
+ */
+Then(/^the page should have its styles and its scripts$/, async function () {
+  await this.page.waitForLoadState('load');
+  const state = await this.page.evaluate(() => ({
+    styles: document.querySelectorAll('link[rel="stylesheet"]').length > 0,
+    drupal: typeof window.Drupal === 'object',
+    uikit: typeof window.UIkit === 'function',
+  }));
+  assert.deepStrictEqual(state, { styles: true, drupal: true, uikit: true });
+});
+
+/**
+ * Submits a form with a full page load and waits for the next page.
+ *
+ * Example: When I submit the form with the button "#edit-submit"
+ */
+When(
+  /^(I |we )*submit the form with the button "([^"]*)"$/,
+  async function (pronoun, selector) {
+    await Promise.all([
+      this.page.waitForNavigation({ timeout: 30000 }),
+      this.page.locator(selector).first().click(),
+    ]);
+    await this.page.waitForLoadState('load');
+  },
+);
+
+/**
+ * Reads a computed style of an element or of one of its pseudo elements.
+ *
+ * @param {import('playwright').Page} page
+ *   The page.
+ * @param {string} selector
+ *   The element.
+ * @param {string} property
+ *   The CSS property.
+ * @param {string} pseudo
+ *   The pseudo element, like "::after", or an empty string.
+ *
+ * @return {Promise<string>}
+ *   The computed value.
+ */
+function computedStyle(page, selector, property, pseudo) {
+  return page
+    .locator(selector)
+    .first()
+    .evaluate(
+      (element, [name, after]) =>
+        getComputedStyle(element, after || null).getPropertyValue(name),
+      [property, pseudo],
+    );
+}
+
+/**
+ * Example: Then the style "color" of the element "em.placeholder" should not be "rgb(240, 80, 110)"
+ */
+Then(
+  /^the style "([^"]*)" of the element "([^"]*)" should (not )?be "([^"]*)"$/,
+  async function (property, selector, not, value) {
+    const actual = await computedStyle(this.page, selector, property, '');
+    if (not) {
+      assert.notStrictEqual(actual, value, `${selector} ${property}`);
+    } else {
+      assert.strictEqual(actual, value, `${selector} ${property}`);
+    }
+  },
+);
+
+/**
+ * Example: Then the style "content" of the pseudo element "::after" of "label.form-required" should be "\"*\""
+ */
+Then(
+  /^the style "([^"]*)" of the pseudo element "([^"]*)" of "([^"]*)" should be "(.*)"$/,
+  async function (property, pseudo, selector, value) {
+    const actual = await computedStyle(this.page, selector, property, pseudo);
+    assert.strictEqual(actual, value.replace(/\\"/g, '"'), selector);
+  },
+);
+
+/**
+ * Example: Then the element "#edit-type" should have the value "qa_type"
+ */
+Then(
+  /^the element "([^"]*)" should have the value "([^"]*)"$/,
+  async function (selector, value) {
+    await this.page.waitForFunction(
+      ([sel, expected]) => document.querySelector(sel)?.value === expected,
+      [selector, value],
+      { timeout: 15000 },
+    );
+  },
+);
+
+/**
+ * Example: Then the element "#edit-type" should be hidden
+ */
+Then(/^the element "([^"]*)" should be hidden$/, async function (selector) {
+  await this.page
+    .locator(selector)
+    .first()
+    .waitFor({ state: 'hidden', timeout: 15000 });
+});
+
+/**
+ * Example: Then the element "thead th" should stay in view after scrolling 1500 pixels
+ */
+Then(
+  /^the element "([^"]*)" should stay in view after scrolling (\d+) pixels$/,
+  async function (selector, pixels) {
+    await this.page.evaluate((y) => window.scrollTo(0, y), Number(pixels));
+    await this.page.waitForTimeout(300);
+    const top = await this.page
+      .locator(selector)
+      .first()
+      .evaluate((element) => element.getBoundingClientRect().top);
+    assert.ok(top >= 0, `${selector} scrolled out of view (top ${top}).`);
+  },
+);
+
+/**
+ * Example: Then the tabs should read "Settings, Manage fields"
+ */
+Then(/^the tabs should read "([^"]*)"$/, async function (list) {
+  const tabs = await this.page.$$eval('.uikit-admin-tabs a', (links) =>
+    links.map((link) => link.textContent.trim()),
+  );
+  assert.deepStrictEqual(tabs.join(', '), list);
+});
+
+/**
+ * Example: Then the focus should be on the element ".uikit-admin-topbar__search"
+ */
+Then(
+  /^the focus should be on the element "([^"]*)"$/,
+  async function (selector) {
+    await this.page.waitForFunction(
+      (sel) => document.activeElement?.matches(sel),
+      selector,
+      { timeout: 5000 },
+    );
+  },
+);
+
+/**
+ * Example: Then the current path should end with "/admin/content"
+ */
+Then(/^the current path should end with "([^"]*)"$/, async function (path) {
+  await this.page.waitForFunction(
+    (expected) => window.location.pathname.endsWith(expected),
+    path,
+    { timeout: 15000 },
+  );
+});
+
+/**
+ * The configuration the back-office scenarios change, restored after a
+ * scenario that failed before it could put it back itself.
+ */
+const watchedConfig = [
+  'system.site',
+  'system.theme',
+  'system.performance',
+  'system.logging',
+  'system.file',
+  'system.image.gd',
+  'system.date',
+  'system.cron',
+  'automated_cron.settings',
+  'user.settings',
+  'views.settings',
+  'update.settings',
+  'uikit_admin.settings',
+];
+
+/**
+ * The modules and themes a scenario may install, uninstalled after a
+ * scenario that failed before it could uninstall them itself.
+ */
+const optionalExtensions = {
+  modules: ['telephone', 'content_moderation', 'workflows', 'comment'],
+  themes: ['stark'],
+};
+
+/**
+ * The state of the site before the suite ran.
+ */
+let initialState = null;
+
+/**
+ * Reads what the cleanup needs to put back.
+ *
+ * @return {object}
+ *   The watched configuration, the installed extensions and the maintenance
+ *   mode.
+ */
+function readSiteState() {
+  const names = Buffer.from(JSON.stringify(watchedConfig)).toString('base64');
+  return JSON.parse(
+    drushPhp(`
+      $config = [];
+      foreach (json_decode(base64_decode("${names}")) as $name) {
+        $config[$name] = \\Drupal::config($name)->getRawData();
+      }
+      print json_encode([
+        "config" => $config,
+        "modules" => array_keys(\\Drupal::moduleHandler()->getModuleList()),
+        "themes" => array_keys(\\Drupal::service("theme_handler")->listInfo()),
+        "maintenance" => (bool) \\Drupal::state()->get("system.maintenance_mode"),
+      ]);
+    `),
+  );
+}
+
+/**
+ * Deletes everything a scenario made: content and config named "qa-" or
+ * "qa_", and, unless only the content is asked for, the extensions and the
+ * configuration it changed.
+ *
+ * The scenarios clean up after themselves through the screens; this is the
+ * safety net that keeps the suite re-runnable after one of them failed.
+ *
+ * @param {boolean} contentOnly
+ *   TRUE to delete the content and the configuration entities only.
+ */
+function cleanUpSite(contentOnly = false) {
+  drushPhp(`
+    $etm = \\Drupal::entityTypeManager();
+    $content = [
+      "comment" => "subject",
+      "node" => "title",
+      "block_content" => "info",
+      "taxonomy_term" => "name",
+      "menu_link_content" => "title",
+      "user" => "name",
+      "path_alias" => "alias",
+    ];
+    foreach ($content as $type => $field) {
+      if (!$etm->hasDefinition($type)) {
+        continue;
+      }
+      $storage = $etm->getStorage($type);
+      $prefix = $type === "path_alias" ? "/qa-" : "qa-";
+      $ids = $storage->getQuery()->accessCheck(FALSE)->condition($field, $prefix, "STARTS_WITH")->execute();
+      if ($ids) {
+        $storage->delete($storage->loadMultiple($ids));
+      }
+    }
+    foreach ($etm->getDefinitions() as $id => $definition) {
+      if (!$definition instanceof \\Drupal\\Core\\Config\\Entity\\ConfigEntityTypeInterface) {
+        continue;
+      }
+      foreach ($etm->getStorage($id)->loadMultiple() as $entity) {
+        if (preg_match("/(^|[._])qa[_-]/", (string) $entity->id())) {
+          try {
+            $etm->getStorage($id)->load($entity->id())?->delete();
+          }
+          catch (\\Throwable $e) {
+          }
+        }
+      }
+    }
+    field_purge_batch(1000);
+  `);
+  if (contentOnly || !initialState) {
+    return;
+  }
+  const current = readSiteState();
+  const modules = optionalExtensions.modules.filter(
+    (name) =>
+      current.modules.includes(name) && !initialState.modules.includes(name),
+  );
+  if (modules.length) {
+    drush(`pm:uninstall ${modules.join(' ')} -y`);
+  }
+  const themes = optionalExtensions.themes.filter(
+    (name) =>
+      current.themes.includes(name) && !initialState.themes.includes(name),
+  );
+  const config = Buffer.from(JSON.stringify(initialState.config)).toString(
+    'base64',
+  );
+  drushPhp(`
+    foreach (json_decode(base64_decode("${config}"), TRUE) as $name => $data) {
+      if ($data && \\Drupal::config($name)->getRawData() != $data) {
+        \\Drupal::configFactory()->getEditable($name)->setData($data)->save();
+      }
+    }
+    \\Drupal::state()->set("system.maintenance_mode", ${initialState.maintenance ? 'TRUE' : 'FALSE'});
+  `);
+  if (themes.length) {
+    drush(`theme:uninstall ${themes.join(' ')} -y`);
+  }
+  drush('cache:rebuild');
+}
+
+BeforeAll({ timeout: 180000 }, function () {
+  initialState = readSiteState();
+  cleanUpSite();
+});
+
+After({ tags: '@cleanup', timeout: 180000 }, function (scope) {
+  cleanUpSite(scope.result?.status === Status.PASSED);
+});
+
+/**
+ * Records the last entry of the database log when a scenario starts: an
+ * entry id, not a time, so an entry a previous scenario logged in the same
+ * second never counts against this one.
+ */
+Before({ tags: '@watchdog', timeout: 60000 }, function () {
+  this.uikitAdminLogSince = Number(
+    drushPhp(`
+      print \\Drupal::moduleHandler()->moduleExists("dblog")
+        ? (int) \\Drupal::database()->query("SELECT MAX(wid) FROM {watchdog}")->fetchField()
+        : 0;
+    `) || 0,
+  );
+});
+
+/**
+ * Fails when the database log got an entry of the error level or worse
+ * since the scenario started (the @watchdog tag records the start).
+ *
+ * Example: Then no error should have been logged
+ */
+Then(/^no error should have been logged$/, { timeout: 60000 }, function () {
+  assert.ok(
+    typeof this.uikitAdminLogSince === 'number',
+    'Tag the scenario with @watchdog to watch the log.',
+  );
+  const errors = drushPhp(`
+      if (!\\Drupal::moduleHandler()->moduleExists("dblog")) {
+        return;
+      }
+      $rows = \\Drupal::database()->select("watchdog", "w")
+        ->fields("w", ["type", "message", "variables"])
+        ->condition("wid", ${this.uikitAdminLogSince}, ">")
+        ->condition("severity", 3, "<=")
+        ->execute();
+      foreach ($rows as $row) {
+        $variables = @unserialize((string) $row->variables, ["allowed_classes" => FALSE]);
+        print $row->type . ": " . strip_tags(strtr((string) $row->message, is_array($variables) ? $variables : [])) . PHP_EOL;
+      }
+    `);
+  assert.strictEqual(errors, '', `Errors were logged:\n${errors}`);
+});
+
+/**
+ * Makes a content item with Drush, for the screens that edit one.
+ *
+ * Example: Given the "page" content item "qa-UIkit revisions" exists
+ * Example: Given the unpublished "page" content item "qa-draft" exists
+ */
+Given(
+  /^the (unpublished )?"([^"]*)" content item "([^"]*)" exists$/,
+  { timeout: 60000 },
+  function (unpublished, type, title) {
+    drushPhp(`
+      $type = \\Drupal\\node\\Entity\\NodeType::load("${type}") ? "${type}" : array_key_first(\\Drupal\\node\\Entity\\NodeType::loadMultiple());
+      $node = \\Drupal\\node\\Entity\\Node::create([
+        "type" => $type,
+        "title" => "${title}",
+        "body" => ["value" => "<p>${title}</p>", "format" => "basic_html"],
+        "uid" => 1,
+        "status" => ${unpublished ? 0 : 1},
+      ]);
+      $node->save();
+    `);
+  },
+);
+
+/**
+ * Makes the article content type the content scenarios need: a body with a
+ * summary, an image and free tagging, like the Article type of old.
+ *
+ * Example: Given the article content type "qa_article" exists
+ */
+Given(
+  /^the article content type "([^"]*)" exists$/,
+  { timeout: 60000 },
+  function (type) {
+    drushPhp(`
+      if (\\Drupal\\node\\Entity\\NodeType::load("${type}")) {
+        return;
+      }
+      $type = \\Drupal\\node\\Entity\\NodeType::create(["type" => "${type}", "name" => "qa-Article"]);
+      $type->save();
+      node_add_body_field($type);
+      \\Drupal\\field\\Entity\\FieldStorageConfig::create([
+        "field_name" => "field_qa_image",
+        "entity_type" => "node",
+        "type" => "image",
+      ])->save();
+      \\Drupal\\field\\Entity\\FieldConfig::create([
+        "field_name" => "field_qa_image",
+        "entity_type" => "node",
+        "bundle" => "${type}",
+        "label" => "Image",
+      ])->save();
+      \\Drupal\\field\\Entity\\FieldStorageConfig::create([
+        "field_name" => "field_qa_tags",
+        "entity_type" => "node",
+        "type" => "entity_reference",
+        "cardinality" => -1,
+        "settings" => ["target_type" => "taxonomy_term"],
+      ])->save();
+      \\Drupal\\field\\Entity\\FieldConfig::create([
+        "field_name" => "field_qa_tags",
+        "entity_type" => "node",
+        "bundle" => "${type}",
+        "label" => "Tags",
+        "settings" => [
+          "handler" => "default:taxonomy_term",
+          "handler_settings" => ["target_bundles" => ["tags" => "tags"], "auto_create" => TRUE],
+        ],
+      ])->save();
+      $displays = \\Drupal::service("entity_display.repository");
+      $displays->getFormDisplay("node", "${type}")
+        ->setComponent("field_qa_image", ["type" => "image_image", "weight" => 2])
+        ->setComponent("field_qa_tags", ["type" => "entity_reference_autocomplete_tags", "weight" => 3])
+        ->setComponent("uid", ["type" => "entity_reference_autocomplete", "weight" => 5])
+        ->setComponent("created", ["type" => "datetime_timestamp", "weight" => 6])
+        ->setComponent("promote", ["type" => "boolean_checkbox", "weight" => 7, "settings" => ["display_label" => TRUE]])
+        ->setComponent("sticky", ["type" => "boolean_checkbox", "weight" => 8, "settings" => ["display_label" => TRUE]])
+        ->setComponent("path", ["type" => "path", "weight" => 9])
+        ->setComponent("status", ["type" => "boolean_checkbox", "weight" => 10, "settings" => ["display_label" => TRUE]])
+        ->save();
+      $displays->getViewDisplay("node", "${type}")
+        ->setComponent("field_qa_image", ["type" => "image", "weight" => 2])
+        ->setComponent("field_qa_tags", ["type" => "entity_reference_label", "weight" => 3])
+        ->save();
+    `);
+  },
+);
+
+/**
+ * Makes a user account with Drush, for the screens that edit one.
+ *
+ * Example: Given the user "qa-editor" exists
+ */
+Given(/^the user "([^"]*)" exists$/, { timeout: 60000 }, function (name) {
+  drushPhp(`
+    if (!user_load_by_name("${name}")) {
+      \\Drupal\\user\\Entity\\User::create([
+        "name" => "${name}",
+        "mail" => "${name}@example.com",
+        "pass" => "Correct.Horse.42",
+        "status" => 1,
+      ])->save();
+    }
+  `);
+});
+
+/**
+ * The modules a scenario installed, uninstalled after it.
+ */
+let scenarioModules = [];
+
+/**
+ * Installs the modules a scenario needs when the site does not have them,
+ * like Layout Builder or Update, which a profile may leave out; the After
+ * hook uninstalls the ones it installed.
+ *
+ * Example: Given the module "layout_builder" is installed
+ * Example: Given the modules "update, layout_builder" are installed
+ */
+Given(
+  /^the modules? "([^"]*)" (?:is|are) installed$/,
+  { timeout: 180000 },
+  function (list) {
+    const modules = list.split(',').map((name) => name.trim());
+    modules.forEach((name) => {
+      assert.match(name, /^[a-z0-9_]+$/, `"${name}" is not a module name.`);
+    });
+    const installed = () =>
+      drushPhp(
+        'print implode(",", array_keys(\\Drupal::moduleHandler()->getModuleList()));',
+      ).split(',');
+    const before = installed();
+    const missing = modules.filter((name) => !before.includes(name));
+    if (missing.length) {
+      drush(`pm:install ${missing.join(' ')} -y`);
+      // The modules they brought along go too.
+      const added = installed().filter((name) => !before.includes(name));
+      scenarioModules = scenarioModules.concat(added);
+    }
+  },
+);
+
+After({ timeout: 180000 }, function () {
+  if (scenarioModules.length) {
+    drush(`pm:uninstall ${scenarioModules.reverse().join(' ')} -y`);
+    drush('cache:rebuild');
+  }
+  scenarioModules = [];
+});
+
+/**
+ * Whether the Comment module was installed before a comment scenario.
+ */
+let commentWasInstalled = null;
+
+/**
+ * Installs Comment and opens the comments of a content type.
+ *
+ * Example: Given comments are open on the content type "qa_article"
+ */
+Given(
+  /^comments are open on the content type "([^"]*)"$/,
+  { timeout: 120000 },
+  function (type) {
+    if (commentWasInstalled === null) {
+      commentWasInstalled =
+        drushPhp(
+          'print (int) \\Drupal::moduleHandler()->moduleExists("comment");',
+        ) === '1';
+    }
+    drush('pm:install comment -y');
+    drushPhp(`
+      if (!\\Drupal\\comment\\Entity\\CommentType::load("qa_comment")) {
+        \\Drupal\\comment\\Entity\\CommentType::create([
+          "id" => "qa_comment",
+          "label" => "qa-Comments",
+          "target_entity_type_id" => "node",
+        ])->save();
+      }
+      \\Drupal::service("comment.manager")->addBodyField("qa_comment");
+      if (!\\Drupal\\field\\Entity\\FieldStorageConfig::loadByName("node", "field_qa_comment")) {
+        \\Drupal\\field\\Entity\\FieldStorageConfig::create([
+          "field_name" => "field_qa_comment",
+          "entity_type" => "node",
+          "type" => "comment",
+          "settings" => ["comment_type" => "qa_comment"],
+        ])->save();
+      }
+      if (!\\Drupal\\field\\Entity\\FieldConfig::loadByName("node", "${type}", "field_qa_comment")) {
+        \\Drupal\\field\\Entity\\FieldConfig::create([
+          "field_name" => "field_qa_comment",
+          "entity_type" => "node",
+          "bundle" => "${type}",
+          "label" => "Comments",
+          "default_value" => [["status" => 2, "cid" => 0, "last_comment_timestamp" => 0, "last_comment_name" => "", "last_comment_uid" => 0, "comment_count" => 0]],
+        ])->save();
+        $displays = \\Drupal::service("entity_display.repository");
+        $displays->getFormDisplay("node", "${type}")->setComponent("field_qa_comment", ["type" => "comment_default", "weight" => 20])->save();
+        $displays->getViewDisplay("node", "${type}")->setComponent("field_qa_comment", ["type" => "comment_default", "weight" => 20, "label" => "above"])->save();
+      }
+    `);
+  },
+);
+
+After({ tags: '@comments', timeout: 180000 }, function () {
+  drushPhp(`
+    $comments = \\Drupal::entityTypeManager()->getStorage("comment");
+    $ids = $comments->getQuery()->accessCheck(FALSE)->condition("comment_type", "qa_comment")->execute();
+    $comments->delete($comments->loadMultiple($ids));
+    \\Drupal\\field\\Entity\\FieldStorageConfig::loadByName("node", "field_qa_comment")?->delete();
+    \\Drupal\\comment\\Entity\\CommentType::load("qa_comment")?->delete();
+    field_purge_batch(1000);
+  `);
+  if (commentWasInstalled === false) {
+    drush('pm:uninstall comment -y');
+  }
+  commentWasInstalled = null;
+});
+
+/**
+ * Types into the CKEditor 5 editor of a text area, like a person does.
+ *
+ * Example: When I type "Hello" in the rich text editor "#edit-body-0-value"
+ */
+When(
+  /^(I |we )*type "([^"]*)" in the rich text editor "([^"]*)"$/,
+  async function (pronoun, text, selector) {
+    const editable = this.page
+      .locator(`${selector} ~ .ck-editor .ck-editor__editable`)
+      .first();
+    await editable.waitFor({ state: 'visible', timeout: 15000 });
+    // Keep typing where the caret is when the editor has the focus already.
+    const focused = await editable.evaluate((element) =>
+      element.contains(document.activeElement),
+    );
+    if (!focused) {
+      await editable.click();
+      await this.page.keyboard.press('Control+End');
+    }
+    await this.page.keyboard.type(text);
+  },
+);
+
+/**
+ * Types text into the element that has the focus.
+ *
+ * Example: When I type "first item" on the keyboard
+ */
+When(
+  /^(I |we )*type "([^"]*)" on the keyboard$/,
+  async function (pronoun, text) {
+    await this.page.keyboard.type(text);
+  },
+);
+
+/**
+ * Presses a button of the CKEditor 5 toolbar, of one of its drop-downs or of
+ * its balloon, by its label.
+ *
+ * Example: When I press the rich text editor button "Bold"
+ */
+When(
+  /^(I |we )*press the rich text editor button "([^"]*)"$/,
+  async function (pronoun, label) {
+    const button = this.page
+      .locator('.ck-button:visible')
+      .filter({
+        has: this.page.locator('.ck-button__label', {
+          hasText: new RegExp(`^${label}$`),
+        }),
+      })
+      .first();
+    await button.click();
+  },
+);
+
+/**
+ * Fills the link balloon of CKEditor 5 and confirms it with Enter.
+ *
+ * Example: When I link the selection in the rich text editor to "https://example.com"
+ */
+When(
+  /^(I |we )*link the selection in the rich text editor to "([^"]*)"$/,
+  async function (pronoun, url) {
+    // The balloon puts the focus in its URL field.
+    const field = this.page
+      .locator('.ck-balloon-panel_visible input.ck-input:focus')
+      .first();
+    await field.waitFor({ state: 'visible', timeout: 15000 });
+    await field.fill(url);
+    await field.press('Enter');
+  },
+);
+
+/**
+ * Example: Then the rich text editor "#edit-body-0-value" should contain "<strong>"
+ */
+Then(
+  /^the rich text editor "([^"]*)" should contain "([^"]*)"$/,
+  async function (selector, markup) {
+    await this.page.waitForFunction(
+      ([sel, expected]) => {
+        const id = document
+          .querySelector(sel)
+          ?.getAttribute('data-ckeditor5-id');
+        const editor = window.Drupal?.CKEditor5Instances?.get(id);
+        return editor ? editor.getData().includes(expected) : false;
+      },
+      [selector, markup],
+      { timeout: 15000 },
+    );
+  },
+);
+
+/**
+ * Types a value key by key, for the fields that answer each key, and picks
+ * the matching suggestion of the autocomplete.
+ *
+ * Example: When I pick "admin" from the autocomplete "#edit-uid-0-target-id"
+ */
+When(
+  /^(I |we )*pick "([^"]*)" from the autocomplete "([^"]*)"$/,
+  async function (pronoun, value, selector) {
+    const field = this.page.locator(selector).first();
+    await field.fill('');
+    await field.pressSequentially(value, { delay: 50 });
+    const item = this.page
+      .locator('.ui-autocomplete:visible li')
+      .filter({ hasText: value })
+      .first();
+    await item.waitFor({ state: 'visible', timeout: 15000 });
+    await item.click();
+  },
+);
+
+/**
+ * Types a value key by key, for the fields that answer each key.
+ *
+ * Example: When I type "Y-m-d" into the element "#edit-date-format-pattern"
+ */
+When(
+  /^(I |we )*type "([^"]*)" into the element "([^"]*)"$/,
+  async function (pronoun, value, selector) {
+    const field = this.page.locator(selector).first();
+    await field.fill('');
+    await field.pressSequentially(value, { delay: 30 });
+  },
+);
+
+/**
+ * Attaches a file of tests/fixtures to a file field.
+ *
+ * Example: When I attach the fixture "qa-image.png" to "input[name='files[field_qa_image_0]']"
+ */
+When(
+  /^(I |we )*attach the fixture "([^"]*)" to "([^"]*)"$/,
+  async function (pronoun, file, selector) {
+    await this.page
+      .locator(selector)
+      .first()
+      .setInputFiles(path.resolve(__dirname, '../fixtures', file));
+  },
+);
+
+/**
+ * Ticks or unticks the first checkbox of a table row: the row of a bulk form
+ * or a table select, or the Enabled box of a menu link.
+ *
+ * Example: When I select the row "qa-bulk one"
+ */
+When(
+  /^(I |we )*(select|unselect) the row "([^"]*)"$/,
+  async function (pronoun, action, row) {
+    const checkbox = this.page
+      .locator('tbody tr')
+      .filter({ hasText: row })
+      .first()
+      .locator('input[type="checkbox"]')
+      .first();
+    await (action === 'select' ? checkbox.check() : checkbox.uncheck());
+  },
+);
+
+/**
+ * Drags a row of a draggable table by its handle, with the mouse, like a
+ * person does: a horizontal move changes its depth in a hierarchy.
+ *
+ * Example: When I drag the row "qa-Docs" 60 pixels to the right
+ */
+When(
+  /^(I |we )*drag the row "([^"]*)" (\d+) pixels to the (right|left)$/,
+  async function (pronoun, row, pixels, direction) {
+    const handle = this.page
+      .locator('tr.draggable')
+      .filter({ hasText: row })
+      .first()
+      .locator('.tabledrag-handle')
+      .first();
+    const box = await handle.boundingBox();
+    const x = box.x + box.width / 2;
+    const y = box.y + box.height / 2;
+    const offset = Number(pixels) * (direction === 'right' ? 1 : -1);
+    await this.page.mouse.move(x, y);
+    await this.page.mouse.down();
+    await this.page.mouse.move(x + offset / 2, y, { steps: 5 });
+    await this.page.mouse.move(x + offset, y, { steps: 5 });
+    await this.page.mouse.up();
+  },
+);
+
+/**
+ * Clicks an operation of a table row, opening the drop-down of the other
+ * operations when it is in there.
+ *
+ * Example: When I click the operation "Delete" in the "qa-UIkit page" row
+ */
+When(
+  /^(I |we )*click the operation "([^"]*)" in the "([^"]*)" row$/,
+  async function (pronoun, operation, row) {
+    const tr = this.page.locator('tr').filter({ hasText: row }).first();
+    const link = tr
+      .locator('.uikit-admin-operations a, .dropbutton a')
+      .filter({ hasText: new RegExp(`^\\s*${operation}\\b`) })
+      .first();
+    if (!(await link.isVisible())) {
+      await tr.locator('button[aria-label="More operations"]').first().click();
+      await link.waitFor({ state: 'visible', timeout: 15000 });
+    }
+    await link.click();
+  },
+);
+
+/**
+ * Compares the text of an element, its visually hidden parts included, with
+ * the spaces collapsed.
+ *
+ * Example: Then the text of the element "#views-add-field" should be "Add fields"
+ */
+Then(
+  /^the text of the element "([^"]*)" should be "([^"]*)"$/,
+  async function (selector, text) {
+    const element = this.page.locator(selector).first();
+    await element.waitFor({ state: 'attached', timeout: 15000 });
+    const actual = await element.evaluate((node) =>
+      node.textContent.replace(/\s+/g, ' ').trim(),
+    );
+    assert.strictEqual(actual, text, selector);
+  },
+);
+
+/**
+ * Example: Then the element "#edit-id" should not exist
+ */
+Then(/^the element "([^"]*)" should not exist$/, async function (selector) {
+  const count = await this.page.locator(selector).count();
+  assert.strictEqual(count, 0, `"${selector}" matches ${count} elements.`);
+});
+
+/**
+ * Presses the visible button with exactly this name: a submit button of a
+ * form or a button of a dialog, never a link.
+ *
+ * Example: When I press the button "Save"
+ */
+When(/^(I |we )*press the button "([^"]*)"$/, async function (pronoun, name) {
+  await this.page.getByRole('button', { name, exact: true }).first().click();
+});
+
+/**
+ * Fills a field found by a CSS selector, spaces included.
+ *
+ * Example: When I fill in the element ".ui-dialog input[name='label']" with "qa Photo"
+ */
+When(
+  /^(I |we )*fill in the element "([^"]*)" with "([^"]*)"$/,
+  async function (pronoun, selector, value) {
+    await this.page.locator(selector).first().fill(value);
+  },
+);
+
+/**
+ * Presses the primary button of the open dialog, whatever its label: Views
+ * UI names it after the displays the change applies to.
+ *
+ * Example: When I press the primary button of the dialog
+ */
+When(
+  /^(I |we )*press the primary button of the dialog$/,
+  async function (pronoun) {
+    await this.page
+      .locator('.ui-dialog-buttonpane .button--primary:visible')
+      .first()
+      .click();
+  },
+);
+
+/**
+ * The configuration a scenario keeps a copy of, put back after it.
+ */
+const keptConfig = {};
+
+/**
+ * Keeps a copy of a configuration object, put back after the scenario, for
+ * the settings forms the scenario saves.
+ *
+ * Example: Given the configuration "system.logging" is put back after the scenario
+ */
+Given(
+  /^the configuration "([^"]*)" is put back after the scenario$/,
+  { timeout: 60000 },
+  function (name) {
+    keptConfig[name] = drushPhp(
+      `print base64_encode(json_encode(\\Drupal::config("${name}")->getRawData()));`,
+    );
+  },
+);
+
+After({ timeout: 120000 }, function () {
+  const names = Object.keys(keptConfig);
+  if (!names.length) {
+    return;
+  }
+  names.forEach((name) => {
+    drushPhp(`
+      $data = json_decode(base64_decode("${keptConfig[name]}"), TRUE);
+      if ($data) {
+        \\Drupal::configFactory()->getEditable("${name}")->setData($data)->save();
+      }
+    `);
+    delete keptConfig[name];
+  });
+  drush('cache:rebuild');
+});
+
+/**
+ * Selects an option of a select of a table row, like its weight or its
+ * parent, found by the end of its name.
+ *
+ * Example: When I select "-10" from the "weight" select of the "Desaturate" row
+ */
+When(
+  /^(I |we )*select "([^"]*)" from the "([^"]*)" select of the "([^"]*)" row$/,
+  async function (pronoun, value, name, row) {
+    await this.page
+      .locator('tr')
+      .filter({ hasText: row })
+      .first()
+      .locator(`select[name$="[${name}]"]`)
+      .first()
+      .selectOption(value);
   },
 );

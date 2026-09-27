@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace Drupal\uikit_admin\Hook;
 
+use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Extension\ThemeSettingsProvider;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\uikit_admin\Shell;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Preprocess hooks for UIkit Admin.
@@ -34,6 +40,11 @@ class PreprocessHooks {
   public function __construct(
     protected ThemeSettingsProvider $themeSettingsProvider,
     protected RouteMatchInterface $routeMatch,
+    protected AccountInterface $currentUser,
+    // The services of optional modules, like Navigation, are looked up only
+    // when they are installed.
+    #[Autowire(service: 'service_container')]
+    protected ContainerInterface $container,
   ) {}
 
   /**
@@ -82,7 +93,13 @@ class PreprocessHooks {
     $variables['rail_account'] = $shell->account();
     $variables['palette_items'] = $shell->paletteItems();
     $variables['#cache']['contexts'][] = 'user.permissions';
+    // The rail names the person signed in.
+    $variables['#cache']['contexts'][] = 'user';
     $variables['#cache']['contexts'][] = 'route';
+    $entity_tasks = $this->entityTasks();
+    if ($entity_tasks) {
+      $variables['page']['pre_content']['uikit_admin_entity_tasks'] = $entity_tasks;
+    }
 
     if ($this->isSignIn()) {
       $variables['#cache']['tags'][] = 'config:uikit_admin.settings';
@@ -92,6 +109,37 @@ class PreprocessHooks {
       $use_default = $this->themeSettingsProvider->getSetting('logo.use_default', 'uikit_admin') ?? TRUE;
       $variables['sign_in_logo'] = $use_default ? '' : (string) ($this->themeSettingsProvider->getSetting('logo.url', 'uikit_admin') ?? '');
     }
+  }
+
+  /**
+   * The tabs of a content entity, when the Navigation module took them.
+   *
+   * The Navigation module moves the View, Edit, Delete and Revisions tabs of
+   * a content entity into its top bar and hides the local tasks block. This
+   * theme draws its own bar instead, so it prints the tabs again.
+   *
+   * @see \Drupal\navigation\NavigationRenderer::removeLocalTasks()
+   */
+  protected function entityTasks(): array {
+    $container = $this->container;
+    if (!$container->has('navigation.renderer') || !$container->has('plugin.manager.top_bar_item')) {
+      return [];
+    }
+    if (!$this->currentUser->hasPermission('access navigation')
+      || !\array_key_exists('page_actions', $container->get('plugin.manager.top_bar_item')->getDefinitions())
+      || !$container->get('navigation.renderer')->hasLocalTasks()) {
+      return [];
+    }
+    $tasks = $container->get('plugin.manager.menu.local_task')->getLocalTasks((string) $this->routeMatch->getRouteName(), 0);
+    $build = [
+      '#theme' => 'menu_local_tasks',
+      '#primary' => $tasks['tabs'],
+      '#weight' => -100,
+    ];
+    CacheableMetadata::createFromObject($tasks['cacheability'])
+      ->addCacheContexts(['user.permissions', 'route'])
+      ->applyTo($build);
+    return $build;
   }
 
   /**
@@ -116,17 +164,41 @@ class PreprocessHooks {
     if ($mode !== 'auto') {
       $variables['html_attributes']->setAttribute('data-theme', $mode);
     }
-    $variables['#attached']['html_head'][] = [
-      [
-        '#tag' => 'style',
-        '#value' => \sprintf(
-          ':root{--uikit-admin-accent:%s;--uikit-admin-focus:%s;}',
-          $this->safeColor($accent, ThemeHooks::ACCENT_COLOR),
-          $this->safeColor($focus, ThemeHooks::FOCUS_COLOR),
-        ),
-      ],
-      'uikit_admin_colors',
-    ];
+    // A color of the settings wins over the defaults of the stylesheet and
+    // over the color mode: the style attribute of the root element comes
+    // after every rule of the style sheets.
+    $properties = [];
+    $accent = $this->safeColor($accent, ThemeHooks::ACCENT_COLOR);
+    if (strcasecmp($accent, ThemeHooks::ACCENT_COLOR) !== 0) {
+      $properties[] = '--uikit-admin-accent:' . $accent;
+      $properties[] = '--uikit-admin-accent-hover:color-mix(in srgb, ' . $accent . ' 82%, #000)';
+      $properties[] = '--uikit-admin-on-accent:' . $this->onColor($accent);
+    }
+    $focus = $this->safeColor($focus, ThemeHooks::FOCUS_COLOR);
+    if (strcasecmp($focus, ThemeHooks::FOCUS_COLOR) !== 0) {
+      $properties[] = '--uikit-admin-focus:' . $focus;
+    }
+    if ($properties) {
+      $variables['html_attributes']->setAttribute('style', implode(';', $properties));
+    }
+    $variables['#cache']['tags'][] = 'config:uikit_admin.settings';
+  }
+
+  /**
+   * The text color that reads on a background color: white or near black.
+   */
+  protected function onColor(string $hex): string {
+    $hex = ltrim($hex, '#');
+    if (\strlen($hex) < 6) {
+      $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+    }
+    $channels = array_map(static function (string $pair): float {
+      $value = hexdec($pair) / 255;
+      return $value <= 0.03928 ? $value / 12.92 : (($value + 0.055) / 1.055) ** 2.4;
+    }, str_split(substr($hex, 0, 6), 2));
+    $luminance = 0.2126 * $channels[0] + 0.7152 * $channels[1] + 0.0722 * $channels[2];
+    // The contrast with white against the contrast with #111.
+    return (1.05 / ($luminance + 0.05)) >= (($luminance + 0.05) / 0.0555) ? '#fff' : '#111';
   }
 
   /**
@@ -198,37 +270,45 @@ class PreprocessHooks {
   /**
    * Implements hook_preprocess_HOOK() for links__operations.
    *
-   * The operations reach the component as plain values, so the dropdown can
-   * keep the first one outside and the rest inside.
+   * The operations reach the component as the links of core, so each one
+   * keeps its attributes, its query and its title markup: the modal dialogs
+   * (use-ajax, data-dialog-type), the Views UI AJAX links, the accessible
+   * names and the CSRF tokens of the routes.
    */
   #[Hook('preprocess_links__operations')]
   public function preprocessLinksOperations(array &$variables): void {
     $items = [];
     foreach ($variables['links'] ?? [] as $item) {
-      if (!isset($item['link'])) {
-        continue;
+      if (isset($item['link'])) {
+        $items[] = ['link' => $item['link']];
       }
-      $link = $item['link'];
-      $items[] = [
-        'title' => (string) ($link['#title'] ?? ''),
-        'url' => isset($link['#url']) ? $link['#url']->toString() : '',
-      ];
+      elseif (!empty($item['text'])) {
+        // A link without a URL prints as text, the way core prints it.
+        $items[] = ['text' => $item['text']];
+      }
     }
     $variables['operations'] = $items;
   }
 
   /**
    * Turn the local task elements of core into plain component values.
+   *
+   * The tabs follow their weight and their access, the way core renders them.
    */
   protected function tabItems(array $tasks): array {
     $items = [];
-    foreach ($tasks as $key => $task) {
+    foreach (Element::children($tasks, TRUE) as $key) {
+      $task = $tasks[$key];
       if (!\is_array($task) || !isset($task['#link'])) {
+        continue;
+      }
+      $access = $task['#access'] ?? TRUE;
+      if ($access instanceof AccessResultInterface ? !$access->isAllowed() : !$access) {
         continue;
       }
       $link = $task['#link'];
       $items[] = [
-        'title' => (string) ($link['title'] ?? ''),
+        'title' => $link['title'] ?? '',
         'url' => isset($link['url']) ? $link['url']->toString() : '',
         'active' => !empty($task['#active']),
       ];

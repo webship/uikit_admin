@@ -94,6 +94,26 @@
   background: var(--uikit-admin-surface, #fff);
 }
 
+.uikit-admin-rail__logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin: 4px 12px 12px;
+  padding: 0 12px;
+  text-decoration: none;
+  color: var(--uikit-admin-text-muted, #5c6672);
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.uikit-admin-rail__logout:hover,
+.uikit-admin-rail__logout:focus {
+  text-decoration: none;
+  color: var(--uikit-admin-text, #1b1f24);
+  background: var(--uk-global-muted-background, #eef0f3);
+}
+
 .uikit-admin-rail__body {
   display: flex;
   overflow-y: auto;
@@ -226,7 +246,8 @@
 .uikit-admin-rail-collapsed .uikit-admin-rail__label,
 .uikit-admin-rail-collapsed .uikit-admin-rail__count,
 .uikit-admin-rail-collapsed .uikit-admin-rail__account-text,
-.uikit-admin-rail-collapsed .uikit-admin-rail__account-link {
+.uikit-admin-rail-collapsed .uikit-admin-rail__account-link,
+.uikit-admin-rail-collapsed .uikit-admin-rail__logout-text {
   position: absolute;
   overflow: hidden;
   clip: rect(0 0 0 0);

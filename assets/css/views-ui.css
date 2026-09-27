@@ -1,0 +1,121 @@
+/**
+ * @file
+ * The Views UI edit screen with the tokens and the buttons of the theme.
+ *
+ * The bucket actions and the display actions are drawn by the operations
+ * component and the dropbutton wrapper of the theme, not by the dropbuttons
+ * of core that the styles of Views UI expect.
+ */
+
+.views-admin .uikit-admin-operations a.icon,
+.views-admin .uikit-admin-operations a.icon.compact {
+  display: inline-block;
+  overflow: visible;
+  width: auto;
+  height: auto;
+  text-indent: 0;
+  border: 1px solid var(--uikit-admin-border);
+  border-radius: 6px;
+  background: var(--uikit-admin-surface);
+  box-shadow: none;
+}
+
+.views-displays {
+  border-color: var(--uikit-admin-border);
+  border-radius: var(--uikit-admin-radius);
+  background: var(--uikit-admin-surface);
+}
+
+.views-display-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom-color: var(--uikit-admin-border);
+  background: var(--uk-global-muted-background);
+  gap: 8px;
+}
+
+.views-display-top .tabs {
+  display: flex;
+  flex-wrap: wrap;
+  order: -1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 6px;
+}
+
+.views-display-top .tabs > li {
+  margin: 0;
+  padding: 0;
+}
+
+.views-display-top .tabs > li > a {
+  display: inline-block;
+  padding: 4px 12px;
+  text-decoration: none;
+  border: 1px solid var(--uikit-admin-border);
+  border-radius: 999px;
+  background: var(--uikit-admin-surface);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.views-display-top .tabs > li.is-active > a {
+  color: var(--uikit-admin-on-accent);
+  border-color: var(--uikit-admin-accent);
+  background: var(--uikit-admin-accent);
+}
+
+.views-display-top .uikit-admin-dropbutton,
+.views-display-top .uikit-admin-operations {
+  position: static;
+}
+
+/* The actions of a display (Duplicate, Delete, Disable) stay compact. */
+.views-display-tab .uikit-admin-dropbutton .uk-button,
+.views-ui-display-tab-actions .uk-button {
+  padding: 0 12px;
+  font-size: 13px;
+  line-height: 30px;
+}
+
+/* A bucket keeps its title on the left and its actions on the right. */
+.views-ui-display-tab-bucket {
+  position: relative;
+  border-color: var(--uikit-admin-border);
+}
+
+.views-ui-display-tab-bucket > .uikit-admin-dropbutton,
+.views-ui-display-tab-bucket > .uikit-admin-operations {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+}
+
+.views-ui-display-tab-bucket__title {
+  min-height: 32px;
+  padding-right: 110px;
+}
+
+.views-ui-display-tab-bucket .views-display-setting:nth-of-type(even) {
+  background: color-mix(in sRGB, var(--uk-global-muted-background) 60%, transparent);
+}
+
+.form-edit .form-actions {
+  border-color: var(--uikit-admin-border);
+  background: color-mix(in sRGB, var(--uikit-admin-canvas) 90%, transparent);
+}
+
+/* The actions of the display sit in their own row, under its links. */
+.views-ui-display-tab-actions.views-ui-display-tab-bucket > .uikit-admin-dropbutton {
+  position: static;
+  display: flex;
+  margin: 8px 0;
+}
+
+.views-ui-display-tab-actions .views-ui-display-tab-bucket__title {
+  padding-right: 0;
+}

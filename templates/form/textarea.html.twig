@@ -5,5 +5,5 @@
  */
 #}
 <div{{ wrapper_attributes.addClass('uikit-admin-textarea') }}>
-  <textarea{{ attributes.addClass('uk-textarea') }}>{{ value }}</textarea>
+  <textarea{{ attributes.addClass(['uk-textarea', attributes.hasClass('error') ? 'uk-form-danger']) }}>{{ value }}</textarea>
 </div>

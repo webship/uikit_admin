@@ -1,0 +1,16 @@
+{#
+/**
+ * @file
+ * The wrapper of a dropbutton.
+ *
+ * The links of a dropbutton are drawn by the operations component, which
+ * brings its own UIkit dropdown, so the wrapper carries none of the classes
+ * the dropbutton script of core turns into a toggle. A dropbutton made of
+ * buttons (the display actions of Views UI) prints them in one row.
+ *
+ * @see templates/navigation/links--dropbutton.html.twig
+ */
+#}
+{% if children %}
+  <div class="uikit-admin-dropbutton" data-drupal-ajax-container>{{- children -}}</div>
+{% endif %}

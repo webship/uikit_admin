@@ -1,0 +1,131 @@
+/**
+ * @file
+ * The dialogs of Drupal (jQuery UI): a UIkit modal look.
+ *
+ * The base theme of jQuery UI paints its buttons grey, over the UIkit
+ * buttons: the selectors here are strong enough to win.
+ */
+
+.ui-widget-overlay {
+  z-index: 1259;
+  opacity: 1;
+  background: rgb(16, 24, 40, 0.5);
+}
+
+/* Above the sticky bar, the sticky table headers and the UIkit dropdowns. */
+.ui-dialog.ui-widget {
+  z-index: 1260;
+  padding: 0;
+  color: var(--uikit-admin-text);
+  border: 1px solid var(--uikit-admin-border);
+  border-radius: var(--uikit-admin-radius, 8px);
+  background: var(--uikit-admin-surface);
+  box-shadow: 0 16px 48px rgb(16, 24, 40, 0.25);
+  font-family: var(--uk-global-font-family);
+  font-size: 15px;
+}
+
+.ui-dialog .ui-dialog-titlebar {
+  display: flex;
+  align-items: flex-start;
+  padding: 18px 56px 14px 24px;
+  color: var(--uk-global-emphasis-color);
+  border: 0;
+  border-bottom: 1px solid var(--uikit-admin-border);
+  border-radius: var(--uikit-admin-radius, 8px) var(--uikit-admin-radius, 8px) 0 0;
+  background: transparent;
+}
+
+.ui-dialog .ui-dialog-title {
+  float: none;
+  width: auto;
+  margin: 0;
+  white-space: normal;
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.ui-dialog .ui-dialog-titlebar-close {
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+}
+
+.ui-dialog .ui-dialog-titlebar-close:hover,
+.ui-dialog .ui-dialog-titlebar-close:focus {
+  border-color: var(--uikit-admin-border);
+  background: var(--uk-global-muted-background);
+}
+
+.ui-dialog .ui-dialog-content {
+  padding: 20px 24px;
+  color: var(--uikit-admin-text);
+  background: transparent;
+}
+
+.ui-dialog .ui-dialog-buttonpane {
+  margin: 0;
+  padding: 14px 24px;
+  border-top: 1px solid var(--uikit-admin-border);
+  background: var(--uk-global-muted-background);
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset {
+  display: flex;
+  float: none;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-button {
+  margin: 0;
+  padding: 0 18px;
+  color: var(--uikit-admin-text);
+  border: 1px solid var(--uikit-admin-border);
+  border-radius: 6px;
+  background: var(--uikit-admin-surface);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 36px;
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-button.uk-button-primary,
+.ui-dialog .ui-dialog-buttonpane .ui-button.button--primary {
+  color: var(--uikit-admin-on-accent);
+  border-color: var(--uikit-admin-accent);
+  background: var(--uikit-admin-accent);
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-button.uk-button-primary:hover,
+.ui-dialog .ui-dialog-buttonpane .ui-button.button--primary:hover {
+  background: var(--uikit-admin-accent-hover);
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-button.uk-button-danger,
+.ui-dialog .ui-dialog-buttonpane .ui-button.button--danger {
+  color: #fff;
+  border-color: var(--uk-global-danger-background);
+  background: var(--uk-global-danger-background);
+}
+
+.ui-dialog .ui-dialog-buttonpane .ui-button:focus-visible {
+  outline: 2px solid var(--uikit-admin-focus);
+  outline-offset: 2px;
+}
+
+/* The form actions of a dialog move to the button pane. */
+.ui-dialog .ui-dialog-content .form-actions {
+  position: static;
+  border: 0;
+  background: none;
+  backdrop-filter: none;
+}

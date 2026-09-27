@@ -8,6 +8,7 @@ use Drupal\Core\Extension\ThemeSettingsProvider;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\uikit_admin\LinkButton;
 
 /**
  * Library, theme settings and page hooks for UIkit Admin.
@@ -41,10 +42,29 @@ class ThemeHooks {
   ) {}
 
   /**
+   * Implements hook_element_info_alter().
+   *
+   * The links core draws as buttons get the UIkit button classes.
+   */
+  #[Hook('element_info_alter')]
+  public function elementInfoAlter(array &$info): void {
+    // Before the pre-render callback of core, which turns the link into its
+    // markup.
+    if (isset($info['link'])) {
+      array_unshift($info['link']['#pre_render'], [LinkButton::class, 'preRenderLink']);
+    }
+  }
+
+  /**
    * Implements hook_form_system_theme_settings_alter().
    */
   #[Hook('form_system_theme_settings_alter')]
   public function themeSettingsAlter(array &$form, FormStateInterface $form_state): void {
+    // The hook runs for every theme settings form while this theme is the
+    // administration theme: only the form of this theme gets its settings.
+    if (($form['config_key']['#value'] ?? NULL) !== 'uikit_admin.settings') {
+      return;
+    }
     $form['uikit_admin'] = [
       '#type' => 'details',
       '#title' => $this->t('UIkit Admin'),

@@ -1,0 +1,42 @@
+{#
+/**
+ * @file
+ * The pager of a listing, rendered by the pagination component.
+ *
+ * The list keeps the "js-pager__items" class the AJAX views look for.
+ */
+#}
+{% if items %}
+  {% set list = [] %}
+  {% for name, label in { first: ['First page'|t, '« First'|t], previous: ['Previous page'|t, '‹ Previous'|t] } %}
+    {% if items[name] %}
+      {% set title %}<span class="uk-hidden-visually">{{ label[0] }}</span><span aria-hidden="true">{{ items[name].text|default(label[1]) }}</span>{% endset %}
+      {% set list = list|merge([{ title: title, url: items[name].href, link_attributes: items[name].attributes|without('href') }]) %}
+    {% endif %}
+  {% endfor %}
+  {% if ellipses.previous %}
+    {% set list = list|merge([{ title: '', url: '' }]) %}
+  {% endif %}
+  {% for key, item in items.pages %}
+    {% set title %}<span class="uk-hidden-visually">{{ 'Page'|t }} </span>{{ key }}{% endset %}
+    {% if current == key %}
+      {% set list = list|merge([{ title: title, url: '' }]) %}
+    {% else %}
+      {% set list = list|merge([{ title: title, url: item.href, link_attributes: item.attributes|without('href') }]) %}
+    {% endif %}
+  {% endfor %}
+  {% if ellipses.next %}
+    {% set list = list|merge([{ title: '', url: '' }]) %}
+  {% endif %}
+  {% for name, label in { next: ['Next page'|t, 'Next ›'|t], last: ['Last page'|t, 'Last »'|t] } %}
+    {% if items[name] %}
+      {% set title %}<span class="uk-hidden-visually">{{ label[0] }}</span><span aria-hidden="true">{{ items[name].text|default(label[1]) }}</span>{% endset %}
+      {% set list = list|merge([{ title: title, url: items[name].href, link_attributes: items[name].attributes|without('href') }]) %}
+    {% endif %}
+  {% endfor %}
+  {{ include('uikit_admin:pagination', {
+    items: list,
+    alignment: 'center',
+    attributes: create_attribute({ class: ['pager__items', 'js-pager__items', 'uikit-admin-pager'] }),
+  }, with_context: false) }}
+{% endif %}

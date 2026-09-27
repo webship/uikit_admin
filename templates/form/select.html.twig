@@ -4,7 +4,7 @@
  * A select with the UIkit form class.
  */
 #}
-<select{{ attributes.addClass(['uk-select', has_error ? 'uk-form-danger']) }}>
+<select{{ attributes.addClass(['uk-select', has_error or attributes.hasClass('error') ? 'uk-form-danger']) }}>
   {% for option in options %}
     {% if option.type == 'optgroup' %}
       <optgroup label="{{ option.label }}">

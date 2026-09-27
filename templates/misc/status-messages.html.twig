@@ -22,6 +22,6 @@
     variant: variants[type]|default('primary'),
     close: true,
     role: type == 'error' ? 'alert' : 'status',
-    content: body,
+    message: body,
   }, with_context: false) }}
 {% endfor %}

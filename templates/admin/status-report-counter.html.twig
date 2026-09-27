@@ -2,11 +2,15 @@
 /**
  * @file
  * One counter of the status report, rendered by the status_counter component.
+ *
+ * The severity (error, warning, checked) names the group of the report the
+ * counter links to: #error, #warning, #checked.
  */
 #}
+{% set status = (severity is iterable ? severity.status : severity)|default('checked') %}
 {{ include('uikit_admin:status_counter', {
-  severity: severity_status ?? 'checked',
+  severity: status,
   amount: amount ?? 0,
   text: text,
-  url: url ?? '#',
+  url: '#' ~ status,
 }, with_context: false) }}

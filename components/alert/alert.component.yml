@@ -41,3 +41,10 @@ props:
       title: "Close button"
       description: "Add a close button to dismiss the alert."
       type: boolean
+    role:
+      title: Role
+      description: "alert for errors, status for the messages that need no interruption."
+      type: string
+      enum:
+        - alert
+        - status

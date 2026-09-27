@@ -1,6 +1,6 @@
-{% set style = {'error': 'uk-card-danger', 'warning': 'uk-card-warning', 'checked': 'uk-card-default'} %}
+{% set severity = severity in ['error', 'warning', 'checked'] ? severity : 'checked' %}
 <div>
-  <a href="{{ url|default('#') }}" class="uk-card uk-card-small uk-card-body uk-display-block uk-link-reset {{ style[severity]|default('uk-card-default') }}">
+  <a href="{{ url|default('#' ~ severity) }}" class="uk-card uk-card-small uk-card-body uk-display-block uk-link-reset uk-card-default uikit-admin-status-counter uikit-admin-status-counter--{{ severity }}">
     <span class="uk-text-large uk-text-bold">{{ amount }}</span>
     <span class="uikit-admin-status-counter__text">{{ text }}</span>
   </a>

@@ -31,3 +31,8 @@
   text-decoration: underline;
   color: inherit;
 }
+
+/* The text of a message stays clear of its close button. */
+.uk-alert:has(> .uk-alert-close) {
+  padding-right: 40px;
+}

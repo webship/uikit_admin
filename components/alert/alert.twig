@@ -3,7 +3,7 @@
   variant and variant != 'default' ? 'uk-alert-' ~ variant,
 ]) %}
 {% set heading_level = heading_level|default(3) %}
-<div{{ attributes.setAttribute('uk-alert', '').setAttribute('role', 'alert') }}>
+<div{{ attributes.setAttribute('uk-alert', '').setAttribute('role', role in ['alert', 'status'] ? role : 'alert') }}>
   {% if close %}
     <button type="button" class="uk-alert-close" uk-close aria-label="{{ 'Close'|t }}"></button>
   {% endif %}

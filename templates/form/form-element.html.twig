@@ -2,10 +2,27 @@
 /**
  * @file
  * One form element, rendered by the form_element component.
+ *
+ * The wrapper keeps the classes of core: the behaviors of core find a field
+ * by them (#states, the machine name, the password confirmation, the summary
+ * of a text field, the vertical tab summaries, the CKEditor 5 settings).
  */
 #}
+{%
+  set classes = [
+    'js-form-item',
+    'form-item',
+    'js-form-type-' ~ type|clean_class,
+    'form-type-' ~ type|clean_class,
+    'js-form-item-' ~ name|clean_class,
+    'form-item-' ~ name|clean_class,
+    title_display not in ['after', 'before'] ? 'form-no-label',
+    element['#disabled'] ?? false ? 'form-disabled',
+    errors ? 'form-item--error',
+  ]
+%}
 {{ include('uikit_admin:form_element', {
-  attributes: attributes,
+  attributes: attributes.addClass(classes),
   title_display: title_display|default('before'),
   disabled: element['#disabled'] ?? false,
   label: label,

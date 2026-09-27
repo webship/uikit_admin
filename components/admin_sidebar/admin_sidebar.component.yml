@@ -18,5 +18,5 @@ props:
         type: object
     account:
       title: Account
-      description: "The initials, the name and the role of the person signed in."
+      description: "The initials, the name, the role and the account and log out links of the person signed in."
       type: object
