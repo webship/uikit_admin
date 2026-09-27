@@ -41,23 +41,6 @@ class ThemeHooks {
   ) {}
 
   /**
-   * Implements hook_library_info_alter().
-   *
-   * Serves the UIkit framework from web/libraries when the theme setting asks
-   * for it, so a site may run without the CDN.
-   */
-  #[Hook('library_info_alter')]
-  public function libraryInfoAlter(array &$libraries, string $extension): void {
-    if ($extension !== 'uikit_admin') {
-      return;
-    }
-    $source = $this->themeSettingsProvider->getSetting('uikit_source', 'uikit_admin');
-    if ($source === 'local' && isset($libraries['uikit.local'])) {
-      $libraries['uikit'] = $libraries['uikit.local'];
-    }
-  }
-
-  /**
    * Implements hook_form_system_theme_settings_alter().
    */
   #[Hook('form_system_theme_settings_alter')]
@@ -68,17 +51,11 @@ class ThemeHooks {
       '#open' => TRUE,
       '#weight' => -10,
     ];
-    $form['uikit_admin']['uikit_source'] = [
-      '#type' => 'radios',
-      '#title' => $this->t('UIkit source'),
-      '#default_value' => $this->themeSettingsProvider->getSetting('uikit_source', 'uikit_admin') ?? 'cdn',
-      '#options' => [
-        'cdn' => $this->t('From the CDN (jsDelivr)'),
-        'local' => $this->t('From web/libraries/uikit'),
-      ],
-      '#description' => $this->t('UIkit @version is the version this theme is built against.', [
-        '@version' => self::UIKIT_VERSION,
-      ]),
+    $form['uikit_admin']['htmx_navigation'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Navigate with HTMX'),
+      '#description' => $this->t('Links, pagers, sorting and filters load only the page, and the rail and the top bar stay in place. Edit, add and delete forms and the screens with drag and drop keep full page loads.'),
+      '#default_value' => (bool) ($this->themeSettingsProvider->getSetting('htmx_navigation', 'uikit_admin') ?? TRUE),
     ];
     $form['uikit_admin']['navbar_sticky'] = [
       '#type' => 'checkbox',

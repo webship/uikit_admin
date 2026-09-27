@@ -15,7 +15,7 @@ slots:
     value: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt."
   footer:
     type: component
-    component: "ui_suite_uikit:button"
+    component: "uikit_admin:button"
     slots:
       label: "Read more"
     props:

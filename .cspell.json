@@ -7,6 +7,16 @@
       "addWords": true
     }
   ],
-  "dictionaries": ["project-words"],
-  "ignorePaths": ["node_modules/**", "vendor/**", "tests/reports/**", "*.min.*", "yarn.lock", "package-lock.json"]
+  "dictionaries": [
+    "project-words"
+  ],
+  "ignorePaths": [
+    "node_modules/**",
+    "vendor/**",
+    "tests/reports/**",
+    "*.min.*",
+    "yarn.lock",
+    "package-lock.json",
+    "assets/vendor/**"
+  ]
 }

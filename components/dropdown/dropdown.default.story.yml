@@ -2,7 +2,7 @@ name: Default
 slots:
   toggle:
     type: component
-    component: "ui_suite_uikit:button"
+    component: "uikit_admin:button"
     slots:
       label: "Open dropdown"
     props:
@@ -12,7 +12,7 @@ slots:
       icon_position: right
   content:
     type: component
-    component: "ui_suite_uikit:nav"
+    component: "uikit_admin:nav"
     story: dropdown
 props:
   mode: click

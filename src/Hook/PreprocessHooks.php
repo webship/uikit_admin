@@ -138,6 +138,31 @@ class PreprocessHooks {
   #[Hook('preprocess_form')]
   public function preprocessForm(array &$variables): void {
     $variables['uikit_admin_sidebar'] = (bool) ($this->themeSettingsProvider->getSetting('edit_form_sidebar', 'uikit_admin') ?? TRUE);
+    // Forms that post keep their normal submission (form tokens, Drupal
+    // AJAX); the GET forms, like the exposed filters, go through HTMX.
+    $method = strtolower((string) ($variables['element']['#method'] ?? 'post'));
+    if ($this->htmxNavigation() && $method !== 'get') {
+      $variables['attributes']['hx-boost'] = 'false';
+    }
+  }
+
+  /**
+   * Tells if the HTMX navigation is on.
+   */
+  protected function htmxNavigation(): bool {
+    return (bool) ($this->themeSettingsProvider->getSetting('htmx_navigation', 'uikit_admin') ?? TRUE);
+  }
+
+  /**
+   * Implements hook_preprocess_HOOK() for off_canvas_page_wrapper.
+   */
+  #[Hook('preprocess_off_canvas_page_wrapper')]
+  public function preprocessOffCanvasPageWrapper(array &$variables): void {
+    $variables['htmx_navigation'] = $this->htmxNavigation();
+    $variables['#cache']['tags'][] = 'config:uikit_admin.settings';
+    if ($variables['htmx_navigation']) {
+      $variables['#attached']['library'][] = 'uikit_admin/htmx';
+    }
   }
 
   /**

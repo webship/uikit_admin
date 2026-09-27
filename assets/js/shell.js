@@ -129,22 +129,42 @@
               : null;
             if (link) {
               event.preventDefault();
-              window.location.href = link.href;
+              // A click, so the HTMX navigation loads the page.
+              link.click();
             }
           }
         });
 
+        // A chosen destination closes the palette before the page changes.
+        items.forEach((item) => {
+          const link = item.querySelector('a');
+          if (link) {
+            link.addEventListener('click', close);
+          }
+        });
+
+        // The shortcut acts on the palette of the current page: HTMX swaps
+        // the page, and with it the palette.
+        Drupal.uikitAdmin = Drupal.uikitAdmin || {};
+        Drupal.uikitAdmin.togglePalette = () => {
+          if (palette.hidden) {
+            open();
+          } else {
+            close();
+          }
+        };
+      });
+
+      // One shortcut listener for the document, whatever page is swapped in.
+      once('uikit-admin-palette-shortcut', 'html').forEach(() => {
         document.addEventListener('keydown', (event) => {
           if (
             (event.metaKey || event.ctrlKey) &&
-            event.key.toLowerCase() === 'k'
+            event.key.toLowerCase() === 'k' &&
+            Drupal.uikitAdmin?.togglePalette
           ) {
             event.preventDefault();
-            if (palette.hidden) {
-              open();
-            } else {
-              close();
-            }
+            Drupal.uikitAdmin.togglePalette();
           }
         });
       });

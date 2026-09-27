@@ -2,7 +2,7 @@ name: Default
 slots:
   badge:
     type: component
-    component: "ui_suite_uikit:label"
+    component: "uikit_admin:label"
     slots:
       label: "New"
   title: "Card title"

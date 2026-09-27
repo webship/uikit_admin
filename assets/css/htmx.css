@@ -1,0 +1,36 @@
+/**
+ * @file
+ * HTMX navigation: a progress bar while the next page loads.
+ */
+
+[data-off-canvas-main-canvas].htmx-request::before {
+  position: fixed;
+  z-index: 1030;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  content: "";
+  animation: uikit-admin-htmx-progress 1.2s ease-in-out infinite;
+  background: linear-gradient(90deg, transparent, var(--uikit-admin-accent, #0a5fa8), transparent);
+  background-repeat: no-repeat;
+  background-size: 50% 100%;
+}
+
+@keyframes uikit-admin-htmx-progress {
+  from {
+    background-position: -50% 0;
+  }
+
+  to {
+    background-position: 150% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-off-canvas-main-canvas].htmx-request::before {
+    animation: none;
+    opacity: 0.6;
+    background: var(--uikit-admin-accent, #0a5fa8);
+  }
+}

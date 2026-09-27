@@ -17,11 +17,11 @@ slots:
   tabs:
     title: Tabs
     expected:
-      - "ui_suite_uikit:switcher_tab"
+      - "uikit_admin:switcher_tab"
   panels:
     title: Panels
     expected:
-      - "ui_suite_uikit:switcher_panel"
+      - "uikit_admin:switcher_panel"
 props:
   type: object
   properties:

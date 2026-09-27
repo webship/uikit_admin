@@ -20,7 +20,8 @@ UI Styles can change on top of the core style and token APIs.
   its values.
 - **No base theme.** Everything the screens need is in this theme, so an update of another
   theme cannot change the administration.
-- **UIkit from the CDN or from your own libraries folder**, chosen in the theme settings.
+- **UIkit compiled into the theme** with its colors: nothing loads from a CDN.
+- **HTMX navigation** with Drupal core HTMX: links, pagers, sorting and filters swap the page, and the rail and the top bar stay.
 - **Accessible by default.** The muted text, the links, the buttons and the alerts all meet the
   WCAG AA contrast minimum, which the UIkit defaults do not.
 - **A dark color mode** that follows the operating system.
@@ -52,12 +53,34 @@ Display Builder and the AI component agents can read them.
 
 ## Theme settings
 
-- **UIkit source**: the CDN (jsDelivr) or `web/libraries/uikit`.
+- **Navigate with HTMX**: on by default; turn it off for full page loads everywhere.
 - **Sticky navbar**: keep the navbar at the top of the screen.
 - **Appearance**: the accent and focus colors, light, dark or the system's color mode, comfortable
   or compact density, a sticky Save row and the content form sidebar.
 - **Sign-in screens**: the layout of the log in, password reset and registration screens, and a
   sentence shown with the site name.
+
+## UIkit, compiled into the theme
+
+UIkit ships in `assets/vendor/uikit`: the CSS compiled from the UIkit Less sources with the
+colors, type and radius of this theme (`assets/less/uikit-admin.less`), and the UIkit JavaScript
+and icons. Nothing loads from a CDN. After changing the Less file, rebuild the CSS:
+
+```shell
+yarn install
+yarn build:uikit
+```
+
+## HTMX navigation
+
+The page wrapper is boosted with Drupal core HTMX: a link, a pager, a table sort or an exposed
+filter loads the next page and swaps the page only, so the rail, its collapsed state and the
+document stay. Drupal core loads the new assets and settings; the theme attaches the behaviors,
+moves the focus to the content and announces the new page.
+
+Full page loads stay for the forms that post (edit, add, delete, settings), the screens with drag
+and drop or builders (block layout, menus, field UI, Views UI, Display Builder), batch and update
+screens, files, and the pages another theme renders.
 
 ## Sign-in screens
 

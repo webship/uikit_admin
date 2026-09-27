@@ -7,7 +7,7 @@ slots:
   cells:
     title: Cells
     expected:
-      - "ui_suite_uikit:table_cell"
+      - "uikit_admin:table_cell"
 props:
   type: object
   properties:

@@ -6,12 +6,16 @@ dropbutton
 dropbuttons
 frosted
 gitlab
+htmx
 iconnav
 jsdelivr
 kbd
 natshah
 navbars
 offcanvas
+Otheme
+pagers
+subnav
 tabledrag
 tableheader
 tableselect
@@ -20,3 +24,4 @@ totop
 uikit
 webship
 xlarge
+YOOtheme

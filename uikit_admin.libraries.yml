@@ -1,5 +1,5 @@
-# UIkit itself, from the CDN by default. A site that serves it locally points
-# the library at web/libraries/uikit through the theme setting.
+# UIkit, compiled into the theme with its colors (assets/less/uikit-admin.less,
+# "yarn build:uikit"). Nothing loads from a CDN.
 uikit:
   remote: https://getuikit.com/
   version: 3.25.22
@@ -9,23 +9,10 @@ uikit:
     gpl-compatible: true
   css:
     base:
-      https://cdn.jsdelivr.net/npm/uikit@3.25.22/dist/css/uikit.min.css: { type: external, minified: true }
+      assets/vendor/uikit/css/uikit.css: {}
   js:
-    https://cdn.jsdelivr.net/npm/uikit@3.25.22/dist/js/uikit.min.js: { type: external, minified: true }
-    https://cdn.jsdelivr.net/npm/uikit@3.25.22/dist/js/uikit-icons.min.js: { type: external, minified: true }
-
-uikit.local:
-  version: 3.25.22
-  license:
-    name: MIT
-    url: https://github.com/uikit/uikit/blob/develop/LICENSE.md
-    gpl-compatible: true
-  css:
-    base:
-      /libraries/uikit/dist/css/uikit.min.css: { minified: true }
-  js:
-    /libraries/uikit/dist/js/uikit.min.js: { minified: true }
-    /libraries/uikit/dist/js/uikit-icons.min.js: { minified: true }
+    assets/vendor/uikit/js/uikit.min.js: { minified: true }
+    assets/vendor/uikit/js/uikit-icons.min.js: { minified: true }
 
 # The design tokens of the theme and the parts of the administration screens
 # that UIkit does not cover on its own.
@@ -58,3 +45,17 @@ toolbar:
   css:
     theme:
       assets/css/toolbar.css: {}
+
+# HTMX navigation: the page wrapper is boosted with Drupal core HTMX, which
+# loads the assets, the settings and the behaviors of the swapped page.
+htmx:
+  js:
+    assets/js/htmx-navigation.js: {}
+  css:
+    theme:
+      assets/css/htmx.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.announce
+    - core/drupal.htmx
+    - core/drupalSettings

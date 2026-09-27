@@ -12,4 +12,4 @@ slots:
   items:
     title: Items
     expected:
-      - "ui_suite_uikit:description_list_item"
+      - "uikit_admin:description_list_item"

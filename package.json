@@ -10,9 +10,14 @@
   "scripts": {
     "test": "cucumber-js --config cucumber.js",
     "test:a11y": "cucumber-js --config cucumber.js --tags @a11y",
-    "test:chromium": "BROWSER=chromium cucumber-js --config cucumber.js"
+    "test:chromium": "BROWSER=chromium cucumber-js --config cucumber.js",
+    "build:uikit": "node scripts/build-uikit.js"
   },
   "dependencies": {
     "webship-js": "^2.0.6"
+  },
+  "devDependencies": {
+    "less": "^4.4.0",
+    "uikit": "3.25.22"
   }
 }

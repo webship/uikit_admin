@@ -2,13 +2,13 @@ name: "Cards in 3 columns"
 slots:
   items:
     - type: component
-      component: "ui_suite_uikit:card"
+      component: "uikit_admin:card"
       story: default
     - type: component
-      component: "ui_suite_uikit:card"
+      component: "uikit_admin:card"
       story: default
     - type: component
-      component: "ui_suite_uikit:card"
+      component: "uikit_admin:card"
       story: default
 props:
   child_width: 1-1

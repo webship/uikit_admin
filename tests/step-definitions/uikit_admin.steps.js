@@ -143,3 +143,91 @@ After({ tags: '@sign-in', timeout: 120000 }, function () {
   }
   previousDefaultTheme = null;
 });
+
+/**
+ * Marks the current document, to tell an HTMX swap from a full page load.
+ *
+ * Example: When I mark the current page
+ */
+When(/^(I |we )*mark the current page$/, async function (pronoun) {
+  await this.page.evaluate(() => {
+    window.uikitAdminMarker = 'not-reloaded';
+  });
+});
+
+/**
+ * Waits for the swapped page: its behaviors are attached once its assets
+ * are loaded.
+ *
+ * Example: Then the page should have been swapped by HTMX
+ */
+Then(/^the page should have been swapped by HTMX$/, async function () {
+  await this.page.waitForFunction(
+    () =>
+      window.uikitAdminMarker === 'not-reloaded' &&
+      document.querySelector(
+        '[data-off-canvas-main-canvas][data-uikit-admin-loaded] [data-uikit-admin-palette][data-once]',
+      ),
+    null,
+    { timeout: 15000 },
+  );
+});
+
+/**
+ * Example: Then the page should have been fully loaded
+ */
+Then(/^the page should have been fully loaded$/, async function () {
+  await this.page.waitForLoadState('load');
+  const marker = await this.page.evaluate(() => window.uikitAdminMarker);
+  assert.notStrictEqual(
+    marker,
+    'not-reloaded',
+    'The page was swapped by HTMX.',
+  );
+});
+
+/**
+ * Example: Then the URL "/admin/content" should not be excluded from the HTMX navigation
+ */
+Then(
+  /^the URL "([^"]*)" should (not )?be excluded from the HTMX navigation$/,
+  async function (url, not) {
+    await this.page.waitForFunction(
+      () => typeof window.Drupal?.uikitAdmin?.isExcludedFromHtmx === 'function',
+      null,
+      { timeout: 15000 },
+    );
+    const excluded = await this.page.evaluate(
+      (path) => window.Drupal.uikitAdmin.isExcludedFromHtmx(path),
+      url,
+    );
+    assert.strictEqual(excluded, !not, `"${url}" exclusion is ${excluded}.`);
+  },
+);
+
+/**
+ * Example: Then the page should load nothing from another host
+ */
+Then(/^the page should load nothing from another host$/, async function () {
+  const hosts = await this.page.evaluate(() =>
+    performance
+      .getEntriesByType('resource')
+      .map((entry) => new URL(entry.name).origin)
+      .filter((origin) => origin !== window.location.origin),
+  );
+  assert.deepStrictEqual(hosts, [], `Loaded from: ${hosts.join(', ')}`);
+});
+
+/**
+ * Example: Then the element "form#user-form" should have the attribute "hx-boost" set to "false"
+ */
+Then(
+  /^the element "([^"]*)" should have the attribute "([^"]*)" set to "([^"]*)"$/,
+  async function (selector, attribute, value) {
+    const actual = await this.page
+      .locator(selector)
+      .first()
+      .getAttribute(attribute);
+    assert.strictEqual(actual, value, `${selector} ${attribute}="${actual}"`);
+  },
+);

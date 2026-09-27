@@ -7,7 +7,7 @@ slots:
   items:
     title: Items
     expected:
-      - "ui_suite_uikit:accordion_item"
+      - "uikit_admin:accordion_item"
 props:
   type: object
   properties:

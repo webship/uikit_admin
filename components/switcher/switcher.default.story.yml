@@ -2,28 +2,28 @@ name: Default
 slots:
   tabs:
     - type: component
-      component: "ui_suite_uikit:switcher_tab"
+      component: "uikit_admin:switcher_tab"
       slots:
         label: "Item 1"
     - type: component
-      component: "ui_suite_uikit:switcher_tab"
+      component: "uikit_admin:switcher_tab"
       slots:
         label: "Item 2"
     - type: component
-      component: "ui_suite_uikit:switcher_tab"
+      component: "uikit_admin:switcher_tab"
       slots:
         label: "Item 3"
   panels:
     - type: component
-      component: "ui_suite_uikit:switcher_panel"
+      component: "uikit_admin:switcher_panel"
       slots:
         content: "Hello!"
     - type: component
-      component: "ui_suite_uikit:switcher_panel"
+      component: "uikit_admin:switcher_panel"
       slots:
         content: "Hello again!"
     - type: component
-      component: "ui_suite_uikit:switcher_panel"
+      component: "uikit_admin:switcher_panel"
       slots:
         content: "Bazinga!"
 props:

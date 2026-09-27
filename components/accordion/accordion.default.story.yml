@@ -2,7 +2,7 @@ name: Default
 slots:
   items:
     - type: component
-      component: "ui_suite_uikit:accordion_item"
+      component: "uikit_admin:accordion_item"
       slots:
         title: "Item 1"
         content:
@@ -12,7 +12,7 @@ slots:
       props:
         open: true
     - type: component
-      component: "ui_suite_uikit:accordion_item"
+      component: "uikit_admin:accordion_item"
       slots:
         title: "Item 2"
         content:
@@ -20,7 +20,7 @@ slots:
           tag: p
           value: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
     - type: component
-      component: "ui_suite_uikit:accordion_item"
+      component: "uikit_admin:accordion_item"
       slots:
         title: "Item 3"
         content:

@@ -2,44 +2,44 @@ name: Default
 slots:
   header:
     type: component
-    component: "ui_suite_uikit:table_row"
+    component: "uikit_admin:table_row"
     slots:
       cells:
         - type: component
-          component: "ui_suite_uikit:table_cell"
+          component: "uikit_admin:table_cell"
           slots:
             content: "Table heading"
           props:
             tag: th
         - type: component
-          component: "ui_suite_uikit:table_cell"
+          component: "uikit_admin:table_cell"
           slots:
             content: "Table heading"
           props:
             tag: th
   rows:
     - type: component
-      component: "ui_suite_uikit:table_row"
+      component: "uikit_admin:table_row"
       slots:
         cells:
           - type: component
-            component: "ui_suite_uikit:table_cell"
+            component: "uikit_admin:table_cell"
             slots:
               content: "Table data"
           - type: component
-            component: "ui_suite_uikit:table_cell"
+            component: "uikit_admin:table_cell"
             slots:
               content: "Table data"
     - type: component
-      component: "ui_suite_uikit:table_row"
+      component: "uikit_admin:table_row"
       slots:
         cells:
           - type: component
-            component: "ui_suite_uikit:table_cell"
+            component: "uikit_admin:table_cell"
             slots:
               content: "Table data"
           - type: component
-            component: "ui_suite_uikit:table_cell"
+            component: "uikit_admin:table_cell"
             slots:
               content: "Table data"
 props:

@@ -2,12 +2,12 @@ name: "66% / 33%"
 slots:
   column_1:
     type: component
-    component: "ui_suite_uikit:placeholder"
+    component: "uikit_admin:placeholder"
     slots:
       content: "Column 1"
   column_2:
     type: component
-    component: "ui_suite_uikit:placeholder"
+    component: "uikit_admin:placeholder"
     slots:
       content: "Column 2"
 props:

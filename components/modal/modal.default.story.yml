@@ -10,7 +10,7 @@ slots:
     value: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
   footer:
     - type: component
-      component: "ui_suite_uikit:button"
+      component: "uikit_admin:button"
       slots:
         label: "Cancel"
       props:
@@ -18,7 +18,7 @@ slots:
           class:
             - uk-modal-close
     - type: component
-      component: "ui_suite_uikit:button"
+      component: "uikit_admin:button"
       slots:
         label: "Save"
       props:
