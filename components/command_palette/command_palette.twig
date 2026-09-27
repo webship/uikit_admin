@@ -1,0 +1,28 @@
+<div class="uikit-admin-palette" data-uikit-admin-palette hidden>
+  <div class="uikit-admin-palette__backdrop" data-uikit-admin-palette-close></div>
+  <div class="uikit-admin-palette__dialog" role="dialog" aria-modal="true" aria-label="{{ 'Jump to anything'|t }}">
+    <div class="uikit-admin-palette__search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/></svg>
+      <label for="uikit-admin-palette-input" class="uk-hidden-visually">{{ 'Search the back office'|t }}</label>
+      <input id="uikit-admin-palette-input" type="text" autocomplete="off" placeholder="{{ 'Jump to anything'|t }}" data-uikit-admin-palette-input>
+      <kbd>esc</kbd>
+    </div>
+    <ul class="uikit-admin-palette__list" data-uikit-admin-palette-list>
+      {% for item in items %}
+        <li class="uikit-admin-palette__item" data-uikit-admin-palette-item data-search="{{ item.title|lower }} {{ item.group|lower }} {{ item.url }}">
+          <a href="{{ item.url }}">
+            <span class="uikit-admin-palette__group">{{ item.group }}</span>
+            <span class="uikit-admin-palette__title">{{ item.title }}</span>
+            <span class="uikit-admin-palette__path">{{ item.url }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+    <p class="uikit-admin-palette__empty" data-uikit-admin-palette-empty hidden>{{ 'Nothing matches that.'|t }}</p>
+    <div class="uikit-admin-palette__foot">
+      <span><kbd>↑</kbd> <kbd>↓</kbd> {{ 'move'|t }}</span>
+      <span><kbd>↵</kbd> {{ 'open'|t }}</span>
+      <span>{{ 'Results follow your permissions'|t }}</span>
+    </div>
+  </div>
+</div>

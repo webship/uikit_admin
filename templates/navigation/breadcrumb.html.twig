@@ -1,31 +1,15 @@
 {#
 /**
  * @file
- * Theme override to display a breadcrumb trail.
+ * The breadcrumb, rendered by the breadcrumb component.
  *
- * Available variables:
- * - breadcrumb: Breadcrumb trail items.
- *
- * @see uikit_preprocess_breadcrumb()
- *
- * @ingroup uikit_themeable
+ * Core names the label "text"; the component reads "title".
  */
 #}
-{% if breadcrumb and display_breadcrumbs %}
-  <nav role="navigation" aria-labelledby="system-breadcrumb">
-    <h2 id="system-breadcrumb" class="visually-hidden">{{ 'Breadcrumb'|t }}</h2>
-    <ol class="uk-breadcrumb uk-margin-remove-top uk-width-1-1">
-    {% for item in breadcrumb %}
-      {% if item.url %}
-        <li><a href="{{ item.url }}">{{ item.text }}</a></li>
-      {% else %}
-        {% if not item.active %}
-          <li><span>{{ item.text }}</span></li>
-        {% else %}
-          <li class="uk-active"><span>{{ item.text }}</span></li>
-        {% endif %}
-      {% endif %}
-    {% endfor %}
-    </ol>
-  </nav>
+{% if breadcrumb %}
+  {% set items = [] %}
+  {% for item in breadcrumb %}
+    {% set items = items|merge([{ 'title': item.text, 'url': item.url }]) %}
+  {% endfor %}
+  {{ include('uikit_admin:breadcrumb', { items: items }, with_context: false) }}
 {% endif %}

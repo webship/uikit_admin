@@ -1,43 +1,17 @@
 {#
 /**
  * @file
- * Theme override for a details element.
- *
- * Available variables
- * - attributes: A list of HTML attributes for the details element.
- * - errors: (optional) Any errors for this details element, may not be set.
- * - title: (optional) The title of the element, may not be set.
- * - description: (optional) The description of the element, may not be set.
- * - children: (optional) The children of the element, may not be set.
- * - value: (optional) The value of the element, may not be set.
- *
- * @see template_preprocess_details()
+ * A details element as a UIkit card with a summary.
  */
 #}
-<details{{ attributes.addClass('uk-margin') }}>
-  {%- if title -%}
-    {%
-      set summary_classes = [
-        required ? 'js-form-required',
-        required ? 'form-required',
-      ]
-    %}
-    <summary{{ summary_attributes.addClass(summary_classes) }}>{{ title }}</summary>
-  {%- endif -%}
-  <div class="details-wrapper">
-    {% if errors %}
-      <div class="form-item--error-message">
-        <strong>{{ errors }}</strong>
-      </div>
-    {% endif %}
-    {%- if description -%}
-      <div class="details-description">{{ description }}</div>
-    {%- endif -%}
-    {%- if children -%}
-      {{ children }}
-    {%- endif -%}
-    {%- if value -%}
-      {{ value }}
-    {%- endif -%}
-  </div>
+<details{{ attributes.addClass(['uk-card', 'uk-card-default', 'uk-card-small', 'uk-card-body', 'uk-margin', 'uikit-admin-details']) }}>
+  {% if title %}
+    <summary class="uk-card-title uk-h5 uikit-admin-details__summary">{{ title }}</summary>
+  {% endif %}
+  {% if errors %}
+    {{ include('uikit_admin:alert', { variant: 'danger', role: 'alert', content: errors }, with_context: false) }}
+  {% endif %}
+  {% if description %}<div class="uk-text-meta">{{ description }}</div>{% endif %}
+  {{ children }}
+  {{ value }}
 </details>

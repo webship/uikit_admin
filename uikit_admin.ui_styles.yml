@@ -1,0 +1,134 @@
+# UIkit utility classes for the administration screens, for UI Styles.
+#
+# Only the utilities that make sense on a back office are offered: text, spacing,
+# width and the panel styles the theme itself draws.
+
+################################################################################
+# Text.
+# https://getuikit.com/docs/text
+################################################################################
+
+text_style:
+  category: "Text"
+  label: "Text style"
+  links:
+    - "https://getuikit.com/docs/text#text-style"
+  options:
+    uk-text-lead: "Lead"
+    uk-text-meta: "Meta"
+  previewed_with:
+    - uk-padding-small
+
+text_size:
+  category: "Text"
+  label: "Text size"
+  links:
+    - "https://getuikit.com/docs/text#text-size"
+  options:
+    uk-text-small: "Small"
+    uk-text-default: "Default"
+    uk-text-large: "Large"
+
+text_alignment:
+  category: "Text"
+  label: "Text alignment"
+  links:
+    - "https://getuikit.com/docs/text#text-alignment"
+  options:
+    uk-text-left: "Left"
+    uk-text-center: "Center"
+    uk-text-right: "Right"
+
+################################################################################
+# Panels.
+# https://getuikit.com/docs/card
+################################################################################
+
+card_style:
+  category: "Panels"
+  label: "Panel style"
+  description: "The surface a block sits on."
+  links:
+    - "https://getuikit.com/docs/card#style-modifiers"
+  options:
+    uk-card-default: "Default"
+    uk-card-primary: "Primary"
+    uk-card-secondary: "Secondary"
+
+card_size:
+  category: "Panels"
+  label: "Panel padding"
+  links:
+    - "https://getuikit.com/docs/card#size-modifiers"
+  options:
+    uk-card-small: "Small"
+    uk-card-large: "Large"
+
+################################################################################
+# Spacing.
+# https://getuikit.com/docs/margin
+################################################################################
+
+margin_top:
+  category: "Spacing"
+  label: "Margin top"
+  links:
+    - "https://getuikit.com/docs/margin"
+  options:
+    uk-margin-small-top: "Small"
+    uk-margin-medium-top: "Medium"
+    uk-margin-large-top: "Large"
+    uk-margin-remove-top: "None"
+
+margin_bottom:
+  category: "Spacing"
+  label: "Margin bottom"
+  links:
+    - "https://getuikit.com/docs/margin"
+  options:
+    uk-margin-small-bottom: "Small"
+    uk-margin-medium-bottom: "Medium"
+    uk-margin-large-bottom: "Large"
+    uk-margin-remove-bottom: "None"
+
+padding:
+  category: "Spacing"
+  label: "Padding"
+  links:
+    - "https://getuikit.com/docs/padding"
+  options:
+    uk-padding-small: "Small"
+    uk-padding: "Default"
+    uk-padding-large: "Large"
+    uk-padding-remove: "None"
+
+################################################################################
+# Width.
+# https://getuikit.com/docs/width
+################################################################################
+
+width:
+  category: "Width"
+  label: "Width"
+  links:
+    - "https://getuikit.com/docs/width"
+  options:
+    uk-width-1-1: "Full"
+    uk-width-1-2@m: "Half, from medium screens"
+    uk-width-1-3@m: "Third, from medium screens"
+    uk-width-2-3@m: "Two thirds, from medium screens"
+
+################################################################################
+# Visibility.
+# https://getuikit.com/docs/visibility
+################################################################################
+
+visibility:
+  category: "Visibility"
+  label: "Visibility"
+  links:
+    - "https://getuikit.com/docs/visibility"
+  options:
+    uk-hidden@s: "Hidden from small screens"
+    uk-visible@m: "Visible from medium screens"
+    uk-hidden-visually: "For screen readers only"

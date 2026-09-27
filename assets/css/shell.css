@@ -1,0 +1,504 @@
+/**
+ * @file
+ * The shell of the back office: the rail on the left, the bar on top, the
+ * palette over everything.
+ */
+
+:root {
+  --uikit-admin-rail-width: 272px;
+  --uikit-admin-rail-rail: 76px;
+}
+
+/* ----------------------------------------------------------------- Rail -- */
+
+.uikit-admin-rail {
+  position: fixed;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: var(--uikit-admin-rail-width);
+  padding: 14px 12px;
+  transition: width 140ms ease;
+  border-right: 1px solid var(--uikit-admin-border, #dfe3e8);
+  background: var(--uikit-admin-surface, #fff);
+  inset: 0 auto 0 0;
+  gap: 4px;
+}
+
+.uikit-admin-rail__head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 6px 14px;
+}
+
+.uikit-admin-rail__site {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  min-width: 0;
+  text-decoration: none;
+  color: inherit;
+  gap: 10px;
+}
+
+.uikit-admin-rail__mark {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  color: var(--uikit-admin-on-accent, #fff);
+  border-radius: 8px;
+  background: var(--uikit-admin-accent, #0a5fa8);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.uikit-admin-rail__site-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.uikit-admin-rail__site-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.uikit-admin-rail__site-slogan {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--uikit-admin-text-muted, #5c6672);
+  font-size: 12px;
+}
+
+.uikit-admin-rail__toggle,
+.uikit-admin-rail__account-link {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  color: var(--uikit-admin-text-muted, #5c6672);
+  border: 1px solid var(--uikit-admin-border, #dfe3e8);
+  border-radius: 6px;
+  background: var(--uikit-admin-surface, #fff);
+}
+
+.uikit-admin-rail__body {
+  display: flex;
+  overflow-y: auto;
+  flex-direction: column;
+  flex-grow: 1;
+  gap: 10px;
+}
+
+.uikit-admin-rail__section-title {
+  padding: 8px 8px 4px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--uikit-admin-text-muted, #5c6672);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.uikit-admin-rail__list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 2px;
+}
+
+.uikit-admin-rail__item {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 8px 10px;
+  text-decoration: none;
+  color: var(--uikit-admin-text, #1b1f24);
+  border-radius: 7px;
+  font-size: 14px;
+  gap: 10px;
+}
+
+.uikit-admin-rail__item:hover {
+  color: var(--uikit-admin-text, #1b1f24);
+  background: var(--uk-global-muted-background, #eef0f3);
+}
+
+.uikit-admin-rail__item.is-active {
+  color: var(--uikit-admin-on-accent, #fff);
+  background: var(--uikit-admin-accent, #0a5fa8);
+  font-weight: 650;
+}
+
+.uikit-admin-rail__icon {
+  display: flex;
+  flex-shrink: 0;
+  opacity: 0.85;
+  color: currentColor;
+}
+
+.uikit-admin-rail__label {
+  overflow: hidden;
+  flex-grow: 1;
+  min-width: 0;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.uikit-admin-rail__count {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--uk-global-muted-background, #eef0f3);
+  font-size: 11px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.uikit-admin-rail__item.is-active .uikit-admin-rail__count {
+  color: var(--uikit-admin-on-accent, #fff);
+  background: rgb(255, 255, 255, 0.22);
+}
+
+.uikit-admin-rail__account {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--uikit-admin-border, #dfe3e8);
+}
+
+.uikit-admin-rail__avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  color: var(--uikit-admin-accent, #0a5fa8);
+  border-radius: 999px;
+  background: #dbe6f2;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.uikit-admin-rail__account-text {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.uikit-admin-rail__account-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.uikit-admin-rail__account-role {
+  color: var(--uikit-admin-text-muted, #5c6672);
+  font-size: 12px;
+}
+
+/* The rail collapsed: icons only, labels kept for screen readers. */
+.uikit-admin-rail-collapsed .uikit-admin-rail {
+  width: var(--uikit-admin-rail-rail);
+  padding-inline: 10px;
+}
+
+.uikit-admin-rail-collapsed .uikit-admin-rail__site-text,
+.uikit-admin-rail-collapsed .uikit-admin-rail__section-title,
+.uikit-admin-rail-collapsed .uikit-admin-rail__label,
+.uikit-admin-rail-collapsed .uikit-admin-rail__count,
+.uikit-admin-rail-collapsed .uikit-admin-rail__account-text,
+.uikit-admin-rail-collapsed .uikit-admin-rail__account-link {
+  position: absolute;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  width: 1px;
+  height: 1px;
+  white-space: nowrap;
+}
+
+.uikit-admin-rail-collapsed .uikit-admin-rail__item {
+  justify-content: center;
+  padding-inline: 8px;
+}
+
+.uikit-admin-rail-collapsed .uikit-admin-rail__toggle svg {
+  transform: rotate(180deg);
+}
+
+/* --------------------------------------------------------------- Shell --- */
+
+.uikit-admin-shell {
+  min-height: 100vh;
+  margin-left: var(--uikit-admin-rail-width);
+  transition: margin-left 140ms ease;
+}
+
+.uikit-admin-rail-collapsed .uikit-admin-shell {
+  margin-left: var(--uikit-admin-rail-rail);
+}
+
+@media (max-width: 960px) {
+  .uikit-admin-rail {
+    transition: transform 160ms ease;
+    transform: translateX(-100%);
+  }
+
+  .uikit-admin-rail-collapsed .uikit-admin-rail {
+    width: var(--uikit-admin-rail-width);
+    transform: translateX(0);
+    box-shadow: 0 10px 40px rgb(16, 24, 40, 0.22);
+  }
+
+  .uikit-admin-shell,
+  .uikit-admin-rail-collapsed .uikit-admin-shell {
+    margin-left: 0;
+  }
+}
+
+/* ---------------------------------------------------------------- Bar ---- */
+
+.uikit-admin-header {
+  position: sticky;
+  z-index: 20;
+  top: 0;
+  border-bottom: 1px solid var(--uikit-admin-border, #dfe3e8);
+  background: color-mix(in srgb, var(--uikit-admin-canvas, #f3f4f6) 88%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.uikit-admin-topbar {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 56px;
+  padding: 10px 28px;
+}
+
+.uikit-admin-topbar__rail-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  color: var(--uikit-admin-text-muted, #5c6672);
+  border: 1px solid var(--uikit-admin-border, #dfe3e8);
+  border-radius: 8px;
+  background: var(--uikit-admin-surface, #fff);
+}
+
+@media (max-width: 960px) {
+  .uikit-admin-topbar__rail-toggle {
+    display: flex;
+  }
+}
+
+.uikit-admin-topbar__place {
+  min-width: 0;
+}
+
+.uikit-admin-topbar__place .uk-breadcrumb {
+  margin: 0;
+  font-size: 12px;
+}
+
+.uikit-admin-topbar__title h1 {
+  margin: 0;
+  letter-spacing: -0.01em;
+  font-size: 22px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.uikit-admin-topbar__search {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  max-width: 420px;
+  min-height: 40px;
+  margin-left: 12px;
+  padding: 0 12px;
+  cursor: pointer;
+  text-align: left;
+  color: var(--uikit-admin-text-muted, #5c6672);
+  border: 1px solid var(--uikit-admin-border, #dfe3e8);
+  border-radius: 8px;
+  background: var(--uikit-admin-surface, #fff);
+  font: inherit;
+  font-size: 14px;
+  gap: 10px;
+}
+
+.uikit-admin-topbar__search span {
+  flex-grow: 1;
+}
+
+.uikit-admin-topbar kbd,
+.uikit-admin-palette kbd {
+  padding: 1px 6px;
+  color: var(--uikit-admin-text-muted, #5c6672);
+  border: 1px solid var(--uikit-admin-border, #dfe3e8);
+  border-bottom-width: 2px;
+  border-radius: 5px;
+  background: var(--uikit-admin-surface, #fff);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.uikit-admin-topbar__actions {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: 8px;
+}
+
+.uikit-admin-topbar__actions .uikit-admin-actions {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ------------------------------------------------------------- Palette --- */
+
+.uikit-admin-palette {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 12vh 16px 16px;
+}
+
+.uikit-admin-palette[hidden] {
+  display: none;
+}
+
+.uikit-admin-palette__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgb(10, 20, 32, 0.45);
+}
+
+.uikit-admin-palette__dialog {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  width: min(680px, 100%);
+  max-height: 70vh;
+  border: 1px solid var(--uikit-admin-border, #dfe3e8);
+  border-radius: 12px;
+  background: var(--uikit-admin-surface, #fff);
+  box-shadow: 0 16px 40px rgb(16, 24, 40, 0.26);
+}
+
+.uikit-admin-palette__search {
+  display: flex;
+  align-items: center;
+  padding: 14px 16px;
+  color: var(--uikit-admin-text-muted, #5c6672);
+  border-bottom: 1px solid var(--uikit-admin-border, #dfe3e8);
+  gap: 10px;
+}
+
+.uikit-admin-palette__search input {
+  flex-grow: 1;
+  color: var(--uikit-admin-text, #1b1f24);
+  border: 0;
+  outline: none;
+  background: transparent;
+  font: inherit;
+  font-size: 16px;
+}
+
+.uikit-admin-palette__list {
+  overflow-y: auto;
+  margin: 0;
+  padding: 6px 0;
+  list-style: none;
+}
+
+.uikit-admin-palette__item a {
+  display: flex;
+  align-items: baseline;
+  padding: 9px 16px;
+  text-decoration: none;
+  color: var(--uikit-admin-text, #1b1f24);
+  gap: 10px;
+}
+
+.uikit-admin-palette__item.is-active a,
+.uikit-admin-palette__item a:hover {
+  background: var(--uk-global-muted-background, #eef0f3);
+}
+
+.uikit-admin-palette__group {
+  color: var(--uikit-admin-text-muted, #5c6672);
+  font-size: 12px;
+}
+
+.uikit-admin-palette__title {
+  flex-grow: 1;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.uikit-admin-palette__path {
+  color: var(--uikit-admin-text-muted, #5c6672);
+  font-size: 12px;
+}
+
+.uikit-admin-palette__empty {
+  margin: 0;
+  padding: 20px 16px;
+  color: var(--uikit-admin-text-muted, #5c6672);
+  font-size: 14px;
+}
+
+.uikit-admin-palette__foot {
+  display: flex;
+  padding: 10px 16px;
+  color: var(--uikit-admin-text-muted, #5c6672);
+  border-top: 1px solid var(--uikit-admin-border, #dfe3e8);
+  font-size: 12px;
+  gap: 18px;
+}
+
+.uikit-admin-palette-open {
+  overflow: hidden;
+}
+
+/* The toolbar of core, when a site still runs one, sits above the rail. */
+.toolbar-oriented .uikit-admin-rail {
+  top: 39px;
+}
+
+/* Core's Navigation module pads the page for its own rail; this theme draws
+   the rail itself, so the page starts at the edge. */
+body.toolbar-fixed,
+html body {
+  padding-inline-start: 0;
+}

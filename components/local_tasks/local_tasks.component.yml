@@ -1,0 +1,16 @@
+name: 'Local tasks'
+description: "The tabs of an administration screen, primary and secondary."
+group: Navigation
+props:
+  type: object
+  properties:
+    primary:
+      title: 'Primary tabs'
+      type: array
+      items:
+        type: object
+    secondary:
+      title: 'Secondary tabs'
+      type: array
+      items:
+        type: object

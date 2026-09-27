@@ -1,0 +1,47 @@
+name: 'Administration page'
+description: "The shell of an administration screen: the navbar, the offcanvas menu, the page header with its title and tabs, the content and the footer."
+group: Layout
+slots:
+  navbar:
+    title: Navbar
+  offcanvas:
+    title: Offcanvas
+  breadcrumb:
+    title: Breadcrumb
+  title:
+    title: 'Page title'
+  tabs:
+    title: 'Primary tabs'
+  actions:
+    title: 'Page actions'
+  help:
+    title: Help
+  messages:
+    title: 'Status messages'
+  content:
+    title: Content
+  sidebar:
+    title: Sidebar
+  footer:
+    title: Footer
+props:
+  type: object
+  properties:
+    container:
+      title: Container
+      description: "The width of the page."
+      type: string
+      enum:
+        - default
+        - xsmall
+        - small
+        - large
+        - xlarge
+        - expand
+      "meta:enum":
+        default: 'Default (Default)'
+        xsmall: X-Small
+        small: Small
+        large: Large
+        xlarge: X-Large
+        expand: 'Full width'

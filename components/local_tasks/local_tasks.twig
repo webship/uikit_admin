@@ -1,0 +1,22 @@
+{% if primary %}
+  <nav aria-label="{{ 'Primary tabs'|t }}">
+    <ul class="uk-tab uikit-admin-tabs">
+      {% for tab in primary %}
+        <li{% if tab.active %} class="uk-active"{% endif %}>
+          <a href="{{ tab.url }}"{{ tab.active ? ' aria-current="page"' : '' }}>{{ tab.title }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}
+{% if secondary %}
+  <nav aria-label="{{ 'Secondary tabs'|t }}">
+    <ul class="uk-subnav uk-subnav-pill uikit-admin-tabs--secondary">
+      {% for tab in secondary %}
+        <li{% if tab.active %} class="uk-active"{% endif %}>
+          <a href="{{ tab.url }}"{{ tab.active ? ' aria-current="page"' : '' }}>{{ tab.title }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}

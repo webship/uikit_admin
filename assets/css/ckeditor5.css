@@ -1,0 +1,9 @@
+/**
+ * @file
+ * The editing area of CKEditor 5, with the typography of the theme.
+ */
+
+.ck-content {
+  color: var(--uk-global-color, #666);
+  font-family: var(--uk-global-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+}

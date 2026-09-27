@@ -1,0 +1,10 @@
+name: 'Status report'
+description: "The status report of the site, one group per severity, with a counter for each."
+group: Administration
+slots:
+  general_info:
+    title: 'General information'
+  counters:
+    title: Counters
+  groups:
+    title: Groups

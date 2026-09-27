@@ -1,0 +1,7 @@
+<div{{ attributes.addClass(['uikit-admin-form-layout', sidebar ? 'uikit-admin-form-layout--with-sidebar']) }}>
+  <div class="uikit-admin-form-layout__main">{{ main }}</div>
+  {% if sidebar %}
+    <aside class="uikit-admin-form-layout__sidebar" aria-label="{{ 'Content meta'|t }}">{{ sidebar }}</aside>
+  {% endif %}
+</div>
+{{ actions }}

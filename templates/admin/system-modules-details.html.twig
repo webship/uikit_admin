@@ -1,74 +1,41 @@
 {#
 /**
  * @file
- * Theme override for the modules listing page.
+ * The module list, as a UIkit table.
  *
- * Displays a list of all packages in a project.
- *
- * Available variables:
- * - modules: Contains multiple module instances. Each module contains:
- *   - attributes: Attributes on the row.
- *   - checkbox: A checkbox for enabling the module.
- *   - name: The human-readable name of the module.
- *   - id: A unique identifier for interacting with the details element.
- *   - enable_id: A unique identifier for interacting with the checkbox element.
- *   - description: The description of the module.
- *   - machine_name: The module's machine name.
- *   - version: Information about the module version.
- *   - requires: A list of modules that this module requires.
- *   - required_by: A list of modules that require this module.
- *   - links: A list of administration links provided by the module.
- *
- * @see template_preprocess_system_modules_details()
+ * The description of a module is plain text next to its name: core wraps it in
+ * a summary with the button role, which then holds its own links, and a
+ * button may not hold anything focusable.
  */
 #}
-<table class="uk-table uk-table-condensed responsive-enabled" data-striping="1">
+<table class="uk-table uk-table-divider uk-table-middle uk-table-small uikit-admin-modules">
   <thead>
     <tr>
-      <th class="checkbox visually-hidden">{{ 'Installed'|t }}</th>
-      <th class="name visually-hidden">{{ 'Name'|t }}</th>
-      <th class="description visually-hidden priority-low">{{ 'Description'|t }}</th>
+      <th class="uk-table-shrink uk-hidden-visually">{{ 'Installed'|t }}</th>
+      <th class="uk-width-medium">{{ 'Name'|t }}</th>
+      <th>{{ 'Description'|t }}</th>
     </tr>
   </thead>
   <tbody>
     {% for module in modules %}
-      {% set zebra = cycle(['odd', 'even'], loop.index0) %}
-      <tr{{ module.attributes.addClass(zebra) }}>
-        <td class="checkbox">
-          {{ module.checkbox }}
+      <tr{{ module.attributes }}>
+        <td class="uk-table-shrink">{{ module.checkbox }}</td>
+        <td>
+          <label id="{{ module.id }}" for="{{ module.enable_id }}" class="uikit-admin-modules__name table-filter-text-source">{{ module.name }}</label>
+          <div class="uk-text-meta uikit-admin-modules__meta">
+            <span class="table-filter-text-source">{{ module.machine_name }}</span>
+            {% if module.version %} · {{ module.version }}{% endif %}
+          </div>
         </td>
-        <td class="module">
-          <label id="{{ module.id }}" for="{{ module.enable_id }}" class="module-name table-filter-text-source">{{ module.name }}</label>
-        </td>
-        <td class="description expand priority-low">
-          <details class="js-form-wrapper form-wrapper" id="{{ module.enable_id }}-description">
-            <summary aria-controls="{{ module.enable_id }}-description" role="button" aria-expanded="false"><span class="text module-description">{{ module.description }}</span></summary>
-            <div class="details-wrapper">
-              <div class="details-description">
-                <div class="requirements">
-                  <div class="admin-requirements">{{ 'Machine name: <span dir="ltr" class="table-filter-text-source">@machine-name</span>'|t({'@machine-name': module.machine_name }) }}</div>
-                  {% if module.version %}
-                    <div class="admin-requirements">{{ 'Version: @module-version'|t({'@module-version': module.version }) }}</div>
-                  {% endif %}
-                  {% if module.requires %}
-                    <div class="admin-requirements">{{ 'Requires: @module-list'|t({'@module-list': module.requires }) }}</div>
-                  {% endif %}
-                  {% if module.required_by %}
-                    <div class="admin-requirements">{{ 'Required by: @module-list'|t({'@module-list': module.required_by }) }}</div>
-                  {% endif %}
-                </div>
-                {% if module.links %}
-                  <div class="links uk-margin-top">
-                    <ul class="uk-subnav uk-margin-remove-bottom">
-                      {% for link_type in ['help', 'permissions', 'configure'] %}
-                        <li>{{ module.links[link_type] }}</li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                {% endif %}
-              </div>
+        <td>
+          <div class="uikit-admin-modules__description">{{ module.description }}</div>
+          {% if module.requires or module.required_by or module.links %}
+            <div class="uk-text-meta uikit-admin-modules__requirements">
+              {% if module.requires %}<div>{{ 'Requires: @module-list'|t({'@module-list': module.requires}) }}</div>{% endif %}
+              {% if module.required_by %}<div>{{ 'Required by: @module-list'|t({'@module-list': module.required_by}) }}</div>{% endif %}
+              {% if module.links %}<div class="uikit-admin-modules__links">{{ module.links }}</div>{% endif %}
             </div>
-          </details>
+          {% endif %}
         </td>
       </tr>
     {% endfor %}

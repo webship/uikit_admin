@@ -1,8 +1,6 @@
 langcode: en
 status: true
 dependencies:
-  module:
-    - help
   theme:
     - uikit_admin
 id: uikit_admin_help
@@ -13,7 +11,7 @@ provider: null
 plugin: help_block
 settings:
   id: help_block
-  label: Help
-  provider: help
+  label: 'Help'
   label_display: '0'
+  provider: help
 visibility: {  }

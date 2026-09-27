@@ -1,0 +1,21 @@
+<div{{ attributes.addClass(['uk-margin', 'uikit-admin-form-item', disabled ? 'uk-disabled']) }}>
+  {% if title_display not in ['after', 'none'] and label %}
+    <div class="uk-form-label{{ title_display == 'invisible' ? ' uk-hidden-visually' }}">{{ label }}</div>
+  {% endif %}
+  <div class="uk-form-controls">
+    {% if title_display == 'after' and label %}
+      <div class="uikit-admin-form-item__choice">
+        {{ prefix }}{{ input }}{{ suffix }}
+        <div class="uk-form-label">{{ label }}</div>
+      </div>
+    {% else %}
+      {{ prefix }}{{ input }}{{ suffix }}
+    {% endif %}
+    {% if errors %}
+      <div class="uk-text-danger uikit-admin-form-item__errors" role="alert">{{ errors }}</div>
+    {% endif %}
+    {% if description %}
+      <div class="uk-text-meta uikit-admin-form-item__description"{% if description_id %} id="{{ description_id }}"{% endif %}>{{ description }}</div>
+    {% endif %}
+  </div>
+</div>

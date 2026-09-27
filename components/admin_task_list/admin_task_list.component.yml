@@ -1,0 +1,12 @@
+name: 'Administration task list'
+description: "The tasks of an administration panel: a title, a description and a link for each."
+group: Administration
+props:
+  type: object
+  properties:
+    tasks:
+      title: Tasks
+      description: "Each task carries a url, a title and an optional description."
+      type: array
+      items:
+        type: object

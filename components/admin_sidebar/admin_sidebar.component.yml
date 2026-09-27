@@ -1,0 +1,22 @@
+name: 'Administration sidebar'
+description: "The rail of the back office: the site, the sections of the administration, and the person signed in. It collapses to icons and keeps that choice per person."
+group: Navigation
+props:
+  type: object
+  properties:
+    site_name:
+      title: 'Site name'
+      type: string
+    site_slogan:
+      title: 'Site slogan'
+      type: string
+    sections:
+      title: Sections
+      description: "Each section carries a title and its items; each item a title, a url, an icon name, whether it is the current one, and an optional count."
+      type: array
+      items:
+        type: object
+    account:
+      title: Account
+      description: "The initials, the name and the role of the person signed in."
+      type: object

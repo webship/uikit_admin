@@ -1,0 +1,7 @@
+{% set heading_level = heading_level|default(2) %}
+<div{{ attributes.addClass(['uk-card', 'uk-card-default', 'uk-card-small', 'uk-card-body', 'uk-height-1-1']) }}>
+  {% if title %}
+    <h{{ heading_level }} class="uk-card-title uk-h5">{{ title }}</h{{ heading_level }}>
+  {% endif %}
+  {{ content }}
+</div>

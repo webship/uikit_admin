@@ -1,0 +1,16 @@
+name: 'Administration top bar'
+description: "The bar above the page: where you are, what you can search, and what you can do here."
+group: Navigation
+slots:
+  breadcrumb:
+    title: Breadcrumb
+  title:
+    title: 'Page title'
+  actions:
+    title: Actions
+props:
+  type: object
+  properties:
+    search_label:
+      title: 'Search label'
+      type: string

@@ -1,38 +1,12 @@
 {#
 /**
  * @file
- * Theme override to display primary and secondary local tasks.
+ * The tabs of an administration screen, rendered by the local_tasks component.
  *
- * Available variables:
- * - primary: HTML list items representing primary tasks.
- * - secondary: HTML list items representing primary tasks.
- *
- * Each item in these variables (primary and secondary) can be individually
- * themed in menu-local-task.html.twig.
- *
- * @see uikit_preprocess_menu_local_tasks()
- *
- * @ingroup uikit_themeable
+ * @see \Drupal\uikit_admin\Hook\PreprocessHooks::preprocessMenuLocalTasks()
  */
 #}
-{% if primary %}
-  <div id="primary-tasks">
-    <h2 class="visually-hidden">{{ 'Primary tasks'|t }}</h2>
-    <ul{{ primary_attributes }}>
-      {{ primary }}
-
-      {% if secondary_tasks %}
-        <li><a href="#secondary-tasks" class="uk-navbar-toggle" uk-navbar-toggle-icon uk-toggle></a></li>
-      {% endif %}
-    </ul>
-  </div>
-{% endif %}
-{% if secondary %}
-  <div id="secondary-tasks" class="uk-offcanvas" uk-offcanvas="flip: true">
-    <div class="uk-offcanvas-bar">
-      <button class="uk-offcanvas-close" type="button" uk-close></button>
-      <h2 class="visually-hidden">{{ 'Secondary tasks'|t }}</h2>
-      <ul{{ secondary_attributes }}>{{ secondary }}</ul>
-    </div>
-  </div>
-{% endif %}
+{{ include('uikit_admin:local_tasks', {
+  primary: tabs.primary ?? [],
+  secondary: tabs.secondary ?? [],
+}, with_context: false) }}

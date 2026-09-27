@@ -1,0 +1,35 @@
+name: 'Form element'
+description: "One form field with its label, description and errors, in the UIkit form layout."
+group: Form
+slots:
+  label:
+    title: Label
+  input:
+    title: Input
+  description:
+    title: Description
+  errors:
+    title: Errors
+  prefix:
+    title: Prefix
+  suffix:
+    title: Suffix
+props:
+  type: object
+  properties:
+    title_display:
+      title: 'Label position'
+      type: string
+      enum: [before, after, invisible, none]
+      "meta:enum":
+        before: 'Before the input (Default)'
+        after: 'After the input'
+        invisible: 'For screen readers only'
+        none: 'No label'
+    disabled:
+      title: Disabled
+      type: boolean
+    description_id:
+      title: 'Description id'
+      description: "The id the field names in aria-describedby."
+      type: string

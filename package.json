@@ -1,0 +1,18 @@
+{
+  "name": "uikit_admin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "The administration theme built with UIkit, where every part of the administration screens is a single directory component.",
+  "license": "GPL-2.0-or-later",
+  "engines": {
+    "node": ">= 20.0"
+  },
+  "scripts": {
+    "test": "cucumber-js --config cucumber.js",
+    "test:a11y": "cucumber-js --config cucumber.js --tags @a11y",
+    "test:chromium": "BROWSER=chromium cucumber-js --config cucumber.js"
+  },
+  "dependencies": {
+    "webship-js": "^2.0.6"
+  }
+}

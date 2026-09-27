@@ -1,0 +1,11 @@
+name: 'Form layout'
+description: "A content form: the fields on one side, the meta of the content on the other."
+group: Form
+slots:
+  main:
+    title: Fields
+  sidebar:
+    title: Meta
+    description: "Authoring information, the revision log, the menu settings."
+  actions:
+    title: Actions

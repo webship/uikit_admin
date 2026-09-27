@@ -1,0 +1,12 @@
+name: 'Command palette'
+description: "Jump to anything: the administration pages and the things you can do, filtered as you type, reached with the keyboard."
+group: Navigation
+props:
+  type: object
+  properties:
+    items:
+      title: Items
+      description: "Each item carries a title, a group, a url and an optional path shown on the right."
+      type: array
+      items:
+        type: object

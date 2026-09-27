@@ -1,0 +1,8 @@
+/**
+ * @file
+ * The administration toolbar of core, above the UIkit navbar.
+ */
+
+.toolbar-oriented .toolbar-bar {
+  z-index: 1001;
+}

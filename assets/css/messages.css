@@ -1,0 +1,33 @@
+/**
+ * @file
+ * Status messages.
+ *
+ * UIkit prints the alert text in the color of its own variant, which is below
+ * the WCAG AA contrast minimum on the alert background.
+ */
+
+.uk-alert-primary {
+  color: #14639e;
+}
+
+.uk-alert-success {
+  color: #1a7f5e;
+}
+
+.uk-alert-warning {
+  color: #8a4b12;
+}
+
+.uk-alert-danger {
+  color: #c2183c;
+}
+
+.uk-alert.uk-alert em,
+.uk-alert.uk-alert .placeholder {
+  color: inherit;
+}
+
+.uk-alert.uk-alert a:not(.uk-button) {
+  text-decoration: underline;
+  color: inherit;
+}

@@ -1,0 +1,8 @@
+/**
+ * @file
+ * The sticky table header of core, in the UIkit table.
+ */
+
+.sticky-header {
+  background: var(--uk-global-background, #fff);
+}

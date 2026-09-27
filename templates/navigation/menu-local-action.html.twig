@@ -1,21 +1,9 @@
 {#
 /**
  * @file
- * Theme override for a single local action link.
- *
- * Available variables:
- * - attributes: HTML attributes for the wrapper element.
- * - link: A rendered link element.
- *
- * @see template_preprocess_menu_local_action()
- * @see uikit_preprocess_menu_local_action()
- *
- * @ingroup uikit_themeable
+ * One action of an administration screen, as a UIkit button.
  */
 #}
-{% set title %}
-  <i uk-icon="icon: plus; ratio: .6"></i> {{ link.title }}
-{% endset %}
-<li{{ attributes }}>
-  <a href="{{ link.url }}" class="uk-button uk-button-primary uk-button-small">{{ title }}</a>
+<li{{ attributes.addClass('uikit-admin-action') }}>
+  {{ link|add_class(['uk-button', 'uk-button-primary', 'uk-button-small']) }}
 </li>

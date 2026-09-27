@@ -1,0 +1,13 @@
+# Color modes. The theme reads data-theme on the html element; without UI
+# Skins, the theme setting and the operating system choose the mode.
+light:
+  label: "Light"
+  label_context: "color"
+  key: "data-theme"
+  target: html
+
+dark:
+  label: "Dark"
+  label_context: "color"
+  key: "data-theme"
+  target: html

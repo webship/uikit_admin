@@ -1,0 +1,7 @@
+<div{{ attributes.addClass('uikit-admin-status-report') }}>
+  {{ general_info }}
+  {% if counters %}
+    <div class="uk-grid uk-grid-small uk-child-width-1-3@s uk-margin" uk-grid>{{ counters }}</div>
+  {% endif %}
+  {{ groups }}
+</div>

@@ -1,0 +1,19 @@
+{% set first = links|first %}
+{% set rest = links|slice(1) %}
+{% if first %}
+  <div class="uk-inline uikit-admin-operations">
+    <a href="{{ first.url }}" class="uk-button uk-button-default uk-button-small">{{ first.title }}</a>
+    {% if rest %}
+      <button class="uk-button uk-button-default uk-button-small" type="button" aria-label="{{ 'More operations'|t }}" aria-haspopup="true">
+        <span uk-icon="icon: more" aria-hidden="true"></span>
+      </button>
+      <div uk-dropdown="mode: click; pos: bottom-right">
+        <ul class="uk-nav uk-dropdown-nav">
+          {% for item in rest %}
+            <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+{% endif %}

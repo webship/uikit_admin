@@ -1,26 +1,12 @@
 {#
 /**
  * @file
- * Theme override for status report counter.
- *
- * Available variables:
- * - amount: The number shown on counter.
- * - text: The text shown on counter.
- * - severity: The severity of the counter.
- *
- * @ingroup themable
+ * One counter of the status report, rendered by the status_counter component.
  */
 #}
-{%
-  set classes = [
-    'system-status-counter',
-    'system-status-counter--' ~ severity,
-  ]
-%}
-<span{{ attributes.addClass(classes) }}>
-  <span class="system-status-counter__status-icon system-status-counter__status-icon--{{ severity }}"></span>
-  <span class="system-status-counter__status-title">
-    <span class="system-status-counter__title-count">{{ amount }} {{ text }}</span>
-    <span class="system-status-counter__details"><a href="#{{ severity }}" ><span class="visually-hidden">{{ text }} </span>Details</a></span>
-  </span>
-</span>
+{{ include('uikit_admin:status_counter', {
+  severity: severity_status ?? 'checked',
+  amount: amount ?? 0,
+  text: text,
+  url: url ?? '#',
+}, with_context: false) }}

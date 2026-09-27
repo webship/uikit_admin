@@ -1,38 +1,59 @@
 name: 'UIkit Admin'
 type: theme
-description: 'A one-column administration theme based on UIkit for Drupal.'
-base theme: uikit
-core_version_requirement: ^8 || ^9
+description: 'The administration theme built with UIkit: every part of the administration screens is a single directory component. It stands on its own, with no base theme.'
+core_version_requirement: ^11.4 || ^12
+base theme: false
+package: 'UIkit'
+alt text: 'Screenshot of UIkit Admin, the UIkit administration theme.'
+screenshot: screenshot.png
+logo: logo.svg
 
+# The administration regions, following the core administration theme, with the
+# UIkit navbar and offcanvas of this theme on top.
 regions:
-  navbar: 'Navigation Bar'
-  navbar_left: 'Navbar Left'
-  navbar_center: 'Navbar Center'
-  navbar_right: 'Navbar Right'
-  status_messages: 'Status messages'
+  navbar_left: 'Navbar left'
+  navbar_right: 'Navbar right'
+  offcanvas: 'Offcanvas'
+  breadcrumb: Breadcrumb
+  header: Header
+  pre_content: 'Pre-content'
+  highlighted: Highlighted
   help: Help
   content: Content
-  sidebar_first: 'Left Sidebar'
-  sidebar_second: 'Right Sidebar'
-  footer: 'Footer'
-  offcanvas: 'Offcanvas Navigation'
+  sidebar_first: 'Sidebar first'
+  footer: Footer
+  page_top: 'Page top'
+  page_bottom: 'Page bottom'
 
 regions_hidden:
-  - navbar
   - sidebar_first
-  - sidebar_second
   - footer
 
 libraries:
-  - uikit_admin/global-style
+  - uikit_admin/uikit
+  - uikit_admin/base
+
+ckeditor5-stylesheets:
+  - assets/css/ckeditor5.css
+
+# The administration screens of core print their own styles: the ones this
+# theme replaces with UIkit are turned off here.
+libraries-override:
+  system/admin:
+    css:
+      theme:
+        css/system.admin.css: false
+  core/drupal.vertical-tabs:
+    css:
+      component:
+        misc/vertical-tabs.css: false
+  core/drupal.dropbutton:
+    css:
+      component:
+        misc/dropbutton/dropbutton.css: false
 
 libraries-extend:
-  system/admin:
-    - uikit_admin/system.admin
-  user/drupal.user:
-    - uikit_admin/user
-  views_ui/admin.styling:
-    - uikit_admin/views_ui.admin.styling
-
-libraries-override:
-  uikit/tableheader: uikit_admin/tableheader
+  core/drupal.message:
+    - uikit_admin/messages
+  core/drupal.tableheader:
+    - uikit_admin/table

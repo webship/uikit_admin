@@ -1,0 +1,612 @@
+/**
+ * @file
+ * The look of the administration screens, on top of UIkit.
+ *
+ * The design follows the administration themes people know: a calm surface, a
+ * sticky page header with the title and the actions, cards with a soft edge,
+ * quiet tables and a form column that stays readable.
+ */
+
+:root {
+  /* Color. The UIkit defaults are below the WCAG AA contrast minimum, so the
+     theme sets its own. */
+  --uikit-admin-accent: #0a5fa8;
+  --uikit-admin-accent-hover: #084b85;
+  --uikit-admin-on-accent: #fff;
+  --uikit-admin-surface: #fff;
+  --uikit-admin-canvas: #f3f4f6;
+  --uikit-admin-border: #dfe3e8;
+  --uikit-admin-text: #1b1f24;
+  --uikit-admin-text-muted: #5c6672;
+  --uikit-admin-radius: 8px;
+  --uikit-admin-shadow: 0 1px 2px rgb(16, 24, 40, 0.06), 0 1px 3px rgb(16, 24, 40, 0.1);
+  --uikit-admin-shadow-raised: 0 4px 12px rgb(16, 24, 40, 0.1);
+  --uikit-admin-header-height: 56px;
+
+  /* The UIkit tokens follow the same palette. */
+  --uk-global-color: var(--uikit-admin-text);
+  --uk-global-emphasis-color: #0d1117;
+  --uk-global-muted-color: var(--uikit-admin-text-muted);
+  --uk-global-background: var(--uikit-admin-surface);
+  --uk-global-muted-background: #eef0f3;
+  --uk-global-border: var(--uikit-admin-border);
+  --uk-global-link-color: var(--uikit-admin-accent);
+  --uk-global-link-hover-color: var(--uikit-admin-accent-hover);
+  --uk-global-primary-background: var(--uikit-admin-accent);
+  --uk-global-primary-background-hover: var(--uikit-admin-accent-hover);
+  --uk-global-danger-background: #c2183c;
+  --uk-global-success-background: #13795a;
+  --uk-global-warning-background: #8a5a12;
+  --uk-global-font-family: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --uikit-admin-accent: #63a4ff;
+    --uikit-admin-accent-hover: #8cbcff;
+    --uikit-admin-on-accent: #0b1a2e;
+    --uikit-admin-surface: #1c2128;
+    --uikit-admin-canvas: #14181d;
+    --uikit-admin-border: #2f3742;
+    --uikit-admin-text: rgb(255, 255, 255, 0.88);
+    --uikit-admin-text-muted: rgb(255, 255, 255, 0.68);
+    --uikit-admin-shadow: none;
+    --uikit-admin-shadow-raised: 0 4px 12px rgb(0, 0, 0, 0.45);
+    --uk-global-emphasis-color: #fff;
+    --uk-global-muted-background: #232a32;
+
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --uikit-admin-accent: #63a4ff;
+  --uikit-admin-accent-hover: #8cbcff;
+  --uikit-admin-on-accent: #0b1a2e;
+  --uikit-admin-surface: #1c2128;
+  --uikit-admin-canvas: #14181d;
+  --uikit-admin-border: #2f3742;
+  --uikit-admin-text: rgb(255, 255, 255, 0.88);
+  --uikit-admin-text-muted: rgb(255, 255, 255, 0.68);
+  --uikit-admin-shadow: none;
+  --uikit-admin-shadow-raised: 0 4px 12px rgb(0, 0, 0, 0.45);
+  --uk-global-emphasis-color: #fff;
+  --uk-global-muted-background: #232a32;
+
+  color-scheme: dark;
+}
+
+html,
+body {
+  color: var(--uikit-admin-text);
+  background: var(--uikit-admin-canvas);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------- Shell -- */
+
+.uikit-admin-main {
+  padding: 0 0 64px;
+  background: transparent;
+}
+
+.uikit-admin-main > .uk-container {
+  padding-top: 24px;
+}
+
+/* The page header sticks to the top: the title on one side, the actions on
+   the other, the way the administration themes of core do it. */
+.uikit-admin-page-head {
+  position: sticky;
+  z-index: 10;
+  top: 0;
+  margin: 0 0 20px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--uikit-admin-border);
+  background: color-mix(in sRGB, var(--uikit-admin-canvas) 88%, transparent);
+  gap: 12px;
+  backdrop-filter: blur(6px);
+}
+
+.uikit-admin-page-head h1 {
+  margin: 0;
+  letter-spacing: -0.01em;
+  color: var(--uk-global-emphasis-color);
+  font-size: 26px;
+  font-weight: 650;
+  line-height: 1.2;
+}
+
+.uikit-admin-header {
+  border-bottom: 1px solid var(--uikit-admin-border);
+  background: var(--uikit-admin-surface);
+}
+
+/* The breadcrumb is quiet, above the title. */
+.uk-breadcrumb {
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+/* ---------------------------------------------------------------- Cards -- */
+
+.uk-card {
+  transition:
+    box-shadow 120ms ease,
+    transform 120ms ease;
+  border: 1px solid var(--uikit-admin-border);
+  border-radius: var(--uikit-admin-radius);
+  background: var(--uikit-admin-surface);
+  box-shadow: var(--uikit-admin-shadow);
+}
+
+.uk-card-title {
+  margin: 0 0 12px;
+  color: var(--uk-global-emphasis-color);
+  font-size: 16px;
+  font-weight: 650;
+}
+
+.uikit-admin-index .uk-card:hover {
+  box-shadow: var(--uikit-admin-shadow-raised);
+}
+
+/* The panels of an index page follow their own height, so a short panel does
+   not leave a tall empty box. */
+.uikit-admin-index .uk-card {
+  width: 100%;
+}
+
+/* ------------------------------------------------------------ Task list -- */
+
+.uikit-admin-task-list__item {
+  padding: 10px 0;
+  border-top: 1px solid var(--uikit-admin-border);
+}
+
+.uikit-admin-task-list__item:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.uikit-admin-task-list__title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.uikit-admin-task-list__title a {
+  text-decoration: none;
+  color: var(--uikit-admin-accent);
+}
+
+.uikit-admin-task-list__title a:hover {
+  text-decoration: underline;
+}
+
+.uikit-admin-task-list__description {
+  margin: 2px 0 0;
+  color: var(--uikit-admin-text-muted);
+  font-size: 13px;
+}
+
+/* ----------------------------------------------------------------- Tabs -- */
+
+.uikit-admin-tabs {
+  margin-bottom: 16px;
+}
+
+.uikit-admin-tabs::before {
+  border-bottom: 1px solid var(--uikit-admin-border);
+}
+
+.uikit-admin-tabs > * > a {
+  padding: 8px 4px;
+  text-transform: none;
+  color: var(--uikit-admin-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.uikit-admin-tabs > .uk-active > a {
+  color: var(--uikit-admin-accent);
+  border-bottom-color: var(--uikit-admin-accent);
+}
+
+.uikit-admin-tabs--secondary {
+  margin-bottom: 20px;
+  font-size: 13px;
+}
+
+.uikit-admin-tabs--secondary > * > a {
+  padding: 4px 12px;
+  text-transform: none;
+  border-radius: 999px;
+}
+
+/* -------------------------------------------------------------- Actions -- */
+
+.uikit-admin-actions {
+  margin: 0;
+}
+
+.uikit-admin-actions .uk-button {
+  text-transform: none;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.uk-button {
+  letter-spacing: 0;
+  text-transform: none;
+  border-radius: 6px;
+  font-weight: 600;
+}
+
+.uk-button-primary {
+  box-shadow: var(--uikit-admin-shadow);
+}
+
+/* The operations of a row stay compact, on one line. */
+.uikit-admin-operations {
+  display: inline-flex;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.uikit-admin-operations .uk-button {
+  font-size: 13px;
+}
+
+/* --------------------------------------------------------------- Tables -- */
+
+.uikit-admin-views-table {
+  width: 100%;
+}
+
+.uk-button-primary,
+.uk-button-primary:hover,
+.uk-button-primary:focus {
+  color: var(--uikit-admin-on-accent);
+}
+
+.uk-table {
+  overflow: hidden;
+  margin-bottom: 0;
+  border: 1px solid var(--uikit-admin-border);
+  border-radius: var(--uikit-admin-radius);
+  background: var(--uikit-admin-surface);
+  font-size: 14px;
+}
+
+.uk-table th {
+  padding: 12px 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--uikit-admin-text-muted);
+  background: var(--uk-global-muted-background);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.uk-table td {
+  padding: 12px 16px;
+  border-top: 1px solid var(--uikit-admin-border);
+}
+
+.uk-table tbody tr:hover {
+  background: color-mix(in sRGB, var(--uikit-admin-accent) 6%, transparent);
+}
+
+.uk-table a {
+  text-decoration: none;
+}
+
+.uk-table a:hover {
+  text-decoration: underline;
+}
+
+/* ---------------------------------------------------------------- Forms -- */
+
+.uikit-admin-form-item {
+  margin-bottom: 20px;
+}
+
+.uk-form-label,
+.uikit-admin-form-item .uk-form-label label {
+  color: var(--uk-global-emphasis-color);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.uikit-admin-form-item__description {
+  max-width: 44rem;
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.uk-input,
+.uk-select,
+.uk-textarea {
+  color: var(--uikit-admin-text);
+  border-color: var(--uikit-admin-border);
+  border-radius: 6px;
+  background: var(--uikit-admin-surface);
+}
+
+.uk-input:focus,
+.uk-select:focus,
+.uk-textarea:focus {
+  border-color: var(--uikit-admin-accent);
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in sRGB, var(--uikit-admin-accent) 22%, transparent);
+}
+
+/* A form column that stays readable: the wide fields of the administration
+   screens are capped, the way the core administration theme caps them. */
+/* A checkbox or a radio with its label beside it. */
+.uikit-admin-form-item__choice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.uikit-admin-form-item__choice .uk-form-label {
+  margin: 0;
+  font-weight: 400;
+}
+
+.uikit-admin-main .uk-input:not([type="checkbox"], [type="radio"]),
+.uikit-admin-main .uk-select,
+.uikit-admin-main .uk-textarea {
+  max-width: 44rem;
+}
+
+/* The buttons of a form stay in reach at the bottom of the screen. */
+.uikit-admin-main .form-actions {
+  position: sticky;
+  z-index: 9;
+  bottom: 0;
+  display: flex;
+  margin-top: 24px;
+  padding: 14px 0;
+  border-top: 1px solid var(--uikit-admin-border);
+  background: color-mix(in sRGB, var(--uikit-admin-canvas) 90%, transparent);
+  gap: 8px;
+  backdrop-filter: blur(6px);
+}
+
+/* A details element reads as a panel, with a chevron instead of the marker
+   the browser draws. */
+.uikit-admin-details {
+  border-radius: var(--uikit-admin-radius);
+}
+
+.uikit-admin-details__summary {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  list-style: none;
+  cursor: pointer;
+  font-size: 15px;
+  gap: 8px;
+}
+
+.uikit-admin-details__summary::-webkit-details-marker {
+  display: none;
+}
+
+.uikit-admin-details__summary::before {
+  width: 8px;
+  height: 8px;
+  content: "";
+  transition: transform 120ms ease;
+  transform: rotate(-45deg);
+  border-right: 2px solid var(--uikit-admin-text-muted);
+  border-bottom: 2px solid var(--uikit-admin-text-muted);
+}
+
+.uikit-admin-details[open] > .uikit-admin-details__summary::before {
+  transform: rotate(45deg);
+}
+
+.uikit-admin-details[open] .uikit-admin-details__summary {
+  margin-bottom: 14px;
+}
+
+/* -------------------------------------------------------------- Content -- */
+
+/* Links inside running text carry an underline: color alone does not tell
+   them apart. The lists, the tables and the menus keep their own styling. */
+.uikit-admin-main p a:not(.uk-button),
+.uikit-admin-main dd a:not(.uk-button),
+.uikit-admin-status-report a:not(.uk-button, .uk-link-reset),
+.uikit-admin-main .description a,
+.uikit-admin-main .system-status-general-info__item a,
+.uikit-admin-main [class*="description"] a:not(.uk-button),
+.uikit-admin-form-item__description a,
+.uikit-admin-help a,
+.uk-alert a {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* ------------------------------------------------------- Status report --- */
+
+.uikit-admin-status-counter__text {
+  display: block;
+  color: var(--uikit-admin-text-muted);
+  font-size: 13px;
+}
+
+.uikit-admin-status-report .uk-card {
+  margin-bottom: 12px;
+}
+
+/* --------------------------------------------------------------- Toolbar -- */
+
+/* The site branding is a slim line: the navigation rail of core already
+   carries the site, so the header stays out of the way. */
+.uikit-admin-header .uk-navbar-container {
+  min-height: 44px;
+  background: transparent;
+}
+
+.uikit-admin-header .uk-logo {
+  color: var(--uikit-admin-text);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+/* The navigation rail of core sits on the left; the page follows it. */
+.uikit-admin-main > .uk-container {
+  max-width: 1280px;
+}
+
+/* ------------------------------------------------------- Exposed filters -- */
+
+/* The filters of a view sit in one row, the way the administration listings
+   of core lay them out. */
+.uikit-admin-main .views-exposed-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid var(--uikit-admin-border);
+  border-radius: var(--uikit-admin-radius);
+  background: var(--uikit-admin-surface);
+  gap: 12px 16px;
+}
+
+.uikit-admin-main .views-exposed-form .uikit-admin-form-item {
+  margin-bottom: 0;
+}
+
+.uikit-admin-main .views-exposed-form .uk-input,
+.uikit-admin-main .views-exposed-form .uk-select {
+  min-width: 12rem;
+  max-width: 18rem;
+}
+
+/* Inside the filters the buttons are not sticky: they belong to the row. */
+.uikit-admin-main .views-exposed-form .form-actions {
+  position: static;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  backdrop-filter: none;
+}
+
+/* The bulk action row of a listing. */
+.uikit-admin-main .vbo-view-form .form-actions,
+.uikit-admin-main .views-form .form-actions {
+  gap: 12px;
+  align-items: center;
+}
+
+/* --------------------------------------------------------------- Modules -- */
+
+.uikit-admin-modules__name {
+  color: var(--uk-global-emphasis-color);
+  font-weight: 650;
+}
+
+.uikit-admin-modules__meta {
+  font-size: 12px;
+}
+
+.uikit-admin-modules__description {
+  font-size: 13px;
+}
+
+.uikit-admin-modules__requirements {
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+.uikit-admin-modules__links a {
+  margin-right: 10px;
+}
+
+/* -------------------------------------------------------------- Density -- */
+
+/* Compact suits the people who work in the back office all day: the rows, the
+   panels and the fields give up their outer room, never their legibility. */
+[data-uikit-admin-density="compact"] {
+  font-size: 14px;
+}
+
+[data-uikit-admin-density="compact"] .uk-table th,
+[data-uikit-admin-density="compact"] .uk-table td {
+  padding: 7px 12px;
+}
+
+[data-uikit-admin-density="compact"] .uikit-admin-form-item {
+  margin-bottom: 14px;
+}
+
+[data-uikit-admin-density="compact"] .uk-card-body {
+  padding: 16px;
+}
+
+[data-uikit-admin-density="compact"] .uikit-admin-page-head {
+  padding: 10px 0;
+}
+
+[data-uikit-admin-density="compact"] .uikit-admin-page-head h1 {
+  font-size: 22px;
+}
+
+/* ---------------------------------------------------------------- Focus -- */
+
+/* One focus ring for the whole back office, in the color of the settings. */
+:root {
+  --uikit-admin-focus: #1f7ad4;
+}
+
+.uikit-admin-main :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  border-radius: 4px;
+  outline: 2px solid var(--uikit-admin-focus);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------- Content form sidebar -- */
+
+/* The fields on the left, the meta on the right, the way an editor reads a
+   content form. */
+.uikit-admin-form-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+
+@media (min-width: 960px) {
+  .uikit-admin-form-layout--with-sidebar {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+    align-items: start;
+  }
+
+  .uikit-admin-form-layout__sidebar {
+    position: sticky;
+    top: 88px;
+  }
+}
+
+.uikit-admin-form-layout__sidebar .uikit-admin-details,
+.uikit-admin-form-layout__sidebar .uk-card {
+  margin-bottom: 12px;
+}
+
+.uikit-admin-form-layout__sidebar .uikit-admin-details__summary {
+  font-size: 14px;
+}
+
+/* A date and a time sit side by side. */
+.uikit-admin-datetime__inputs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}

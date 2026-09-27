@@ -1,0 +1,90 @@
+################################################################################
+# UIkit Admin: the drupal.org CI templates, plus the webship-js suite that
+# installs Drupal with this theme as the administration theme and walks the
+# back office, accessibility included.
+################################################################################
+include:
+  - project: $_GITLAB_TEMPLATES_REPO
+    ref: $_GITLAB_TEMPLATES_REF
+    file:
+      - "/includes/include.drupalci.main.yml"
+      - "/includes/include.drupalci.variables.yml"
+      - "/includes/include.drupalci.workflows.yml"
+
+variables:
+  # Build and test with Drupal 11.4 and PHP 8.4; the theme also allows 12.
+  DRUPAL_CORE: "11.4.8"
+  _TARGET_PHP: "8.4"
+  YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
+
+# Drupal 11.4.8 carries the fix for the Twig 3.30 escape TypeError
+# (https://www.drupal.org/i/3625969), which 11.4.6 does not.
+composer:
+  variables:
+    DRUPAL_CORE: "11.4.8"
+
+.drupal-node-base:
+  extends: .testing-job-base
+  needs: [composer]
+  # Playwright brings its own Chromium: only the database is needed.
+  services:
+    - name: $_CONFIG_DOCKERHUB_ROOT/$_TARGET_DB_TYPE-$_TARGET_DB_VERSION:$_TARGET_DB_IMAGE_TAG
+      alias: database
+  variables:
+    DRUPAL_ADMIN_USER: "webmaster"
+    DRUPAL_ADMIN_PASSWORD: "dD.123123ddd"
+    LAUNCH_URL: "http://localhost"
+    DRUSH: "drush-www"
+    DRUPAL_PROJECT_DIR: $CI_PROJECT_DIR
+    FORCE_COLOR: "1"
+    # The Basic page type comes from the core recipe the job applies.
+    DRUPAL_SKIP_FIXTURES: "1"
+  before_script:
+    # Web server.
+    - mkdir -pv $CI_PROJECT_DIR/$_WEB_ROOT/sites/default/files
+    - chmod -R 777 $CI_PROJECT_DIR/$_WEB_ROOT/sites/default/files
+    - rm -rf /var/www/html && ln -s $CI_PROJECT_DIR/$_WEB_ROOT /var/www/html
+    - chown -R www-data:www-data $CI_PROJECT_DIR
+    - service apache2 start
+    # Drupal, with the Basic page type the standard profile no longer ships.
+    - export SIMPLETEST_DB=mysql://$MYSQL_USER:$MYSQL_PASSWORD@database/$MYSQL_DATABASE
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT site:install standard
+        --db-url=$SIMPLETEST_DB
+        --account-name=webmaster
+        --account-pass=dD.123123ddd
+        --site-name="UIkit Admin"
+        -y
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT recipe $CI_PROJECT_DIR/$_WEB_ROOT/core/recipes/page_content_type -y
+    # This theme as the administration theme, content forms included.
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT theme:enable uikit_admin -y
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT config:set system.theme admin uikit_admin -y
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT config:set node.settings use_admin_theme 1 -y
+    - $CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT cache:rebuild
+    # Surface a server error before the browser suite runs.
+    - 'curl -s -o /tmp/login.html -w "login page HTTP=%{http_code}\n" http://localhost/user/login || true'
+    - '$CI_PROJECT_DIR/vendor/bin/drush --root=$CI_PROJECT_DIR/$_WEB_ROOT watchdog:show --count=25 --severity=Error --extended || true'
+    # Drush as the web server user, for the fixture steps.
+    - printf '#!/bin/sh\nexec su -s /bin/sh www-data -c "HOME=/tmp %s/vendor/bin/drush --root=%s/%s --uri=http://localhost $*"\n' "$CI_PROJECT_DIR" "$CI_PROJECT_DIR" "$_WEB_ROOT" > /usr/local/bin/drush-www
+    - chmod +x /usr/local/bin/drush-www
+    # Node.js 22, which Cucumber needs.
+    - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+    - apt-get install -y nodejs
+    - node --version && npm --version
+    # The suite and its browser.
+    - 'test -f .yarnrc.yml || echo "nodeLinker: node-modules" > .yarnrc.yml'
+    - corepack enable
+    - yarn install
+    - ./node_modules/.bin/playwright install --with-deps chromium
+
+# The screens of the back office and their accessibility.
+webship-js-test:
+  extends: .drupal-node-base
+  script:
+    - ./node_modules/.bin/cucumber-js --config cucumber.js --tags "not @wip"
+  artifacts:
+    when: always
+    paths:
+      - tests/reports/
+      - tests/screenshots/
+    expire_in: 7 days
+  allow_failure: false

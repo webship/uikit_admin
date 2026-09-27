@@ -1,34 +1,21 @@
 {
-  "name": "drupal/uikit_admin",
-  "description": "A one-column administration theme based on UIkit for Drupal.",
-  "type": "drupal-theme",
-  "homepage": "https://www.drupal.org/project/uikit_admin",
-  "license": "GPL-2.0-or-later",
-  "minimum-stability": "dev",
-  "authors": [
-    {
-      "name": "Webship",
-      "homepage": "https://www.drupal.org/webship",
-      "role": "Maintainer"
+    "name": "drupal/uikit_admin",
+    "type": "drupal-theme",
+    "description": "The administration theme built with UIkit, where every part of the administration screens is a single directory component.",
+    "keywords": [
+        "Drupal",
+        "Theme",
+        "UIkit",
+        "Administration",
+        "SDC"
+    ],
+    "homepage": "https://www.drupal.org/project/uikit_admin",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "drupal/core": "^11.4 || ^12"
+    },
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/uikit_admin",
+        "source": "https://git.drupalcode.org/project/uikit_admin"
     }
-  ],
-  "support": {
-    "issues": "http://drupal.org/project/issues/uikit_admin",
-    "source": "http://cgit.drupalcode.org/uikit_admin"
-  },
-  "repositories": {
-    "drupal": {
-      "type": "composer",
-      "url": "https://packages.drupal.org/8"
-    }
-  },
-  "require": {
-    "drupal/core": "~8.0 || ~9.0",
-    "drupal/uikit": "~3.0"
-  },
-  "extra": {
-    "branch-alias": {
-      "dev-8.x-3.x": "8.3.x-dev"
-    }
-  }
 }

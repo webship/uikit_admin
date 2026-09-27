@@ -1,0 +1,23 @@
+name: 'Status counter'
+description: "How many checks fall in one severity of the status report."
+group: Administration
+props:
+  type: object
+  properties:
+    severity:
+      title: Severity
+      type: string
+      enum: [error, warning, checked]
+      "meta:enum":
+        error: Errors
+        warning: Warnings
+        checked: Checked
+    amount:
+      title: Amount
+      type: integer
+    text:
+      title: Text
+      type: string
+    url:
+      title: URL
+      type: string

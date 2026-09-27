@@ -1,63 +1,60 @@
-global-style:
-  version: VERSION
+# UIkit itself, from the CDN by default. A site that serves it locally points
+# the library at web/libraries/uikit through the theme setting.
+uikit:
+  remote: https://getuikit.com/
+  version: 3.25.22
+  license:
+    name: MIT
+    url: https://github.com/uikit/uikit/blob/develop/LICENSE.md
+    gpl-compatible: true
   css:
     base:
-      css/base.css: {}
-    layout:
-      css/layout.css: {}
-    component:
-      css/component.css: {}
-    theme:
-      css/theme.css: {}
+      https://cdn.jsdelivr.net/npm/uikit@3.25.22/dist/css/uikit.min.css: { type: external, minified: true }
   js:
-    js/theme.js: {}
-  dependencies:
-    - toolbar/toolbar
-    - uikit/global-style
+    https://cdn.jsdelivr.net/npm/uikit@3.25.22/dist/js/uikit.min.js: { type: external, minified: true }
+    https://cdn.jsdelivr.net/npm/uikit@3.25.22/dist/js/uikit-icons.min.js: { type: external, minified: true }
 
-system.admin:
-  version: VERSION
+uikit.local:
+  version: 3.25.22
+  license:
+    name: MIT
+    url: https://github.com/uikit/uikit/blob/develop/LICENSE.md
+    gpl-compatible: true
+  css:
+    base:
+      /libraries/uikit/dist/css/uikit.min.css: { minified: true }
+  js:
+    /libraries/uikit/dist/js/uikit.min.js: { minified: true }
+    /libraries/uikit/dist/js/uikit-icons.min.js: { minified: true }
+
+# The design tokens of the theme and the parts of the administration screens
+# that UIkit does not cover on its own.
+base:
   css:
     theme:
-      css/theme/system.admin.css: { weight: -10 }
-  dependencies:
-    - uikit/global-style
-
-system.status_report:
-  version: VERSION
-  css:
-    component:
-      css/component/system-status-counter.css: {}
-      css/component/system-status-report.css: {}
-      css/component/system-status-report-counters.css: {}
-      css/component/system-status-report-general-info.css: {}
-  dependencies:
-    - uikit/global-style
-
-tableheader:
-  version: VERSION
+      assets/css/tokens.css: {}
+      assets/css/admin.css: {}
+      assets/css/shell.css: {}
   js:
-    js/tableheader.js: {}
+    assets/js/shell.js: {}
   dependencies:
-    - core/jquery
+    - uikit_admin/uikit
     - core/drupal
-    - core/drupalSettings
-    - core/jquery.once
-    - core/drupal.displace
-    - uikit/uikit
+    - core/once
 
-user:
-  version: VERSION
+messages:
   css:
     theme:
-      css/theme/user.css: {}
-  dependencies:
-    - uikit/global-style
+      assets/css/messages.css: {}
 
-views_ui.admin.styling:
-  version: VERSION
+table:
   css:
     theme:
-      css/theme/views_ui.admin.theme.css: {}
-  dependencies:
-    - uikit/views_ui.admin.styling
+      assets/css/table.css: {}
+
+# The administration toolbar of core keeps its own styles; this only aligns it
+# with the UIkit navbar below it.
+toolbar:
+  css:
+    theme:
+      assets/css/toolbar.css: {}

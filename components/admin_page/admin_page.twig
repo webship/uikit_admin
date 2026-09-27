@@ -1,0 +1,31 @@
+{#
+/**
+ * @file
+ * The shell of an administration screen: the bar above, the page below.
+ */
+#}
+{% if navbar %}
+  <header class="uikit-admin-header">{{ navbar }}</header>
+{% endif %}
+{{ offcanvas }}
+<main class="uikit-admin-main">
+  <div class="uk-container{{ container is defined and container not in ['default', ''] ? ' uk-container-' ~ container }}">
+    <a id="main-content" tabindex="-1"></a>
+    {{ tabs }}
+    {{ messages }}
+    {{ help }}
+    {% if sidebar %}
+      <div class="uk-grid uk-grid-medium" uk-grid>
+        <div class="uk-width-expand@m">{{ content }}</div>
+        <aside class="uk-width-1-4@m" role="complementary">{{ sidebar }}</aside>
+      </div>
+    {% else %}
+      {{ content }}
+    {% endif %}
+  </div>
+</main>
+{% if footer %}
+  <footer class="uikit-admin-footer" role="contentinfo">
+    <div class="uk-container">{{ footer }}</div>
+  </footer>
+{% endif %}

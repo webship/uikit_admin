@@ -1,0 +1,11 @@
+name: Operations
+description: "The operations of a row, as a UIkit dropdown next to the first action."
+group: Navigation
+props:
+  type: object
+  properties:
+    links:
+      title: Links
+      type: array
+      items:
+        type: object

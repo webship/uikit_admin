@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  theme:
+    - uikit_admin
+id: uikit_admin_breadcrumbs
+theme: uikit_admin
+region: breadcrumb
+weight: 0
+provider: null
+plugin: system_breadcrumb_block
+settings:
+  id: system_breadcrumb_block
+  label: 'Breadcrumbs'
+  label_display: '0'
+  provider: core
+visibility: {  }

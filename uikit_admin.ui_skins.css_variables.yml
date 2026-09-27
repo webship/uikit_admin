@@ -1,0 +1,116 @@
+# The design tokens of the administration screens, for UI Skins.
+#
+# The theme runs without UI Skins: these are the same custom properties its
+# stylesheets read, so the module only offers them as settings. Keep every
+# pair of text and background at the WCAG AA contrast minimum.
+
+################################################################################
+# Brand.
+################################################################################
+
+uikit-admin-accent:
+  category: "Brand"
+  label: "Accent (links, primary buttons, active rail item)"
+  type: "color"
+  default_values:
+    ":root": "#0a5fa8"
+
+uikit-admin-accent-hover:
+  category: "Brand"
+  label: "Accent on hover"
+  type: "color"
+  default_values:
+    ":root": "#084b85"
+
+uikit-admin-focus:
+  category: "Brand"
+  label: "Focus ring"
+  type: "color"
+  default_values:
+    ":root": "#1f7ad4"
+
+################################################################################
+# Surfaces.
+################################################################################
+
+uikit-admin-canvas:
+  category: "Surfaces"
+  label: "Canvas (behind the panels)"
+  type: "color"
+  default_values:
+    ":root": "#f3f4f6"
+
+uikit-admin-surface:
+  category: "Surfaces"
+  label: "Surface (panels, tables, the rail)"
+  type: "color"
+  default_values:
+    ":root": "#ffffff"
+
+uikit-admin-border:
+  category: "Surfaces"
+  label: "Border"
+  type: "color"
+  default_values:
+    ":root": "#dfe3e8"
+
+################################################################################
+# Text colors.
+################################################################################
+
+uikit-admin-text:
+  category: "Text colors"
+  label: "Text color"
+  type: "color"
+  default_values:
+    ":root": "#1b1f24"
+
+uikit-admin-text-muted:
+  category: "Text colors"
+  label: "Muted text color"
+  type: "color"
+  default_values:
+    ":root": "#5c6672"
+
+################################################################################
+# States.
+################################################################################
+
+uk-global-success-background:
+  category: "States"
+  label: "Success"
+  type: "color"
+  default_values:
+    ":root": "#13795a"
+
+uk-global-warning-background:
+  category: "States"
+  label: "Warning"
+  type: "color"
+  default_values:
+    ":root": "#8a5a12"
+
+uk-global-danger-background:
+  category: "States"
+  label: "Danger"
+  type: "color"
+  default_values:
+    ":root": "#c2183c"
+
+################################################################################
+# Layout.
+################################################################################
+
+uikit-admin-radius:
+  category: "Layout"
+  label: "Corner radius of the panels"
+  type: "string"
+  default_values:
+    ":root": "8px"
+
+uikit-admin-rail-width:
+  category: "Layout"
+  label: "Width of the sidebar"
+  type: "string"
+  default_values:
+    ":root": "272px"

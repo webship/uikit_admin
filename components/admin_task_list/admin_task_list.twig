@@ -1,0 +1,13 @@
+{# A definition list keeps the title with its description, the way core does. #}
+<dl{{ attributes.addClass(['uikit-admin-task-list', 'uk-margin-remove-bottom']) }}>
+  {% for task in tasks %}
+    <div class="uikit-admin-task-list__item">
+      <dt class="uikit-admin-task-list__title">
+        <a href="{{ task.url }}" class="uk-link-heading">{{ task.title }}</a>
+      </dt>
+      {% if task.description %}
+        <dd class="uikit-admin-task-list__description uk-text-meta">{{ task.description }}</dd>
+      {% endif %}
+    </div>
+  {% endfor %}
+</dl>

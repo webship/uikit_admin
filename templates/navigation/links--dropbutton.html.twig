@@ -1,0 +1,9 @@
+{#
+/**
+ * @file
+ * A dropbutton, rendered by the operations component.
+ *
+ * @see \Drupal\uikit_admin\Hook\PreprocessHooks::preprocessLinksDropbutton()
+ */
+#}
+{{ include('uikit_admin:operations', { links: operations ?? [] }, with_context: false) }}

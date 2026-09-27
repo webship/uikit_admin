@@ -1,0 +1,7 @@
+name: 'Local actions'
+description: "The actions of an administration screen, such as Add content, as UIkit buttons in one list."
+group: Navigation
+slots:
+  items:
+    title: Items
+    description: "One list item per action."

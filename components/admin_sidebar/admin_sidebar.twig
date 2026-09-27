@@ -1,0 +1,58 @@
+{#
+/**
+ * @file
+ * The administration rail.
+ *
+ * @see \Drupal\uikit_admin\Hook\PreprocessHooks::preprocessPage()
+ */
+#}
+<nav{{ attributes.addClass('uikit-admin-rail').setAttribute('aria-label', 'Administration'|t) }} data-uikit-admin-rail>
+  <div class="uikit-admin-rail__head">
+    <a href="/" class="uikit-admin-rail__site">
+      <span class="uikit-admin-rail__mark" aria-hidden="true">{{ site_name|first }}</span>
+      <span class="uikit-admin-rail__site-text">
+        <span class="uikit-admin-rail__site-name">{{ site_name }}</span>
+        {% if site_slogan %}<span class="uikit-admin-rail__site-slogan">{{ site_slogan }}</span>{% endif %}
+      </span>
+    </a>
+    <button type="button" class="uikit-admin-rail__toggle" data-uikit-admin-rail-toggle aria-label="{{ 'Collapse the sidebar'|t }}" aria-expanded="true">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
+  </div>
+
+  <div class="uikit-admin-rail__body">
+    {% for section in sections %}
+      <div class="uikit-admin-rail__section">
+        {% if section.title %}
+          <div class="uikit-admin-rail__section-title">{{ section.title }}</div>
+        {% endif %}
+        <ul class="uikit-admin-rail__list">
+          {% for item in section.items %}
+            <li>
+              <a href="{{ item.url }}" class="uikit-admin-rail__item{{ item.active ? ' is-active' }}"{{ item.active ? ' aria-current="page"' : '' }}>
+                <span class="uikit-admin-rail__icon" aria-hidden="true">{{ item.icon }}</span>
+                <span class="uikit-admin-rail__label">{{ item.title }}</span>
+                {% if item.count is not empty %}
+                  <span class="uikit-admin-rail__count">{{ item.count }}</span>
+                {% endif %}
+              </a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if account %}
+    <div class="uikit-admin-rail__account">
+      <span class="uikit-admin-rail__avatar" aria-hidden="true">{{ account.initials }}</span>
+      <span class="uikit-admin-rail__account-text">
+        <span class="uikit-admin-rail__account-name">{{ account.name }}</span>
+        <span class="uikit-admin-rail__account-role">{{ account.role }}</span>
+      </span>
+      <a href="{{ account.url }}" class="uikit-admin-rail__account-link" aria-label="{{ 'Your account'|t }}">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </a>
+    </div>
+  {% endif %}
+</nav>

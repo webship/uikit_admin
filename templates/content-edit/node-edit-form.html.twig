@@ -1,0 +1,23 @@
+{#
+/**
+ * @file
+ * A content form, rendered by the form_layout component.
+ *
+ * @see \Drupal\uikit_admin\Hook\FormHooks::formNodeFormAlter()
+ */
+#}
+{% if form.is_ajax_request %}
+  {{ form|without('advanced', 'footer', 'actions') }}
+  {{ form.advanced }}
+  {{ form.footer }}
+  {{ form.actions }}
+{% else %}
+  {% set fields %}{{ form|without('advanced', 'footer', 'actions') }}{% endset %}
+  {% set meta %}{{ form.advanced }}{% endset %}
+  {% set buttons %}{{ form.footer }}{{ form.actions }}{% endset %}
+  {{ include('uikit_admin:form_layout', {
+    main: fields,
+    sidebar: meta,
+    actions: buttons,
+  }, with_context: false) }}
+{% endif %}

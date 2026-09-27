@@ -1,0 +1,7 @@
+{% set style = {'error': 'uk-card-danger', 'warning': 'uk-card-warning', 'checked': 'uk-card-default'} %}
+<div>
+  <a href="{{ url|default('#') }}" class="uk-card uk-card-small uk-card-body uk-display-block uk-link-reset {{ style[severity]|default('uk-card-default') }}">
+    <span class="uk-text-large uk-text-bold">{{ amount }}</span>
+    <span class="uikit-admin-status-counter__text">{{ text }}</span>
+  </a>
+</div>

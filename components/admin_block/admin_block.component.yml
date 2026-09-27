@@ -1,0 +1,21 @@
+name: 'Administration block'
+description: "A panel on an administration index page, holding a list of tasks."
+group: Administration
+slots:
+  title:
+    title: Title
+  content:
+    title: Content
+props:
+  type: object
+  properties:
+    heading_level:
+      title: 'Heading level'
+      type: integer
+      enum: [2, 3, 4, 5, 6]
+      "meta:enum":
+        2: 'h2 (Default)'
+        3: h3
+        4: h4
+        5: h5
+        6: h6
