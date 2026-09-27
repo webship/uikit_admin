@@ -135,6 +135,33 @@ class ThemeHooks {
       '#description' => $this->t('Authoring information, the revision log and the other advanced groups move next to the form.'),
       '#default_value' => (bool) ($this->themeSettingsProvider->getSetting('edit_form_sidebar', 'uikit_admin') ?? TRUE),
     ];
+
+    $form['uikit_admin']['sign_in'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Sign-in screens'),
+      '#description' => $this->t('The log in, password reset and registration screens, when this theme shows them.'),
+      '#open' => TRUE,
+    ];
+    $form['uikit_admin']['sign_in']['sign_in_layout'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Layout'),
+      '#default_value' => $this->themeSettingsProvider->getSetting('sign_in_layout', 'uikit_admin') ?? 'center',
+      '#options' => [
+        'center' => $this->t('Centered: the form alone, the site name above it'),
+        'start' => $this->t('Start: the form at the start, the brand panel next to it'),
+        'end' => $this->t('End: the brand panel first, the form at the end'),
+        'top' => $this->t('Top: a brand band above the form'),
+        'bottom' => $this->t('Bottom: a brand band under the form'),
+        'spotlight' => $this->t('Spotlight: a frosted card floating over the accent color'),
+      ],
+    ];
+    $form['uikit_admin']['sign_in']['sign_in_message'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Message'),
+      '#description' => $this->t('A sentence shown with the site name, like "The back office of the site."'),
+      '#maxlength' => 160,
+      '#default_value' => $this->themeSettingsProvider->getSetting('sign_in_message', 'uikit_admin') ?? '',
+    ];
   }
 
 }

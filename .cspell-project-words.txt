@@ -4,6 +4,7 @@ cdnjs
 dropbar
 dropbutton
 dropbuttons
+frosted
 gitlab
 iconnav
 jsdelivr

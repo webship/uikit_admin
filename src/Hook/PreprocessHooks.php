@@ -6,6 +6,7 @@ namespace Drupal\uikit_admin\Hook;
 
 use Drupal\Core\Extension\ThemeSettingsProvider;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\uikit_admin\Shell;
 
 /**
@@ -13,9 +14,47 @@ use Drupal\uikit_admin\Shell;
  */
 class PreprocessHooks {
 
+  /**
+   * The routes of the sign-in screens.
+   */
+  public const SIGN_IN_ROUTES = [
+    'user.login',
+    'user.pass',
+    'user.register',
+    'user.reset',
+    'user.reset.form',
+    'user.reset.login',
+  ];
+
+  /**
+   * The layouts of the sign-in screens.
+   */
+  public const SIGN_IN_LAYOUTS = ['center', 'start', 'end', 'top', 'bottom', 'spotlight'];
+
   public function __construct(
     protected ThemeSettingsProvider $themeSettingsProvider,
+    protected RouteMatchInterface $routeMatch,
   ) {}
+
+  /**
+   * Tells if the page is one of the sign-in screens.
+   */
+  protected function isSignIn(): bool {
+    return \in_array($this->routeMatch->getRouteName(), self::SIGN_IN_ROUTES, TRUE);
+  }
+
+  /**
+   * Implements hook_theme_suggestions_HOOK_alter() for page.
+   *
+   * The sign-in screens have a page of their own, without the rail and the
+   * top bar.
+   */
+  #[Hook('theme_suggestions_page_alter')]
+  public function themeSuggestionsPageAlter(array &$suggestions, array $variables): void {
+    if ($this->isSignIn()) {
+      $suggestions[] = 'page__uikit_admin_sign_in';
+    }
+  }
 
   /**
    * The shell of the back office.
@@ -44,6 +83,15 @@ class PreprocessHooks {
     $variables['palette_items'] = $shell->paletteItems();
     $variables['#cache']['contexts'][] = 'user.permissions';
     $variables['#cache']['contexts'][] = 'route';
+
+    if ($this->isSignIn()) {
+      $variables['#cache']['tags'][] = 'config:uikit_admin.settings';
+      $layout = $this->themeSettingsProvider->getSetting('sign_in_layout', 'uikit_admin') ?: 'center';
+      $variables['sign_in_layout'] = \in_array($layout, self::SIGN_IN_LAYOUTS, TRUE) ? $layout : 'center';
+      $variables['sign_in_message'] = (string) ($this->themeSettingsProvider->getSetting('sign_in_message', 'uikit_admin') ?? '');
+      $use_default = $this->themeSettingsProvider->getSetting('logo.use_default', 'uikit_admin') ?? TRUE;
+      $variables['sign_in_logo'] = $use_default ? '' : (string) ($this->themeSettingsProvider->getSetting('logo.url', 'uikit_admin') ?? '');
+    }
   }
 
   /**

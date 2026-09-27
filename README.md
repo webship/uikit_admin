@@ -54,6 +54,24 @@ Display Builder and the AI component agents can read them.
 
 - **UIkit source**: the CDN (jsDelivr) or `web/libraries/uikit`.
 - **Sticky navbar**: keep the navbar at the top of the screen.
+- **Appearance**: the accent and focus colors, light, dark or the system's color mode, comfortable
+  or compact density, a sticky Save row and the content form sidebar.
+- **Sign-in screens**: the layout of the log in, password reset and registration screens, and a
+  sentence shown with the site name.
+
+## Sign-in screens
+
+When this theme shows the sign-in screens, they get a page of their own: the form in a card, the
+site name and logo in a brand panel, and no rail or top bar. Pick the layout in the theme settings:
+
+- **Centered**: the form alone, the site name above it.
+- **Start** and **End**: the form on one side of the screen, the brand panel on the other.
+- **Top** and **Bottom**: a brand band above or under the form.
+- **Spotlight**: a frosted card floating over the accent color.
+
+The sign-in screens use the default theme of the site. A site where UIkit Admin is only the
+administration theme shows them with UIkit Admin when a module marks the sign-in routes as
+administration routes, as [Web Admin](https://www.drupal.org/project/webadmin) does.
 
 ## Tested with
 

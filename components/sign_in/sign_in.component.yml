@@ -1,0 +1,41 @@
+name: 'Sign in'
+description: "The sign-in, password reset and registration screens: the form in a card, next to a panel with the site's name."
+group: Page
+slots:
+  title:
+    title: Title
+    description: 'The title of the screen, like "Log in".'
+  messages:
+    title: Messages
+    description: 'The status messages, above the form.'
+  tabs:
+    title: Tabs
+    description: 'The links to the other sign-in screens.'
+  content:
+    title: Content
+    description: 'The form.'
+props:
+  type: object
+  properties:
+    layout:
+      title: Layout
+      description: 'Where the form sits: centered, at the start or the end of the screen, under or above the brand panel, or floating over the accent.'
+      type: string
+      enum:
+        - center
+        - start
+        - end
+        - top
+        - bottom
+        - spotlight
+      default: center
+    site_name:
+      title: 'Site name'
+      type: string
+    message:
+      title: Message
+      description: 'A sentence shown in the brand panel.'
+      type: string
+    logo:
+      title: 'Logo URL'
+      type: string

@@ -6,7 +6,7 @@
 const assert = require('node:assert');
 const { execSync } = require('node:child_process');
 // eslint-disable-next-line import/no-unresolved, import/no-extraneous-dependencies
-const { Given, When, Then } = require('@cucumber/cucumber');
+const { Given, When, Then, After } = require('@cucumber/cucumber');
 
 const DRUSH = process.env.DRUSH || 'drush';
 const PROJECT_DIR = process.env.DRUPAL_PROJECT_DIR || process.cwd();
@@ -107,3 +107,39 @@ When(
     await field.fill(value);
   },
 );
+
+/**
+ * The default theme before a sign-in scenario, restored after it.
+ */
+let previousDefaultTheme = null;
+
+/**
+ * Shows the sign-in screens with this theme and one of its layouts.
+ *
+ * The sign-in screens use the default theme, so the scenario makes UIkit
+ * Admin the default theme; the After hook puts the previous one back.
+ *
+ * Example: Given UIkit Admin shows the sign-in screens with the "spotlight" layout
+ */
+Given(
+  /^UIkit Admin shows the sign-in screens with the "([^"]*)" layout$/,
+  { timeout: 120000 },
+  function (layout) {
+    if (previousDefaultTheme === null) {
+      previousDefaultTheme = drush(
+        'config:get system.theme default --format=string',
+      );
+    }
+    drush('config:set system.theme default uikit_admin -y');
+    drush(`config:set uikit_admin.settings sign_in_layout ${layout} -y`);
+    drush('cache:rebuild');
+  },
+);
+
+After({ tags: '@sign-in', timeout: 120000 }, function () {
+  if (previousDefaultTheme && previousDefaultTheme !== 'uikit_admin') {
+    drush(`config:set system.theme default ${previousDefaultTheme} -y`);
+    drush('cache:rebuild');
+  }
+  previousDefaultTheme = null;
+});
