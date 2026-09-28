@@ -22,8 +22,10 @@ UI Styles can change on top of the core style and token APIs.
   theme cannot change the administration.
 - **UIkit compiled into the theme** with its colors: nothing loads from a CDN.
 - **HTMX navigation** with Drupal core HTMX: links, pagers, sorting and filters swap the page, and the rail and the top bar stay.
-- **Accessible by default.** The muted text, the links, the buttons and the alerts all meet the
-  WCAG AA contrast minimum, which the UIkit defaults do not.
+- **Accessible by default.** The text, the muted text, the links, the primary and danger buttons
+  and the alerts reach the WCAG AAA contrast of 7:1 in the light and the dark mode, and the
+  edges of the fields reach 3:1. One solid focus ring marks the keyboard everywhere, the
+  controls are 44px high, and nothing animates when the system asks for reduced motion.
 - **A dark color mode** that follows the operating system.
 
 ## Install
@@ -58,7 +60,8 @@ Display Builder and the AI component agents can read them.
 - **Appearance**: the accent and focus colors, light, dark or the system's color mode, comfortable
   or compact density, a sticky Save row and the content form sidebar.
 - **Sign-in screens**: the layout of the log in, password reset and registration screens, and a
-  sentence shown with the site name.
+  sentence shown with the site name. They apply only when the sign-in routes use this theme: see
+  [Sign-in screens](#sign-in-screens).
 
 ## UIkit, compiled into the theme
 
@@ -92,11 +95,25 @@ site name and logo in a brand panel, and no rail or top bar. Pick the layout in 
 - **Top** and **Bottom**: a brand band above or under the form.
 - **Spotlight**: a frosted card floating over the accent color.
 
-The sign-in screens use the default theme of the site. A site where UIkit Admin is only the
-administration theme shows them with UIkit Admin when a module marks the sign-in routes as
-administration routes, as [Web Admin](https://www.drupal.org/project/webadmin) does.
+On a stock site these screens never show: Drupal renders the sign-in routes in the default
+theme of the site, not in the administration theme. The layouts above apply only when the
+sign-in routes use UIkit Admin, which happens when:
+
+- UIkit Admin is also the default theme of the site, or
+- a module marks the sign-in routes as administration routes (`_admin_route: TRUE`), as
+  [Web Admin](https://www.drupal.org/project/webadmin) does, or with a route subscriber of your
+  own.
+
+The sign-in routes are `user.login`, `user.pass`, `user.register`, `user.reset`,
+`user.reset.form` and `user.reset.login`.
 
 ## Tested with
 
 - Drupal core, the standard profile, with UIkit Admin as the administration theme.
 - The `website_starter` site template of the Webship stack.
+- UI Patterns 2, which the tests install for the scenarios that need it: the
+  CI gets it from the `require-dev` of `composer.json`.
+
+The webship-js suite in `tests/` walks the back office in a browser, with
+WCAG 2.2 AAA checks in the light and the dark color scheme
+(`tests/features/03-02-01-wcag-aaa.feature`).

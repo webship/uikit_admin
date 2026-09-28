@@ -58,6 +58,10 @@ less
     filename: source,
     paths: [path.join(uikit, 'src/less')],
     math: 'always',
+    // The images resolve from the file that names them: data-uri() embeds
+    // them and the svg-fill() mixin of UIkit colors their icons. From the
+    // entry file they are not found, and every icon stays black.
+    rewriteUrls: 'all',
   })
   .then((output) => write(output.css))
   .catch((error) => {

@@ -7,7 +7,7 @@
 {% set layout = layout|default('center') %}
 {% set initial = site_name|default('D')|first|upper %}
 <div class="uikit-admin-sign-in uikit-admin-sign-in--{{ layout }}">
-  <div class="uikit-admin-sign-in__brand">
+  <header class="uikit-admin-sign-in__brand" role="banner">
     <div class="uikit-admin-sign-in__brand-inner">
       <a class="uikit-admin-sign-in__site" href="{{ path('<front>') }}">
         {% if logo %}
@@ -21,7 +21,7 @@
         <p class="uikit-admin-sign-in__message">{{ message }}</p>
       {% endif %}
     </div>
-  </div>
+  </header>
   <main id="main-content" class="uikit-admin-sign-in__main" tabindex="-1">
     <div class="uikit-admin-sign-in__card">
       <div class="uikit-admin-sign-in__title">{{ title }}</div>

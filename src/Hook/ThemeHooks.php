@@ -30,7 +30,14 @@ class ThemeHooks {
   /**
    * The color of the links, the primary buttons and the active states.
    */
-  public const string ACCENT_COLOR = '#0a5fa8';
+  public const string ACCENT_COLOR = '#08508a';
+
+  /**
+   * The accent color of the releases before 4.0.1.
+   *
+   * A site that still stores it keeps the new default: it was never a choice.
+   */
+  public const string LEGACY_ACCENT_COLOR = '#0a5fa8';
 
   /**
    * The color of the ring around the element the keyboard is on.
@@ -136,7 +143,7 @@ class ThemeHooks {
     $form['uikit_admin']['sign_in'] = [
       '#type' => 'details',
       '#title' => $this->t('Sign-in screens'),
-      '#description' => $this->t('The log in, password reset and registration screens, when this theme shows them.'),
+      '#description' => $this->t('The log in, password reset and registration screens. Drupal shows them in the default theme of the site: these settings apply only when the sign-in routes use this theme, because it is also the default theme or because a module marks those routes as administration routes. See the README of the theme.'),
       '#open' => TRUE,
     ];
     $form['uikit_admin']['sign_in']['sign_in_layout'] = [

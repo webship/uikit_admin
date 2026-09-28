@@ -1,26 +1,41 @@
+{#
+/**
+ * @file
+ * One form element: the label, the input, the errors and the description.
+ *
+ * UI Patterns hands every slot over as a render array, even an empty one: the
+ * optional parts are rendered first, and printed only when they hold output.
+ * An empty role="alert" would be announced by screen readers.
+ */
+#}
+{% set label_out = label|render %}
+{% set prefix_out = prefix|render %}
+{% set suffix_out = suffix|render %}
+{% set errors_out = errors|render %}
+{% set description_out = description|render %}
 <div{{ attributes.addClass(['uk-margin', 'uikit-admin-form-item', disabled ? 'uk-disabled']) }}>
-  {% if title_display not in ['after', 'none'] and label %}
-    <div class="uk-form-label{{ title_display == 'invisible' ? ' uk-hidden-visually' }}">{{ label }}</div>
+  {% if title_display not in ['after', 'none'] and label_out|trim is not empty %}
+    <div class="uk-form-label{{ title_display == 'invisible' ? ' uk-hidden-visually' }}">{{ label_out }}</div>
   {% endif %}
   <div class="uk-form-controls">
-    {% if title_display == 'after' and label %}
+    {% if title_display == 'after' and label_out|trim is not empty %}
       {# The label follows the input: the summaries of core read "input:checked + label". #}
       <div class="uikit-admin-form-item__choice">
-        {%- if prefix is not empty %}<span class="field-prefix">{{ prefix }}</span>{% endif -%}
+        {%- if prefix_out|trim is not empty %}<span class="field-prefix">{{ prefix_out }}</span>{% endif -%}
         {{- input -}}
-        {{- label -}}
-        {%- if suffix is not empty %}<span class="field-suffix">{{ suffix }}</span>{% endif -%}
+        {{- label_out -}}
+        {%- if suffix_out|trim is not empty %}<span class="field-suffix">{{ suffix_out }}</span>{% endif -%}
       </div>
     {% else %}
-      {% if prefix is not empty %}<span class="field-prefix">{{ prefix }}</span>{% endif %}
+      {% if prefix_out|trim is not empty %}<span class="field-prefix">{{ prefix_out }}</span>{% endif %}
       {{ input }}
-      {% if suffix is not empty %}<span class="field-suffix">{{ suffix }}</span>{% endif %}
+      {% if suffix_out|trim is not empty %}<span class="field-suffix">{{ suffix_out }}</span>{% endif %}
     {% endif %}
-    {% if errors %}
-      <div class="uk-text-danger uikit-admin-form-item__errors form-item--error-message" role="alert">{{ errors }}</div>
+    {% if errors_out|trim is not empty %}
+      <div class="uk-text-danger uikit-admin-form-item__errors form-item--error-message" role="alert">{{ errors_out }}</div>
     {% endif %}
-    {% if description %}
-      <div class="uk-text-meta uikit-admin-form-item__description description"{% if description_id %} id="{{ description_id }}"{% endif %}>{{ description }}</div>
+    {% if description_out|trim is not empty %}
+      <div class="uk-text-meta uikit-admin-form-item__description description"{% if description_id %} id="{{ description_id }}"{% endif %}>{{ description_out }}</div>
     {% endif %}
   </div>
 </div>

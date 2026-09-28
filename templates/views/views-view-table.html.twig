@@ -4,7 +4,8 @@
  * A views table with the UIkit table classes.
  *
  * The markup of the core views table, so tablesort, the sticky header and
- * the bulk operations keep working.
+ * the bulk operations keep working. A table wider than the screen scrolls in
+ * its own box, not the whole page (WCAG 1.4.10).
  */
 #}
 {%
@@ -19,9 +20,12 @@
     'uikit-admin-views-table',
   ]
 %}
+{% set caption_id = 'uikit-admin-table-caption'|clean_unique_id %}
+{% set region_label = title|render|striptags|trim %}
+<div class="uikit-admin-table-scroll"{% if caption_needed %} role="region" aria-labelledby="{{ caption_id }}"{% elseif region_label is not empty %} role="region" aria-label="{{ region_label }}"{% endif %}>
 <table{{ attributes.addClass(classes) }}>
   {% if caption_needed %}
-    <caption>
+    <caption id="{{ caption_id }}">
     {% if caption %}
       {{ caption }}
     {% else %}
@@ -60,6 +64,7 @@
                 {{- column.content }}{{ column.sort_indicator }}
               {%- endif -%}
             {%- endif -%}
+            {%- if column.hidden_label %}<span class="visually-hidden">{{ column.hidden_label }}</span>{% endif -%}
           </th>
         {% endfor %}
       </tr>
@@ -97,3 +102,4 @@
     {% endfor %}
   </tbody>
 </table>
+</div>

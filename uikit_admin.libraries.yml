@@ -29,10 +29,12 @@ base:
     - core/drupal
     - core/once
 
+# The messages Drupal.Message adds on the page, as UIkit alerts.
 messages:
-  css:
-    theme:
-      assets/css/messages.css: {}
+  js:
+    assets/js/messages.js: {}
+  dependencies:
+    - core/drupal
 
 # The dialogs of Drupal core.
 dialog:
@@ -45,6 +47,12 @@ views_ui:
   css:
     theme:
       assets/css/views-ui.css: {}
+
+# CKEditor 5 follows the offsets of Drupal.displace: its sticky toolbar
+# stays under the sticky bar of the theme.
+ckeditor5:
+  dependencies:
+    - core/drupal.displace
 
 table:
   css:

@@ -5,6 +5,8 @@ ddev
 dropbar
 dropbutton
 dropbuttons
+extlink
+fieldgroup
 frosted
 gitlab
 htmx
@@ -13,6 +15,7 @@ jsdelivr
 kbd
 natshah
 navbars
+nums
 offcanvas
 Otheme
 pagers
@@ -21,11 +24,15 @@ sourceediting
 subnav
 tabledrag
 tableheader
+tableresponsive
 tableselect
 topbar
 totop
 uikit
 unticks
+usort
+wcag
+webform
 webship
 xlarge
 yarnrc

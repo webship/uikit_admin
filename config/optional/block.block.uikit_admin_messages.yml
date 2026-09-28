@@ -5,7 +5,7 @@ dependencies:
     - uikit_admin
 id: uikit_admin_messages
 theme: uikit_admin
-region: highlighted
+region: messages
 weight: -10
 provider: null
 plugin: system_messages_block

@@ -2,10 +2,15 @@
 /**
  * @file
  * A table with the UIkit table classes.
+ *
+ * A table wider than the screen scrolls in its own box, not the whole page
+ * (WCAG 1.4.10). The box is named by the caption, when there is one.
  */
 #}
+{% set caption_id = 'uikit-admin-table-caption'|clean_unique_id %}
+<div class="uikit-admin-table-scroll"{% if caption %} role="region" aria-labelledby="{{ caption_id }}"{% endif %}>
 <table{{ attributes.addClass(['uk-table', 'uk-table-divider', 'uk-table-middle', 'uk-table-small', 'uk-table-responsive']) }}>
-  {% if caption %}<caption>{{ caption }}</caption>{% endif %}
+  {% if caption %}<caption id="{{ caption_id }}">{{ caption }}</caption>{% endif %}
   {% for colgroup in colgroups %}
     {% if colgroup.cols %}
       <colgroup{{ colgroup.attributes }}>
@@ -49,3 +54,4 @@
     </tfoot>
   {% endif %}
 </table>
+</div>

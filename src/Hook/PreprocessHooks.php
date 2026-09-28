@@ -11,6 +11,8 @@ use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\Template\Attribute;
 use Drupal\uikit_admin\Shell;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -19,6 +21,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Preprocess hooks for UIkit Admin.
  */
 class PreprocessHooks {
+
+  use StringTranslationTrait;
 
   /**
    * The routes of the sign-in screens.
@@ -156,6 +160,10 @@ class PreprocessHooks {
     $density = $this->themeSettingsProvider->getSetting('density', 'uikit_admin') ?: 'comfortable';
 
     $variables['html_attributes']->setAttribute('data-uikit-admin-density', $density);
+    // The Save row of a form sticks to the bottom of the screen only when the
+    // setting asks for it.
+    $sticky_actions = (bool) ($this->themeSettingsProvider->getSetting('sticky_actions', 'uikit_admin') ?? TRUE);
+    $variables['html_attributes']->setAttribute('data-uikit-admin-sticky-actions', $sticky_actions ? 'on' : 'off');
 
     // The rail of this theme is the navigation of the back office: the sidebar
     // and the top bar of core's Navigation module would draw it a second time,
@@ -169,6 +177,11 @@ class PreprocessHooks {
     // after every rule of the style sheets.
     $properties = [];
     $accent = $this->safeColor($accent, ThemeHooks::ACCENT_COLOR);
+    // The old default is not a custom color: the stylesheet default wins,
+    // with its dark scheme counterpart.
+    if (strcasecmp($accent, ThemeHooks::LEGACY_ACCENT_COLOR) === 0) {
+      $accent = ThemeHooks::ACCENT_COLOR;
+    }
     if (strcasecmp($accent, ThemeHooks::ACCENT_COLOR) !== 0) {
       $properties[] = '--uikit-admin-accent:' . $accent;
       $properties[] = '--uikit-admin-accent-hover:color-mix(in srgb, ' . $accent . ' 82%, #000)';
@@ -242,6 +255,80 @@ class PreprocessHooks {
    */
   protected function safeColor(?string $value, string $fallback): string {
     return \is_string($value) && \preg_match('/^#[0-9a-fA-F]{3,8}$/', $value) ? $value : $fallback;
+  }
+
+  /**
+   * Implements hook_preprocess_HOOK() for block.
+   *
+   * Core gives the help block the complementary role: a name tells it apart
+   * from the other complementary landmarks of a page.
+   */
+  #[Hook('preprocess_block')]
+  public function preprocessBlock(array &$variables): void {
+    if (($variables['base_plugin_id'] ?? '') === 'help_block' && empty($variables['attributes']['aria-label'])) {
+      $variables['attributes']['aria-label'] = $this->t('Help');
+    }
+  }
+
+  /**
+   * Implements hook_preprocess_HOOK() for input.
+   *
+   * The filter of the Views listing has only a title and a placeholder: it
+   * gets an accessible name.
+   */
+  #[Hook('preprocess_input')]
+  public function preprocessInput(array &$variables): void {
+    $classes = $variables['attributes']['class'] ?? [];
+    if (\is_array($classes) && \in_array('views-filter-text', $classes, TRUE) && empty($variables['attributes']['aria-label'])) {
+      $variables['attributes']['aria-label'] = $this->t('Filter by view name or description');
+    }
+  }
+
+  /**
+   * Implements hook_preprocess_HOOK() for views_view_table.
+   *
+   * A column without a label, like the severity icon of the recent log
+   * messages or the select-all box of a bulk form, gets a visually hidden one.
+   */
+  #[Hook('preprocess_views_view_table')]
+  public function preprocessViewsViewTable(array &$variables): void {
+    $view = $variables['view'] ?? NULL;
+    foreach ($variables['header'] ?? [] as $key => $column) {
+      if (!\is_array($column) || trim(strip_tags((string) ($column['content'] ?? ''))) !== '') {
+        continue;
+      }
+      $attributes = $column['attributes'] ?? NULL;
+      if ($attributes instanceof Attribute && $attributes->hasClass('select-all')) {
+        $label = $this->t('Select all rows');
+      }
+      elseif ($view && $view->id() === 'watchdog' && $key === 'nothing') {
+        $label = $this->t('Severity');
+      }
+      elseif ($view && isset($view->field[$key])) {
+        $label = $view->field[$key]->adminLabel(TRUE);
+      }
+      else {
+        continue;
+      }
+      $variables['header'][$key]['hidden_label'] = $label;
+    }
+  }
+
+  /**
+   * Implements hook_preprocess_HOOK() for table.
+   *
+   * The select-all header of a table select gets a visually hidden label.
+   */
+  #[Hook('preprocess_table')]
+  public function preprocessTable(array &$variables): void {
+    foreach ($variables['header'] ?? [] as $key => $cell) {
+      $attributes = $cell['attributes'] ?? NULL;
+      if ($attributes instanceof Attribute && $attributes->hasClass('select-all') && trim(strip_tags((string) ($cell['content'] ?? ''))) === '') {
+        $variables['header'][$key]['content'] = [
+          '#markup' => '<span class="visually-hidden">' . $this->t('Select all rows') . '</span>',
+        ];
+      }
+    }
   }
 
   /**

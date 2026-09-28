@@ -12,7 +12,7 @@
   height: 3px;
   content: "";
   animation: uikit-admin-htmx-progress 1.2s ease-in-out infinite;
-  background: linear-gradient(90deg, transparent, var(--uikit-admin-accent, #0a5fa8), transparent);
+  background: linear-gradient(90deg, transparent, var(--uikit-admin-accent, #08508a), transparent);
   background-repeat: no-repeat;
   background-size: 50% 100%;
 }
@@ -31,6 +31,6 @@
   [data-off-canvas-main-canvas].htmx-request::before {
     animation: none;
     opacity: 0.6;
-    background: var(--uikit-admin-accent, #0a5fa8);
+    background: var(--uikit-admin-accent, #08508a);
   }
 }

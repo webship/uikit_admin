@@ -14,7 +14,7 @@
   align-items: flex-end;
   padding: 40px;
   color: #fff;
-  background: linear-gradient(150deg, var(--uikit-admin-accent, #0a5fa8), #0a2540);
+  background: linear-gradient(150deg, var(--uikit-admin-accent, #08508a), #0a2540);
 }
 
 .uikit-admin-sign-in__brand-inner {
@@ -123,7 +123,7 @@
 .uikit-admin-sign-in__tabs .uk-tab > * > a {
   padding: 0;
   text-transform: none;
-  color: var(--uikit-admin-accent, #0a5fa8);
+  color: var(--uikit-admin-accent, #08508a);
   border: 0;
   font-size: 14px;
 }
@@ -162,11 +162,11 @@
 
 .uikit-admin-sign-in--center .uikit-admin-sign-in__mark {
   color: var(--uikit-admin-on-accent, #fff);
-  background: var(--uikit-admin-accent, #0a5fa8);
+  background: var(--uikit-admin-accent, #08508a);
 }
 
 .uikit-admin-sign-in--center .uikit-admin-sign-in__message {
-  color: var(--uikit-admin-text-muted, #5c6672);
+  color: var(--uikit-admin-text-muted, #454d57);
 }
 
 .uikit-admin-sign-in--center .uikit-admin-sign-in__main {
@@ -241,7 +241,7 @@
   overflow: hidden;
   align-content: center;
   justify-items: center;
-  background: radial-gradient(circle at 18% 22%, rgb(255, 255, 255, 0.22), transparent 38%), radial-gradient(circle at 82% 78%, rgb(99, 164, 255, 0.45), transparent 42%), linear-gradient(135deg, var(--uikit-admin-accent, #0a5fa8), #0a2540 70%);
+  background: radial-gradient(circle at 18% 22%, rgb(255, 255, 255, 0.22), transparent 38%), radial-gradient(circle at 82% 78%, rgb(99, 164, 255, 0.45), transparent 42%), linear-gradient(135deg, var(--uikit-admin-accent, #08508a), #0a2540 70%);
 }
 
 .uikit-admin-sign-in--spotlight .uikit-admin-sign-in__brand {

@@ -4,19 +4,23 @@
  * A date and time field: the date and the time inputs in one labelled group.
  *
  * Core prints the title as an h4, which breaks the heading order of a form; a
- * group named by its label says the same thing to a screen reader.
+ * group named by its label says the same thing to a screen reader. The errors
+ * and the description print only when they hold output: an empty role="alert"
+ * would be announced.
  */
 #}
 {% set label_id = title_attributes.id|default('datetime-' ~ random()) %}
+{% set errors_out = errors|render %}
+{% set description_out = description|render %}
 <div role="group" aria-labelledby="{{ label_id }}" class="uikit-admin-form-item uikit-admin-datetime">
   {% if title %}
     <div{{ title_attributes.setAttribute('id', label_id).addClass(['uk-form-label', required ? 'js-form-required', required ? 'form-required']) }}>{{ title }}</div>
   {% endif %}
   <div class="uk-form-controls uikit-admin-datetime__inputs">{{ content }}</div>
-  {% if errors %}
-    <div class="uk-text-danger uikit-admin-form-item__errors" role="alert">{{ errors }}</div>
+  {% if errors_out|trim is not empty %}
+    <div class="uk-text-danger uikit-admin-form-item__errors" role="alert">{{ errors_out }}</div>
   {% endif %}
-  {% if description %}
-    <div{{ description_attributes.addClass(['uk-text-meta', 'uikit-admin-form-item__description']) }}>{{ description }}</div>
+  {% if description_out|trim is not empty %}
+    <div{{ description_attributes.addClass(['uk-text-meta', 'uikit-admin-form-item__description']) }}>{{ description_out }}</div>
   {% endif %}
 </div>

@@ -119,3 +119,58 @@
 .views-ui-display-tab-actions .views-ui-display-tab-bucket__title {
   padding-right: 0;
 }
+
+/* The display tabs keep the colors of the theme in both color modes: core
+   paints them white, with the accent text on top (2.5:1 in the dark mode). */
+.views-displays .tabs.secondary li a {
+  color: var(--uikit-admin-accent);
+  background: var(--uikit-admin-surface);
+}
+
+.views-displays .tabs li a:hover,
+.views-displays .tabs li.is-active a,
+.views-displays .tabs li.is-active a.is-active {
+  color: var(--uikit-admin-on-accent);
+  border-color: var(--uikit-admin-accent);
+  background: var(--uikit-admin-accent);
+}
+
+/* Core removes the focus ring of the display tabs. */
+.views-displays .tabs a:focus-visible,
+.views-displays .tabs.secondary a:focus-visible {
+  text-decoration: none;
+  outline: 2px solid var(--uikit-admin-focus);
+  outline-offset: 2px;
+}
+
+/* The grays of core fall under the AA contrast minimum. */
+.views-ui-display-tab-bucket .views-display-setting,
+.views-ui-display-tab-bucket .views-display-setting .label,
+.views-live-preview .section-title,
+.views-query-info table th,
+.views-query-info table td {
+  color: var(--uikit-admin-text-muted);
+}
+
+/* The links of the settings of a display are at least 24px high (WCAG
+   2.5.8). */
+.views-display-setting .views-ajax-link {
+  display: inline-block;
+  min-height: 24px;
+  line-height: 24px;
+}
+
+/* The preview keeps the surfaces of the theme in both color modes: core
+   paints its title bar and its query table with fixed light grays. */
+.view-preview-form__title,
+.views-preview-wrapper,
+.views-query-info table tr {
+  color: var(--uikit-admin-text);
+  border-color: var(--uikit-admin-border);
+  background-color: var(--uikit-admin-canvas);
+}
+
+/* The search and the filter of the "Add fields" and "Add filters" dialogs. */
+.views-ui-dialog .views-filterable-options-controls {
+  background: var(--uk-global-muted-background);
+}

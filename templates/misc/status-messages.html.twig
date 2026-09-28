@@ -2,8 +2,13 @@
 /**
  * @file
  * The status messages, one UIkit alert per type.
+ *
+ * The wrapper is where Drupal.Message adds the messages of the scripts.
+ *
+ * @see assets/js/messages.js
  */
 #}
+<div data-drupal-messages>
 {% set variants = { 'status': 'success', 'warning': 'warning', 'error': 'danger', 'info': 'primary' } %}
 {% for type, messages in message_list %}
   {% set body %}
@@ -25,3 +30,4 @@
     message: body,
   }, with_context: false) }}
 {% endfor %}
+</div>

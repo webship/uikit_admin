@@ -316,13 +316,25 @@ Given(/^the caches are cleared$/, { timeout: 120000 }, function () {
 const changedSettings = {};
 
 /**
+ * Whether the settings of this theme were stored before the scenario: a site
+ * that installed the theme before it shipped them has none.
+ */
+let settingsStored = null;
+
+/**
  * Example: Given the UIkit Admin setting "accent_color" is "#c0392b"
  */
 Given(
   /^the UIkit Admin setting "([^"]*)" is "([^"]*)"$/,
   { timeout: 120000 },
   function (key, value) {
-    if (!(key in changedSettings)) {
+    if (settingsStored === null) {
+      settingsStored =
+        drushPhp(
+          'print \\Drupal::config("uikit_admin.settings")->isNew() ? 0 : 1;',
+        ) === '1';
+    }
+    if (settingsStored && !(key in changedSettings)) {
       changedSettings[key] = drush(
         `config:get uikit_admin.settings ${key} --format=string`,
       );
@@ -332,10 +344,14 @@ Given(
 );
 
 After({ tags: '@settings', timeout: 120000 }, function () {
+  if (settingsStored === false) {
+    drush('config:delete uikit_admin.settings -y');
+  }
   Object.entries(changedSettings).forEach(([key, value]) => {
     drush(`config:set uikit_admin.settings ${key} '${value}' -y`);
     delete changedSettings[key];
   });
+  settingsStored = null;
 });
 
 /**
@@ -1344,5 +1360,390 @@ When(
       .locator(`select[name$="[${name}]"]`)
       .first()
       .selectOption(value);
+  },
+);
+
+/**
+ * Shows the page in the light or the dark color scheme, as the system of the
+ * person asks for it.
+ *
+ * Example: Given the color scheme is "dark"
+ */
+Given(/^the color scheme is "(light|dark)"$/, async function (scheme) {
+  await this.page.emulateMedia({ colorScheme: scheme });
+});
+
+/**
+ * Example: Then the page should not scroll sideways
+ */
+Then(/^the page should not scroll sideways$/, async function () {
+  const overflow = await this.page.evaluate(() => {
+    const root = document.documentElement;
+    return root.scrollWidth - root.clientWidth;
+  });
+  assert.ok(overflow <= 0, `The page scrolls ${overflow}px sideways.`);
+});
+
+/**
+ * Finds the elements that have no text and no control, image or frame.
+ *
+ * Example: Then no "[role='alert']" element should be empty
+ */
+Then(/^no "([^"]*)" element should be empty$/, async function (selector) {
+  const empty = await this.page.evaluate(
+    (sel) =>
+      [...document.querySelectorAll(sel)]
+        .filter(
+          (element) =>
+            element.textContent.trim() === '' &&
+            !element.querySelector(
+              'input, select, textarea, img, svg, button, iframe',
+            ),
+        )
+        .map((element) => element.outerHTML.slice(0, 120)),
+    selector,
+  );
+  assert.strictEqual(
+    empty.length,
+    0,
+    `${empty.length} empty "${selector}":\n${empty.slice(0, 5).join('\n')}`,
+  );
+});
+
+/**
+ * Checks the target size of every visible element a selector finds, grown
+ * by the hit area an absolute ::before draws around it (WCAG 2.5.5).
+ *
+ * Example: Then every visible ".uikit-admin-rail a" should offer a target of at least 44 by 44 pixels
+ */
+Then(
+  /^every visible "([^"]*)" should offer a target of at least (\d+) by (\d+) pixels$/,
+  async function (selector, width, height) {
+    const result = await this.page.evaluate(
+      ({ sel, minWidth, minHeight }) => {
+        const measure = (element) => {
+          const box = element.getBoundingClientRect();
+          let w = box.width;
+          let h = box.height;
+          const before = window.getComputedStyle(element, '::before');
+          if (before.content !== 'none' && before.position === 'absolute') {
+            const px = (value) => parseFloat(value) || 0;
+            w = Math.max(w, box.width - px(before.left) - px(before.right));
+            h = Math.max(h, box.height - px(before.top) - px(before.bottom));
+          }
+          return [Math.round(w), Math.round(h)];
+        };
+        const found = [...document.querySelectorAll(sel)].filter((element) =>
+          element.checkVisibility(),
+        );
+        return {
+          count: found.length,
+          small: found
+            .map((element) => [element, measure(element)])
+            .filter(([, [w, h]]) => w < minWidth || h < minHeight)
+            .map(
+              ([element, [w, h]]) =>
+                `${element.tagName.toLowerCase()}.${element.className} "${element.textContent.trim().slice(0, 30)}" ${w}x${h}`,
+            ),
+        };
+      },
+      { sel: selector, minWidth: Number(width), minHeight: Number(height) },
+    );
+    assert.ok(result.count > 0, `No visible element matches "${selector}".`);
+    assert.strictEqual(
+      result.small.length,
+      0,
+      `Targets smaller than ${width}x${height}:\n${result.small.join('\n')}`,
+    );
+  },
+);
+
+/**
+ * Example: Then the elements ".uikit-admin-topbar__title h1" and ".uikit-admin-topbar__search" should not overlap
+ */
+Then(
+  /^the elements "([^"]*)" and "([^"]*)" should not overlap$/,
+  async function (first, second) {
+    const area = await this.page.evaluate(
+      ([a, b]) => {
+        const one = document.querySelector(a);
+        const two = document.querySelector(b);
+        if (!one || !two) {
+          return null;
+        }
+        // The text of the first one, not its box, which may stretch.
+        const range = document.createRange();
+        range.selectNodeContents(one);
+        const r1 = range.getBoundingClientRect();
+        const r2 = two.getBoundingClientRect();
+        const x = Math.min(r1.right, r2.right) - Math.max(r1.left, r2.left);
+        const y = Math.min(r1.bottom, r2.bottom) - Math.max(r1.top, r2.top);
+        return Math.max(0, x) * Math.max(0, y);
+      },
+      [first, second],
+    );
+    assert.notStrictEqual(area, null, `"${first}" or "${second}" is missing.`);
+    assert.strictEqual(area, 0, `"${first}" covers ${area}px² of "${second}".`);
+  },
+);
+
+/**
+ * Example: Then the top of ".ck-sticky-panel__content" should be below the bottom of ".uikit-admin-header"
+ */
+Then(
+  /^the top of "([^"]*)" should be below the bottom of "([^"]*)"$/,
+  async function (lower, upper) {
+    const [top, bottom] = await this.page.evaluate(
+      ([a, b]) => [
+        document.querySelector(a)?.getBoundingClientRect().top,
+        document.querySelector(b)?.getBoundingClientRect().bottom,
+      ],
+      [lower, upper],
+    );
+    assert.ok(
+      top !== undefined && bottom !== undefined,
+      `"${lower}" or "${upper}" is missing.`,
+    );
+    assert.ok(
+      top >= bottom - 1,
+      `"${lower}" starts at ${top}px, under "${upper}" (bottom ${bottom}px).`,
+    );
+  },
+);
+
+/**
+ * Presses Tab the given number of times, and fails when the focus lands
+ * inside an element, like the closed rail.
+ *
+ * Example: Then the focus should not reach "nav.uikit-admin-rail" within 20 presses of Tab
+ */
+Then(
+  /^the focus should not reach "([^"]*)" within (\d+) presses of Tab$/,
+  async function (selector, presses) {
+    await this.page.evaluate(() => {
+      document.activeElement?.blur();
+      window.scrollTo(0, 0);
+    });
+    for (let i = 1; i <= Number(presses); i++) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.page.keyboard.press('Tab');
+      // eslint-disable-next-line no-await-in-loop
+      const inside = await this.page.evaluate(
+        (sel) => !!document.activeElement?.closest(sel),
+        selector,
+      );
+      assert.ok(!inside, `Tab ${i} put the focus inside "${selector}".`);
+    }
+  },
+);
+
+/**
+ * Example: Then the focus should be inside the element "nav.uikit-admin-rail"
+ */
+Then(
+  /^the focus should be inside the element "([^"]*)"$/,
+  async function (selector) {
+    await this.page.waitForFunction(
+      (sel) => !!document.activeElement?.closest(sel),
+      selector,
+      { timeout: 5000 },
+    );
+  },
+);
+
+/**
+ * Checks that nothing covers the element that has the focus.
+ *
+ * Example: Then the focused element should not be covered
+ */
+Then(/^the focused element should not be covered$/, async function () {
+  const covered = await this.page.evaluate(() => {
+    const element = document.activeElement;
+    const box = element.getBoundingClientRect();
+    if (!box.width || !box.height) {
+      return ['it has no size'];
+    }
+    return [
+      [0.5, 0.5],
+      [0.1, 0.5],
+      [0.9, 0.5],
+      [0.5, 0.1],
+      [0.5, 0.9],
+    ]
+      .map(([x, y]) => [box.left + box.width * x, box.top + box.height * y])
+      .filter(([x, y]) => {
+        const hit = document.elementFromPoint(x, y);
+        return !(hit && (hit === element || element.contains(hit)));
+      })
+      .map(([x, y]) => `${Math.round(x)},${Math.round(y)}`);
+  });
+  assert.strictEqual(
+    covered.length,
+    0,
+    `The focused element is covered at ${covered.join(' ')}.`,
+  );
+});
+
+/**
+ * Checks the focus ring of the element that has the focus (WCAG 2.4.13).
+ *
+ * Example: Then the focused element should have a 2px solid focus ring
+ */
+Then(
+  /^the focused element should have a (\d+)px solid focus ring$/,
+  async function (width) {
+    const ring = await this.page.evaluate(() => {
+      const style = window.getComputedStyle(document.activeElement);
+      return {
+        tag: document.activeElement.tagName.toLowerCase(),
+        style: style.outlineStyle,
+        width: parseFloat(style.outlineWidth) || 0,
+      };
+    });
+    assert.strictEqual(ring.style, 'solid', `${ring.tag}: ${ring.style}`);
+    assert.ok(
+      ring.width >= Number(width),
+      `${ring.tag}: the ring is ${ring.width}px`,
+    );
+  },
+);
+
+/**
+ * Fills the CKEditor 5 editor of a text area with paragraphs, so the page is
+ * long enough to scroll with the toolbar of the editor, and focuses it.
+ *
+ * Example: When I fill the rich text editor "#edit-body-0-value" with 60 paragraphs
+ */
+When(
+  /^(I |we )*fill the rich text editor "([^"]*)" with (\d+) paragraphs$/,
+  async function (pronoun, selector, count) {
+    const editable = this.page
+      .locator(`${selector} ~ .ck-editor .ck-editor__editable`)
+      .first();
+    await editable.waitFor({ state: 'visible', timeout: 15000 });
+    await editable.evaluate((element, number) => {
+      const paragraphs = Array.from(
+        { length: number },
+        (value, index) => `<p>Paragraph ${index + 1}</p>`,
+      );
+      element.ckeditorInstance.setData(paragraphs.join(''));
+      // The toolbar of CKEditor sticks only while the editor has the focus.
+      element.ckeditorInstance.editing.view.focus();
+    }, Number(count));
+  },
+);
+
+/**
+ * Adds a message the way a script of Drupal does, with Drupal.Message.
+ *
+ * Example: When a script adds the "warning" message "A script warning."
+ */
+When(
+  /^a script adds the "(status|warning|error)" message "([^"]*)"$/,
+  async function (type, text) {
+    await this.page.evaluate(
+      ([kind, message]) => new Drupal.Message().add(message, { type: kind }),
+      [type, text],
+    );
+  },
+);
+
+/**
+ * Opens the form to add content of the Basic page type, or of the first type
+ * with a body on a site that has no Basic page, like a site template.
+ *
+ * Example: When I go to a content form with a body
+ */
+When(
+  /^(I |we )*go to a content form with a body$/,
+  { timeout: 60000 },
+  async function (pronoun) {
+    const type = drushPhp(`
+      $fields = \\Drupal::service("entity_field.manager");
+      $types = array_keys(\\Drupal\\node\\Entity\\NodeType::loadMultiple());
+      usort($types, fn ($a, $b) => ($b === "page") <=> ($a === "page"));
+      foreach ($types as $id) {
+        if (isset($fields->getFieldDefinitions("node", $id)["body"])) {
+          print $id;
+          break;
+        }
+      }
+    `);
+    assert.ok(type, 'No content type has a body field.');
+    await this.page.goto(`${this.launchUrl}/node/add/${type}`);
+  },
+);
+
+/**
+ * Walks the first tab stops of the page with the keyboard and checks the
+ * focus ring of each one (WCAG 2.4.13). The editing area of CKEditor draws
+ * its own ring.
+ *
+ * Example: Then the first 25 tab stops should have a 2px solid focus ring
+ */
+Then(
+  /^the first (\d+) tab stops should have a (\d+)px solid focus ring$/,
+  async function (stops, width) {
+    await this.page.evaluate(() => {
+      document.activeElement?.blur();
+      window.scrollTo(0, 0);
+    });
+    const faults = [];
+    for (let i = 1; i <= Number(stops); i++) {
+      // eslint-disable-next-line no-await-in-loop
+      await this.page.keyboard.press('Tab');
+      // eslint-disable-next-line no-await-in-loop
+      const ring = await this.page.evaluate(() => {
+        const element = document.activeElement;
+        if (!element || element === document.body) {
+          return null;
+        }
+        const style = window.getComputedStyle(element);
+        return {
+          name: `${element.tagName.toLowerCase()}.${element.className}`.slice(
+            0,
+            80,
+          ),
+          editor: element.classList.contains('ck-editor__editable'),
+          style: style.outlineStyle,
+          width: parseFloat(style.outlineWidth) || 0,
+        };
+      });
+      if (
+        ring &&
+        !ring.editor &&
+        (ring.style !== 'solid' || ring.width < Number(width))
+      ) {
+        faults.push(`Tab ${i}: ${ring.name} ${ring.width}px ${ring.style}`);
+      }
+    }
+    assert.strictEqual(faults.length, 0, faults.join('\n'));
+  },
+);
+
+/**
+ * Waits for a batch to finish on the page it goes back to. A site with many
+ * modules takes a while to check their updates.
+ *
+ * Example: When I wait up to 120 seconds until the path is "/admin/reports/updates"
+ */
+When(
+  /^(I |we )*wait up to (\d+) seconds until the path is "([^"]*)"$/,
+  { timeout: 300000 },
+  async function (pronoun, seconds, path) {
+    // The batch leaves the page first, unless it has done so already.
+    await this.page
+      .waitForFunction(
+        (expected) => window.location.pathname !== expected,
+        path,
+        { timeout: 10000 },
+      )
+      .catch(() => {});
+    await this.page.waitForFunction(
+      (expected) => window.location.pathname === expected,
+      path,
+      { timeout: Number(seconds) * 1000 },
+    );
+    await this.page.waitForLoadState('load');
   },
 );

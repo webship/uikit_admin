@@ -1,49 +1,124 @@
 /**
  * @param Drupal
  * @param once
- * @param storage
  * @file
  * The rail and the palette of the back office.
  *
  * The rail keeps its width per person; the palette opens on Command-K or
  * Control-K, filters as you type and moves with the arrow keys.
  */
-((Drupal, once, storage) => {
+((Drupal, once) => {
   const RAIL_KEY = 'uikit_admin.rail.collapsed';
 
-  Drupal.behaviors.uikitAdminRail = {
-    attach(context) {
-      const rails = once(
-        'uikit-admin-rail',
-        '[data-uikit-admin-rail]',
-        context,
-      );
-      rails.forEach((rail) => {
-        const collapsed = storage.getItem(RAIL_KEY) === '1';
-        document.documentElement.classList.toggle(
-          'uikit-admin-rail-collapsed',
-          collapsed,
-        );
+  // Below this width the rail slides over the page. The class that collapses
+  // the rail on a wide screen opens it on a narrow one.
+  const narrow = window.matchMedia('(max-width: 960px)');
+  const root = document.documentElement;
+  const COLLAPSED = 'uikit-admin-rail-collapsed';
 
-        const toggles = document.querySelectorAll(
-          '[data-uikit-admin-rail-toggle], [data-uikit-admin-rail-open]',
-        );
-        toggles.forEach((toggle) => {
-          toggle.addEventListener('click', () => {
-            const isCollapsed = document.documentElement.classList.toggle(
-              'uikit-admin-rail-collapsed',
-            );
-            storage.setItem(RAIL_KEY, isCollapsed ? '1' : '0');
-            const inner = rail.querySelector('[data-uikit-admin-rail-toggle]');
-            if (inner) {
-              inner.setAttribute(
-                'aria-expanded',
-                isCollapsed ? 'false' : 'true',
-              );
-            }
-          });
+  // When the system asks for reduced motion, the drops, the offcanvas, the
+  // accordions and the alerts of UIkit open and close without animating
+  // (WCAG 2.3.3). The stylesheet stops the transitions of the theme itself.
+  if (
+    window.UIkit &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ) {
+    const { UIkit } = window;
+    UIkit.mixin({ data: { animation: false, duration: 0 } }, 'drop');
+    UIkit.mixin({ data: { animation: false, duration: 0 } }, 'dropdown');
+    UIkit.mixin({ data: { mode: 'none' } }, 'offcanvas');
+    UIkit.mixin({ data: { animation: false, duration: 0 } }, 'accordion');
+    UIkit.mixin({ data: { duration: 0 } }, 'alert');
+  }
+
+  const readCollapsed = () => {
+    try {
+      // Reading the storage throws when the browser blocks it.
+      return window.localStorage.getItem(RAIL_KEY) === '1';
+    } catch (e) {
+      return false;
+    }
+  };
+
+  const writeCollapsed = (collapsed) => {
+    try {
+      window.localStorage.setItem(RAIL_KEY, collapsed ? '1' : '0');
+    } catch (e) {
+      // The rail keeps its width for this page only.
+    }
+  };
+
+  /**
+   * Keeps a closed rail out of the tab order on a narrow screen.
+   */
+  const syncRail = () => {
+    const rail = document.querySelector('[data-uikit-admin-rail]');
+    if (!rail) {
+      return;
+    }
+    const on = root.classList.contains(COLLAPSED);
+    const open = narrow.matches ? on : !on;
+    rail.inert = narrow.matches && !on;
+    const inner = rail.querySelector('[data-uikit-admin-rail-toggle]');
+    if (inner) {
+      inner.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    document
+      .querySelectorAll('[data-uikit-admin-rail-open]')
+      .forEach((button) => {
+        button.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+  };
+
+  const toggleRail = () => {
+    const on = root.classList.toggle(COLLAPSED);
+    if (!narrow.matches) {
+      writeCollapsed(on);
+      syncRail();
+      return;
+    }
+    syncRail();
+    // The focus follows the rail: into it when it opens, back to the button
+    // of the bar when it closes.
+    const target = on
+      ? document.querySelector('[data-uikit-admin-rail-toggle]')
+      : document.querySelector('[data-uikit-admin-rail-open]');
+    if (target) {
+      target.focus();
+    }
+  };
+
+  Drupal.behaviors.uikitAdminRail = {
+    attach() {
+      once('uikit-admin-rail', 'html').forEach(() => {
+        // The stored width is the one of a wide screen: on a narrow screen
+        // the rail starts closed.
+        root.classList.toggle(COLLAPSED, readCollapsed() && !narrow.matches);
+        // One listener for the document: HTMX may swap the bar and the rail.
+        document.addEventListener('click', (event) => {
+          if (
+            event.target.closest(
+              '[data-uikit-admin-rail-toggle], [data-uikit-admin-rail-open]',
+            )
+          ) {
+            toggleRail();
+          }
+        });
+        document.addEventListener('keydown', (event) => {
+          if (
+            event.key === 'Escape' &&
+            narrow.matches &&
+            root.classList.contains(COLLAPSED)
+          ) {
+            toggleRail();
+          }
+        });
+        narrow.addEventListener('change', () => {
+          root.classList.toggle(COLLAPSED, readCollapsed() && !narrow.matches);
+          syncRail();
         });
       });
+      syncRail();
     },
   };
 
@@ -187,15 +262,107 @@
    */
   Drupal.behaviors.uikitAdminTableSelect = {
     attach(context) {
-      once(
-        'uikit-admin-table-select',
-        'th.select-all input[type="checkbox"], input.form-checkbox[title]:not([aria-label]):not([id])',
+      // After the other behaviors: the table select behavior of core adds the
+      // box, in the preview of Views UI after this one has run.
+      setTimeout(() => {
+        once(
+          'uikit-admin-table-select',
+          'th.select-all input[type="checkbox"], input.form-checkbox[title]:not([aria-label]):not([id])',
+          context,
+        ).forEach((box) => {
+          if (!box.getAttribute('aria-label') && box.title) {
+            box.setAttribute('aria-label', box.title);
+          }
+        });
+      }, 0);
+    },
+  };
+
+  /**
+   * A table wider than its box scrolls in it. A table that fits lets its box
+   * overflow on a wide screen, so its sticky header follows the page. Only a
+   * box that scrolls takes the keyboard focus (WCAG 2.1.1): a table that fits
+   * adds no tab stop.
+   */
+  Drupal.behaviors.uikitAdminTableScroll = {
+    attach(context) {
+      const boxes = once(
+        'uikit-admin-table-scroll',
+        '.uikit-admin-table-scroll',
         context,
-      ).forEach((box) => {
-        if (!box.getAttribute('aria-label') && box.title) {
-          box.setAttribute('aria-label', box.title);
+      );
+      if (!boxes.length) {
+        return;
+      }
+      if (!window.ResizeObserver) {
+        boxes.forEach((box) => box.setAttribute('tabindex', '0'));
+        return;
+      }
+      const measure = (box) => {
+        const table = box.querySelector(':scope > table');
+        const overflowing = !!table && table.offsetWidth > box.clientWidth + 1;
+        box.classList.toggle('is-overflowing', overflowing);
+        if (overflowing) {
+          box.setAttribute('tabindex', '0');
+        } else {
+          box.removeAttribute('tabindex');
+        }
+      };
+      const observer = new ResizeObserver((entries) => {
+        entries.forEach(({ target }) => {
+          const box = target.closest('.uikit-admin-table-scroll');
+          if (box) {
+            measure(box);
+          }
+        });
+      });
+      boxes.forEach((box) => {
+        measure(box);
+        observer.observe(box);
+        const table = box.querySelector(':scope > table');
+        if (table) {
+          observer.observe(table);
         }
       });
     },
   };
-})(Drupal, once, window.localStorage);
+
+  /**
+   * The sticky bar displaces the top of the viewport: the toolbar of CKEditor
+   * 5 and the dialogs stay under it. CKEditor 5 reads the offsets only when
+   * they change, after the editor is created, so the first scroll sends them.
+   */
+  Drupal.behaviors.uikitAdminDisplace = {
+    attach() {
+      once('uikit-admin-displace', 'html').forEach(() => {
+        window.addEventListener(
+          'scroll',
+          () => {
+            if (Drupal.displace) {
+              Drupal.displace();
+            }
+          },
+          { once: true, passive: true },
+        );
+      });
+    },
+  };
+
+  /**
+   * The Coffee module adds its search box at the end of the page, outside any
+   * landmark: it becomes a named search landmark.
+   */
+  Drupal.behaviors.uikitAdminCoffee = {
+    attach() {
+      // After the other behaviors, Coffee's among them, have run.
+      setTimeout(() => {
+        once('uikit-admin-coffee', '.coffee-form-wrapper').forEach(
+          (wrapper) => {
+            wrapper.setAttribute('role', 'search');
+            wrapper.setAttribute('aria-label', Drupal.t('Coffee'));
+          },
+        );
+      }, 0);
+    },
+  };
+})(Drupal, once);

@@ -1,0 +1,54 @@
+# Schema for the configuration files of the UIkit Admin theme.
+
+uikit_admin.settings:
+  type: theme_settings
+  label: 'UIkit Admin settings'
+  mapping:
+    htmx_navigation:
+      type: boolean
+      label: 'Navigate with HTMX'
+    navbar_sticky:
+      type: boolean
+      label: 'Keep the navbar at the top of the screen'
+    accent_color:
+      type: color_hex
+      label: 'Accent color'
+    focus_color:
+      type: color_hex
+      label: 'Focus color'
+    color_mode:
+      type: string
+      label: 'Color mode'
+      constraints:
+        Choice:
+          - auto
+          - light
+          - dark
+    density:
+      type: string
+      label: 'Density'
+      constraints:
+        Choice:
+          - comfortable
+          - compact
+    sticky_actions:
+      type: boolean
+      label: 'Keep the buttons of a form in reach'
+    edit_form_sidebar:
+      type: boolean
+      label: 'Put the meta of a content form in a sidebar'
+    sign_in_layout:
+      type: string
+      label: 'Sign-in layout'
+      constraints:
+        # @see \Drupal\uikit_admin\Hook\PreprocessHooks::SIGN_IN_LAYOUTS
+        Choice:
+          - center
+          - start
+          - end
+          - top
+          - bottom
+          - spotlight
+    sign_in_message:
+      type: label
+      label: 'Sign-in message'

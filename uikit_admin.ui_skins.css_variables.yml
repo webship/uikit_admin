@@ -2,7 +2,8 @@
 #
 # The theme runs without UI Skins: these are the same custom properties its
 # stylesheets read, so the module only offers them as settings. Keep every
-# pair of text and background at the WCAG AA contrast minimum.
+# pair of text and background at 7:1 (WCAG AAA), and the edges of the
+# controls at 3:1.
 
 ################################################################################
 # Brand.
@@ -13,14 +14,14 @@ uikit-admin-accent:
   label: "Accent (links, primary buttons, active rail item)"
   type: "color"
   default_values:
-    ":root": "#0a5fa8"
+    ":root": "#08508a"
 
 uikit-admin-accent-hover:
   category: "Brand"
   label: "Accent on hover"
   type: "color"
   default_values:
-    ":root": "#084b85"
+    ":root": "#063f6e"
 
 uikit-admin-focus:
   category: "Brand"
@@ -49,10 +50,17 @@ uikit-admin-surface:
 
 uikit-admin-border:
   category: "Surfaces"
-  label: "Border"
+  label: "Border (decorative dividers)"
   type: "color"
   default_values:
     ":root": "#dfe3e8"
+
+uikit-admin-border-control:
+  category: "Surfaces"
+  label: "Border of the fields, checkboxes and toggles (3:1)"
+  type: "color"
+  default_values:
+    ":root": "#7d8794"
 
 ################################################################################
 # Text colors.
@@ -70,7 +78,7 @@ uikit-admin-text-muted:
   label: "Muted text color"
   type: "color"
   default_values:
-    ":root": "#5c6672"
+    ":root": "#454d57"
 
 ################################################################################
 # States.
@@ -95,7 +103,7 @@ uk-global-danger-background:
   label: "Danger"
   type: "color"
   default_values:
-    ":root": "#c2183c"
+    ":root": "#9e1231"
 
 ################################################################################
 # Layout.

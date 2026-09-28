@@ -2,30 +2,39 @@
 /**
  * @file
  * The shell of an administration screen: the bar above, the page below.
+ *
+ * UI Patterns hands every slot over as a render array, even an empty one: the
+ * optional parts are rendered first, and printed only when they hold output.
  */
 #}
-{% if navbar %}
-  <header class="uikit-admin-header">{{ navbar }}</header>
+{% set navbar_out = navbar|render %}
+{% set messages_out = messages|render %}
+{% set sidebar_out = sidebar|render %}
+{% set footer_out = footer|render %}
+{% if navbar_out|trim is not empty %}
+  <header class="uikit-admin-header" data-offset-top>{{ navbar_out }}</header>
 {% endif %}
 {{ offcanvas }}
 <main class="uikit-admin-main">
   <div class="uk-container{{ container is defined and container not in ['default', ''] ? ' uk-container-' ~ container }}">
     <a id="main-content" tabindex="-1"></a>
     {{ tabs }}
-    {{ messages }}
+    {% if messages_out|trim is not empty %}
+      <div class="uikit-admin-messages">{{ messages_out }}</div>
+    {% endif %}
     {{ help }}
-    {% if sidebar %}
+    {% if sidebar_out|trim is not empty %}
       <div class="uk-grid uk-grid-medium" uk-grid>
         <div class="uk-width-expand@m">{{ content }}</div>
-        <aside class="uk-width-1-4@m" role="complementary">{{ sidebar }}</aside>
+        <aside class="uk-width-1-4@m" role="complementary">{{ sidebar_out }}</aside>
       </div>
     {% else %}
       {{ content }}
     {% endif %}
   </div>
 </main>
-{% if footer %}
+{% if footer_out|trim is not empty %}
   <footer class="uikit-admin-footer" role="contentinfo">
-    <div class="uk-container">{{ footer }}</div>
+    <div class="uk-container">{{ footer_out }}</div>
   </footer>
 {% endif %}

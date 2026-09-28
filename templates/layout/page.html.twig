@@ -14,18 +14,25 @@
 }, with_context: false) }}
 
 <div class="uikit-admin-shell">
-  {% set topbar %}
-    {{ include('uikit_admin:admin_topbar', {
+  {# A render array, not a captured string: the page renders its slots before
+     it prints them, and a captured string would lose its markup. A slot takes
+     only a render array: a region that is empty, or that a page does not
+     have, like on the batch page, is left out. #}
+  {% set topbar = {
+    '#type': 'component',
+    '#component': 'uikit_admin:admin_topbar',
+    '#slots': {
       breadcrumb: page.breadcrumb,
       title: page.header,
       actions: page.highlighted,
-    }, with_context: false) }}
-  {% endset %}
+    }|filter(region => region is not empty),
+  } %}
 
   {{ include('uikit_admin:admin_page', {
     navbar: topbar,
     offcanvas: page.offcanvas,
     tabs: page.pre_content,
+    messages: page.messages,
     help: page.help,
     content: page.content,
     sidebar: page.sidebar_first,

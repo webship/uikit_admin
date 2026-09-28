@@ -2,19 +2,24 @@
  * @file
  * The dialogs of Drupal (jQuery UI): a UIkit modal look.
  *
- * The base theme of jQuery UI paints its buttons grey, over the UIkit
+ * The base theme of jQuery UI paints its buttons gray, over the UIkit
  * buttons: the selectors here are strong enough to win.
  */
 
+/* The overlay dims the whole screen, the rail included. */
 .ui-widget-overlay {
   z-index: 1259;
   opacity: 1;
   background: rgb(16, 24, 40, 0.5);
 }
 
-/* Above the sticky bar, the sticky table headers and the UIkit dropdowns. */
+/* Above the rail, the sticky bar, the sticky table headers and the UIkit
+   dropdowns. A dialog never grows past the screen: its content scrolls. */
 .ui-dialog.ui-widget {
   z-index: 1260;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 32px);
   padding: 0;
   color: var(--uikit-admin-text);
   border: 1px solid var(--uikit-admin-border);
@@ -64,7 +69,15 @@
   background: var(--uk-global-muted-background);
 }
 
+/* Webform pins its dialogs 50px from the top of the screen. */
+.ui-dialog.webform-ui-dialog {
+  max-height: calc(100vh - 66px);
+}
+
 .ui-dialog .ui-dialog-content {
+  overflow: auto;
+  flex: 1 1 auto;
+  min-height: 0;
   padding: 20px 24px;
   color: var(--uikit-admin-text);
   background: transparent;

@@ -1,13 +1,18 @@
 # Color modes. The theme reads data-theme on the html element; without UI
 # Skins, the theme setting and the operating system choose the mode.
-light:
+# The ids carry the theme name, so they do not replace the color modes of
+# UI Suite UIkit, which the front end of the same site may use; the value
+# written to data-theme stays light or dark.
+uikit_admin_light:
   label: "Light"
   label_context: "color"
   key: "data-theme"
+  value: "light"
   target: html
 
-dark:
+uikit_admin_dark:
   label: "Dark"
   label_context: "color"
   key: "data-theme"
+  value: "dark"
   target: html

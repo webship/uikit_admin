@@ -1,0 +1,10 @@
+htmx_navigation: true
+navbar_sticky: true
+accent_color: '#08508a'
+focus_color: '#1f7ad4'
+color_mode: auto
+density: comfortable
+sticky_actions: true
+edit_form_sidebar: true
+sign_in_layout: center
+sign_in_message: ''

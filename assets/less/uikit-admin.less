@@ -10,23 +10,42 @@
 @global-font-size: 15px;
 @global-line-height: 1.5;
 
-// Color. The UIkit defaults are below the WCAG AA contrast minimum.
+// Color. The UIkit defaults are below the WCAG contrast minimum: the muted
+// text and the accent reach 7:1 (AAA) on the surface, the canvas and the
+// muted background.
 @global-color: #1b1f24;
 @global-emphasis-color: #0d1117;
-@global-muted-color: #5c6672;
-@global-link-color: #0a5fa8;
-@global-link-hover-color: #084b85;
+@global-muted-color: #454d57;
+@global-link-color: #08508a;
+@global-link-hover-color: #063f6e;
 @global-inverse-color: #fff;
 
 @global-background: #fff;
 @global-muted-background: #eef0f3;
-@global-primary-background: #0a5fa8;
+@global-primary-background: #08508a;
 @global-secondary-background: #1b1f24;
 @global-success-background: #13795a;
 @global-warning-background: #8a5a12;
-@global-danger-background: #c2183c;
+@global-danger-background: #9e1231;
 
 @global-border: #dfe3e8;
+
+// The edge of a field, a checkbox or a radio reaches 3:1 (WCAG 1.4.11); the
+// decorative dividers keep @global-border.
+@form-border: ~"var(--uikit-admin-border-control, #7d8794)";
+@form-radio-border: ~"var(--uikit-admin-border-control, #7d8794)";
+
+// Focus: one solid 2px ring, in the color of the settings (WCAG 2.4.13).
+@base-focus-outline-width: 2px;
+@base-focus-outline-style: solid;
+@base-focus-outline: ~"var(--uikit-admin-focus, #1f7ad4)";
+@base-focus-outline-offset: 2px;
+
+// Targets: the controls are 44px high (WCAG 2.5.5). The small ones keep a
+// 32px look and get a 44px hit area in admin.css.
+@global-control-height: 44px;
+@global-control-small-height: 32px;
+@form-radio-size: 20px;
 
 // Shape.
 @button-border-radius: 6px;
