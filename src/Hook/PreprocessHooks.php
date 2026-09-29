@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\uikit_admin\Hook;
 
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Extension\ThemeSettingsProvider;
@@ -195,6 +196,58 @@ class PreprocessHooks {
       $variables['html_attributes']->setAttribute('style', implode(';', $properties));
     }
     $variables['#cache']['tags'][] = 'config:uikit_admin.settings';
+
+    // A boosted link to a page another theme renders (the site name of the
+    // rail, the account link, the View tab of a content item) loads that page
+    // in full, in its own theme.
+    $variables['#cache']['contexts'][] = 'headers:HX-Boosted';
+    $full_load = $this->otherThemeUrl();
+    if ($full_load !== NULL) {
+      $variables['#attached']['http_header'][] = ['HX-Redirect', $full_load];
+    }
+  }
+
+  /**
+   * The URL to load in full when a boosted request belongs to another theme.
+   *
+   * Core renders the page of an HTMX request in the theme of the page the
+   * request comes from (the page state it sends), not in the theme the page
+   * has on a full load: a front end page would show in this theme, with the
+   * rail and the top bar, and pass the check of htmx-navigation.js. The theme
+   * negotiators are asked again without that page state: when they pick
+   * another theme, HTMX loads the page in full (HX-Redirect), so the same URL
+   * always shows the same theme.
+   *
+   * @return string|null
+   *   The URL of the page without the page state, or NULL when the page
+   *   belongs to this theme.
+   */
+  protected function otherThemeUrl(): ?string {
+    if (!$this->htmxNavigation()) {
+      return NULL;
+    }
+    $request = $this->container->get('request_stack')->getCurrentRequest();
+    if (!$request || !$request->headers->has('HX-Boosted')) {
+      return NULL;
+    }
+    $page_state = $request->attributes->get('ajax_page_state');
+    if (empty($page_state['theme'])) {
+      return NULL;
+    }
+    $request->attributes->remove('ajax_page_state');
+    try {
+      $theme = $this->container->get('theme.negotiator')->determineActiveTheme($this->routeMatch);
+    }
+    finally {
+      $request->attributes->set('ajax_page_state', $page_state);
+    }
+    if (!$theme || $theme === $this->container->get('theme.manager')->getActiveTheme()->getName()) {
+      return NULL;
+    }
+    $parsed = UrlHelper::parse($request->getRequestUri());
+    unset($parsed['query']['ajax_page_state'], $parsed['query']['_wrapper_format']);
+    $path = '/' . \ltrim($parsed['path'], '/');
+    return UrlHelper::filterBadProtocol($path . ($parsed['query'] ? '?' . UrlHelper::buildQuery($parsed['query']) : ''));
   }
 
   /**

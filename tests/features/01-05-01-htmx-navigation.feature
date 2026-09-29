@@ -13,6 +13,14 @@ Feature: HTMX navigation
       And I should see "People"
       And the element ".uikit-admin-rail a.is-active[href$='/admin/people']" should exist
 
+  Scenario: A link to the front end loads it in full, in its own theme
+    Given I am logged in as the Drupal administrator
+     When I go to "/admin/content"
+      And I mark the current page
+      And I click on the element ".uikit-admin-rail a.uikit-admin-rail__site"
+     Then the page should have left the theme in a full load
+      And the element ".uikit-admin-shell" should not exist
+
   Scenario: The exposed filters go through HTMX
     Given I am logged in as the Drupal administrator
      When I go to "/admin/content"

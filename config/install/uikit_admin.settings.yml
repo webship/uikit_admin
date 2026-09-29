@@ -1,3 +1,4 @@
+langcode: en
 htmx_navigation: true
 navbar_sticky: true
 accent_color: '#08508a'

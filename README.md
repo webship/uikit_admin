@@ -58,10 +58,27 @@ Display Builder and the AI component agents can read them.
 - **Navigate with HTMX**: on by default; turn it off for full page loads everywhere.
 - **Sticky navbar**: keep the navbar at the top of the screen.
 - **Appearance**: the accent and focus colors, light, dark or the system's color mode, comfortable
-  or compact density, a sticky Save row and the content form sidebar.
+  or compact density, a sticky Save row and the content form sidebar. The color mode is the one
+  control of the mode: it is stored for UI Skins too (`uikit_admin_light`, `uikit_admin_dark`), and
+  the UI Skins select does not show on this form. UI Suite UIkit and Webtheme have the same setting.
 - **Sign-in screens**: the layout of the log in, password reset and registration screens, and a
   sentence shown with the site name. They apply only when the sign-in routes use this theme: see
   [Sign-in screens](#sign-in-screens).
+
+## Next to a front theme
+
+UIkit Admin runs next to a UIkit front theme (UI Suite UIkit, Webtheme) on the same site, and
+nothing of one reaches the pages of the other:
+
+- The UI Skins ids carry the theme name: the color modes (`uikit_admin_light`, `uikit_admin_dark`)
+  and the design tokens (`uikit-admin-*`, the states included: `uikit-admin-success`,
+  `uikit-admin-warning`, `uikit-admin-danger`). A front theme declares the UIkit names
+  (`uk-global-*`) under its own name too.
+- Drupal core loads the CKEditor 5 styles of the default theme only: `assets/css/ckeditor5.css`
+  applies when UIkit Admin is also the default theme. Otherwise the editor shows the styles of the
+  front theme, which keeps them at WCAG AAA.
+- The small links and the close buttons of the messages are 44 by 44 pixels (WCAG 2.5.5), like in
+  the front themes. The *Compact* density keeps 32px choices, the WCAG 2.5.8 minimum and more.
 
 ## UIkit, compiled into the theme
 
@@ -83,7 +100,10 @@ moves the focus to the content and announces the new page.
 
 Full page loads stay for the forms that post (edit, add, delete, settings), the screens with drag
 and drop or builders (block layout, menus, field UI, Views UI, Display Builder), batch and update
-screens, files, and the pages another theme renders.
+screens, files, and the pages another theme renders. Drupal renders an HTMX request in the theme
+of the page it comes from, so the theme asks the theme negotiators again: a link to the front end
+(the site name, the account link, the View tab) answers with `HX-Redirect` and loads in full, in
+the front theme.
 
 ## Sign-in screens
 
@@ -100,9 +120,10 @@ theme of the site, not in the administration theme. The layouts above apply only
 sign-in routes use UIkit Admin, which happens when:
 
 - UIkit Admin is also the default theme of the site, or
-- a module marks the sign-in routes as administration routes (`_admin_route: TRUE`), as
-  [Web Admin](https://www.drupal.org/project/webadmin) does, or with a route subscriber of your
-  own.
+- a module shows the sign-in routes in UIkit Admin: [Web Admin](https://www.drupal.org/project/webadmin)
+  does with a theme negotiator, and keeps the Display Builder page layouts of the front theme out of
+  them. A route subscriber of your own that marks the routes as administration routes
+  (`_admin_route: TRUE`) works too.
 
 The sign-in routes are `user.login`, `user.pass`, `user.register`, `user.reset`,
 `user.reset.form` and `user.reset.login`.

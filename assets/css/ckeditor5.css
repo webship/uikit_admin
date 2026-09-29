@@ -1,6 +1,11 @@
 /**
  * @file
  * The editing area of CKEditor 5, with the typography of the theme.
+ *
+ * Drupal core loads the "ckeditor5-stylesheets" of the default theme only,
+ * wherever the editor shows: the editing area looks like the front end of
+ * the site. This file applies only on a site where UIkit Admin is also the
+ * default theme; with a front theme, the editor uses the file of that theme.
  */
 
 .ck-content {

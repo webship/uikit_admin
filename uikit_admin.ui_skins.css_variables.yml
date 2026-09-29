@@ -81,24 +81,25 @@ uikit-admin-text-muted:
     ":root": "#454d57"
 
 ################################################################################
-# States.
+# States. The ids carry the theme name: the ids of UI Skins are shared by
+# every theme of the site, and the front theme declares the UIkit ones.
 ################################################################################
 
-uk-global-success-background:
+uikit-admin-success:
   category: "States"
   label: "Success"
   type: "color"
   default_values:
     ":root": "#13795a"
 
-uk-global-warning-background:
+uikit-admin-warning:
   category: "States"
   label: "Warning"
   type: "color"
   default_values:
     ":root": "#8a5a12"
 
-uk-global-danger-background:
+uikit-admin-danger:
   category: "States"
   label: "Danger"
   type: "color"
@@ -106,19 +107,20 @@ uk-global-danger-background:
     ":root": "#9e1231"
 
 ################################################################################
-# Layout.
+# Layout. A length is a "textfield": the type is the form element of the
+# field, and the UI Skins form cannot save a type that has none.
 ################################################################################
 
 uikit-admin-radius:
   category: "Layout"
   label: "Corner radius of the panels"
-  type: "string"
+  type: "textfield"
   default_values:
     ":root": "8px"
 
 uikit-admin-rail-width:
   category: "Layout"
   label: "Width of the sidebar"
-  type: "string"
+  type: "textfield"
   default_values:
     ":root": "272px"

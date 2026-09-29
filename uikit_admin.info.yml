@@ -34,6 +34,8 @@ libraries:
   - uikit_admin/uikit
   - uikit_admin/base
 
+# Core uses the editor styles of the default theme only: these apply when
+# UIkit Admin is also the default theme of the site.
 ckeditor5-stylesheets:
   - assets/css/ckeditor5.css
 

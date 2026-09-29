@@ -152,12 +152,12 @@
   color: var(--uikit-admin-text-muted);
 }
 
-/* The links of the settings of a display are at least 24px high (WCAG
-   2.5.8). */
+/* The links of the settings of a display are at least 44px high (WCAG
+   2.5.5). */
 .views-display-setting .views-ajax-link {
-  display: inline-block;
-  min-height: 24px;
-  line-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 /* The preview keeps the surfaces of the theme in both color modes: core

@@ -34,6 +34,12 @@
   --uikit-admin-alert-warning-bg: #fff6ee;
   --uikit-admin-alert-danger: #9e1231;
   --uikit-admin-alert-danger-bg: #fef4f6;
+
+  /* The states. UI Skins sets them under these names, not the UIkit ones: a
+     front theme on the same site declares --uk-global-* too. */
+  --uikit-admin-success: #13795a;
+  --uikit-admin-warning: #8a5a12;
+  --uikit-admin-danger: #9e1231;
   --uikit-admin-radius: 8px;
   --uikit-admin-shadow: 0 1px 2px rgb(16, 24, 40, 0.06), 0 1px 3px rgb(16, 24, 40, 0.1);
   --uikit-admin-shadow-raised: 0 4px 12px rgb(16, 24, 40, 0.1);
@@ -50,9 +56,9 @@
   --uk-global-link-hover-color: var(--uikit-admin-accent-hover);
   --uk-global-primary-background: var(--uikit-admin-accent);
   --uk-global-primary-background-hover: var(--uikit-admin-accent-hover);
-  --uk-global-danger-background: #9e1231;
-  --uk-global-success-background: #13795a;
-  --uk-global-warning-background: #8a5a12;
+  --uk-global-danger-background: var(--uikit-admin-danger);
+  --uk-global-success-background: var(--uikit-admin-success);
+  --uk-global-warning-background: var(--uikit-admin-warning);
   --uk-global-font-family: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
 }
 
@@ -155,11 +161,6 @@ body {
 .uk-alert.uk-alert a:not(.uk-button) {
   text-decoration: underline;
   color: inherit;
-}
-
-/* The text of a message stays clear of its close button. */
-.uk-alert:has(> .uk-alert-close) {
-  padding-right: 40px;
 }
 
 /* ---------------------------------------------------------------- Shell -- */
@@ -1320,27 +1321,23 @@ em {
   color: var(--uikit-admin-text-muted);
 }
 
-/* -------------------------------------------- Target size (WCAG 2.5.8) --- */
+/* -------------------------------------------- Target size (WCAG 2.5.5) --- */
 
-/* The small links of the back office are at least 24px high. */
+/* The small links of the back office are at least 44px high, like the ones
+   of the front themes (WCAG 2.5.5, AAA). */
 .uk-breadcrumb > * > a {
   display: inline-flex;
   align-items: center;
-  min-height: 24px;
-}
-
-.system-status-report__entry .description li,
-.uikit-admin-status-report .description li {
-  line-height: 1.75;
+  min-height: 44px;
 }
 
 .system-status-report__entry .description > ul > li > a,
 .uikit-admin-status-report .description > ul > li > a,
 .compact-link a,
 .theme-info .operations a {
-  display: inline-block;
-  min-height: 24px;
-  line-height: 24px;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
 }
 
 /* A Webform message brings its own close link, which also remembers that the
@@ -1353,23 +1350,31 @@ em {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 24px;
-  min-height: 24px;
+  min-width: 44px;
+  min-height: 44px;
   text-decoration: none;
 }
 
 .uk-alert > .js-webform-message__link {
   position: absolute;
-  top: 12px;
-  right: 8px;
+  top: 5px;
+  right: 5px;
 }
 
 .uk-alert-close {
+  top: 5px;
+  right: 5px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 24px;
-  min-height: 24px;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* The text of a message stays clear of its 44px close button. */
+.uk-alert:has(> .uk-alert-close),
+.uk-alert:has(> .js-webform-message__link) {
+  padding-right: 54px;
 }
 
 /* ---------------------------------------------------------- Target size -- */
@@ -1423,5 +1428,26 @@ em {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* ------------------------------------------------------- Forced colors -- */
+
+/* In a forced colors mode (Windows contrast themes) the backgrounds are
+   gone: the messages keep an edge and the invalid fields a double border,
+   like in the front themes, and the focus ring takes the system color. */
+@media (forced-colors: active) {
+  .uk-alert {
+    border: 1px solid CanvasText;
+  }
+
+  .uk-form-danger,
+  .error.form-element {
+    border-width: 3px;
+    border-style: double;
+  }
+
+  :focus-visible {
+    outline-color: Highlight;
   }
 }

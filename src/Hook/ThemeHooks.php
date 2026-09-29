@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\uikit_admin\Hook;
 
+use Drupal\Core\Config\Config;
 use Drupal\Core\Extension\ThemeSettingsProvider;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
@@ -117,6 +118,12 @@ class ThemeHooks {
         'dark' => $this->t('Dark'),
       ],
     ];
+    // UI Skins offers the color modes of this theme as well: a second control
+    // that the setting above would silently override. The setting above is
+    // the one control, and it is stored for UI Skins too, so both agree. This
+    // alter can run before the one of UI Skins (when another theme shows the
+    // form): hide its control once the form is built.
+    $form['#after_build'][] = [static::class, 'hideUiSkinsColorMode'];
     $form['uikit_admin']['appearance']['density'] = [
       '#type' => 'radios',
       '#title' => $this->t('Density'),
@@ -166,6 +173,54 @@ class ThemeHooks {
       '#maxlength' => 160,
       '#default_value' => $this->themeSettingsProvider->getSetting('sign_in_message', 'uikit_admin') ?? '',
     ];
+  }
+
+  /**
+   * Submit callback: stores the color mode for UI Skins too.
+   *
+   * The "Follow the operating system" mode clears it: the stylesheet follows
+   * the system when the root element has no data-theme.
+   */
+  public static function colorModeSubmit(array &$form, FormStateInterface $form_state): void {
+    static::syncUiSkinsColorMode(\Drupal::configFactory()->getEditable('uikit_admin.settings'));
+  }
+
+  /**
+   * After build callback: one color mode control.
+   *
+   * Hides the color mode control of UI Skins, and stores the color mode for
+   * UI Skins once the settings are saved. Both are done here, once the form
+   * is built: the theme settings form calls the alter of the theme it shows
+   * (when another theme shows the form) before the form alter of UI
+   * Skins, and before it adds its own submit handler, which saves the
+   * settings.
+   */
+  public static function hideUiSkinsColorMode(array $form, FormStateInterface $form_state): array {
+    if (isset($form['third_party_settings']['ui_skins']['theme'])) {
+      $form['third_party_settings']['ui_skins']['theme']['#access'] = FALSE;
+    }
+    $submit = [static::class, 'colorModeSubmit'];
+    if (!\in_array($submit, $form['#submit'] ?? [], TRUE)) {
+      $form['#submit'][] = $submit;
+    }
+    return $form;
+  }
+
+  /**
+   * Stores the color mode of the theme settings as the UI Skins theme.
+   *
+   * @param \Drupal\Core\Config\Config $config
+   *   The editable settings of the theme.
+   */
+  public static function syncUiSkinsColorMode(Config $config): void {
+    $mode = $config->get('color_mode') ?: 'auto';
+    if (\in_array($mode, ['light', 'dark'], TRUE)) {
+      $config->set('third_party_settings.ui_skins.theme', 'uikit_admin_' . $mode);
+    }
+    else {
+      $config->clear('third_party_settings.ui_skins.theme');
+    }
+    $config->save();
   }
 
 }

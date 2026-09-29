@@ -256,6 +256,23 @@ Then(/^the page should have been fully loaded$/, async function () {
 });
 
 /**
+ * Waits for a full page load in another theme: the page of this theme is
+ * gone, not swapped.
+ *
+ * Example: Then the page should have left the theme in a full load
+ */
+Then(/^the page should have left the theme in a full load$/, async function () {
+  await this.page.waitForFunction(
+    () =>
+      document.readyState === 'complete' &&
+      window.uikitAdminMarker !== 'not-reloaded' &&
+      !document.documentElement.hasAttribute('data-uikit-admin-density'),
+    null,
+    { timeout: 15000 },
+  );
+});
+
+/**
  * Example: Then the URL "/admin/content" should not be excluded from the HTMX navigation
  */
 Then(

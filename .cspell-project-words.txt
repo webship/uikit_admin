@@ -32,8 +32,10 @@ uikit
 unticks
 usort
 wcag
+webdashboard
 webform
 webship
+Webtheme
 xlarge
 yarnrc
 YOOtheme
