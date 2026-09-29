@@ -33,7 +33,7 @@ Feature: Configuration
       And I wait until the page is loaded
      Then the element "input[name='htmx_navigation']" should exist
      When I select radio button "compact"
-      And I fill in the color field "accent_color" with the value "#c0392b"
+      And I fill in the color field "uikit_admin_skin[accent]" with the value "#c0392b"
       And I select radio button "start"
       And I fill in "sign_in_message" with "qa sign-in message"
       And I press the button "Save configuration"

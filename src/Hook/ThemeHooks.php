@@ -10,6 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\uikit_admin\LinkButton;
+use Drupal\uikit_admin\Skin;
 
 /**
  * Library, theme settings and page hooks for UIkit Admin.
@@ -27,23 +28,6 @@ class ThemeHooks {
    * The ID of the offcanvas printing the "Offcanvas" region.
    */
   public const string OFFCANVAS_ID = 'uikit-admin-offcanvas';
-
-  /**
-   * The color of the links, the primary buttons and the active states.
-   */
-  public const string ACCENT_COLOR = '#08508a';
-
-  /**
-   * The accent color of the releases before 4.0.1.
-   *
-   * A site that still stores it keeps the new default: it was never a choice.
-   */
-  public const string LEGACY_ACCENT_COLOR = '#0a5fa8';
-
-  /**
-   * The color of the ring around the element the keyboard is on.
-   */
-  public const string FOCUS_COLOR = '#1f7ad4';
 
   public function __construct(
     protected ThemeSettingsProvider $themeSettingsProvider,
@@ -96,17 +80,37 @@ class ThemeHooks {
       '#title' => $this->t('Appearance'),
       '#open' => TRUE,
     ];
-    $form['uikit_admin']['appearance']['accent_color'] = [
+    // The accent and the focus color are design tokens: they are stored once,
+    // in the keys of UI Skins, for the light and for the dark color mode.
+    $stored = $this->themeSettingsProvider->getSetting(Skin::KEY, 'uikit_admin');
+    $stored = \is_array($stored) ? $stored : [];
+    $form['uikit_admin']['appearance']['uikit_admin_skin'] = [
+      '#type' => 'container',
+      '#tree' => TRUE,
+    ];
+    $form['uikit_admin']['appearance']['uikit_admin_skin']['accent'] = [
       '#type' => 'color',
       '#title' => $this->t('Accent color'),
-      '#description' => $this->t('The color of the links, the primary buttons and the active states.'),
-      '#default_value' => $this->themeSettingsProvider->getSetting('accent_color', 'uikit_admin') ?? self::ACCENT_COLOR,
+      '#description' => $this->t('The color of the links, the primary buttons and the active states, in the light color mode. Pick a dark color: it carries white text and sits on a light page.'),
+      '#default_value' => Skin::color($stored, 'accent'),
     ];
-    $form['uikit_admin']['appearance']['focus_color'] = [
+    $form['uikit_admin']['appearance']['uikit_admin_skin']['accent_dark'] = [
+      '#type' => 'color',
+      '#title' => $this->t('Accent color, dark mode'),
+      '#description' => $this->t('The same color in the dark color mode. Pick a light color: it sits on a dark page.'),
+      '#default_value' => Skin::color($stored, 'accent_dark'),
+    ];
+    $form['uikit_admin']['appearance']['uikit_admin_skin']['focus'] = [
       '#type' => 'color',
       '#title' => $this->t('Focus color'),
-      '#description' => $this->t('The ring around the element the keyboard is on.'),
-      '#default_value' => $this->themeSettingsProvider->getSetting('focus_color', 'uikit_admin') ?? self::FOCUS_COLOR,
+      '#description' => $this->t('The ring around the element the keyboard is on, in the light color mode.'),
+      '#default_value' => Skin::color($stored, 'focus'),
+    ];
+    $form['uikit_admin']['appearance']['uikit_admin_skin']['focus_dark'] = [
+      '#type' => 'color',
+      '#title' => $this->t('Focus color, dark mode'),
+      '#description' => $this->t('The same ring in the dark color mode.'),
+      '#default_value' => Skin::color($stored, 'focus_dark'),
     ];
     $form['uikit_admin']['appearance']['color_mode'] = [
       '#type' => 'radios',
@@ -122,7 +126,8 @@ class ThemeHooks {
     // that the setting above would silently override. The setting above is
     // the one control, and it is stored for UI Skins too, so both agree. This
     // alter can run before the one of UI Skins (when another theme shows the
-    // form): hide its control once the form is built.
+    // form): hide its control once the form is built, and add the submit
+    // callbacks that store the colors.
     $form['#after_build'][] = [static::class, 'hideUiSkinsColorMode'];
     $form['uikit_admin']['appearance']['density'] = [
       '#type' => 'radios',
@@ -176,32 +181,52 @@ class ThemeHooks {
   }
 
   /**
-   * Submit callback: stores the color mode for UI Skins too.
+   * Submit callback: keeps the colors out of the settings core saves.
    *
-   * The "Follow the operating system" mode clears it: the stylesheet follows
-   * the system when the root element has no data-theme.
+   * Core saves every value of the form as a setting of the theme. The colors
+   * belong in the keys of UI Skins, so they leave the values before core
+   * saves, and are stored after it.
    */
-  public static function colorModeSubmit(array &$form, FormStateInterface $form_state): void {
-    static::syncUiSkinsColorMode(\Drupal::configFactory()->getEditable('uikit_admin.settings'));
+  public static function skinBeforeSave(array &$form, FormStateInterface $form_state): void {
+    $colors = $form_state->getValue('uikit_admin_skin');
+    $form_state->set('uikit_admin_skin', \is_array($colors) ? $colors : []);
+    $form_state->unsetValue('uikit_admin_skin');
   }
 
   /**
-   * After build callback: one color mode control.
+   * Submit callback: stores the colors and the color mode for UI Skins.
    *
-   * Hides the color mode control of UI Skins, and stores the color mode for
-   * UI Skins once the settings are saved. Both are done here, once the form
-   * is built: the theme settings form calls the alter of the theme it shows
-   * (when another theme shows the form) before the form alter of UI
-   * Skins, and before it adds its own submit handler, which saves the
+   * The "Follow the operating system" mode clears the color mode: the
+   * stylesheet follows the system when the root element has no data-theme.
+   */
+  public static function skinAfterSave(array &$form, FormStateInterface $form_state): void {
+    $config = \Drupal::configFactory()->getEditable('uikit_admin.settings');
+    Skin::store($config, $form_state->get('uikit_admin_skin') ?: []);
+    static::syncUiSkinsColorMode($config);
+  }
+
+  /**
+   * After build callback: one control for each value.
+   *
+   * Hides the color mode control of UI Skins, and stores the colors and the
+   * color mode for UI Skins once the settings are saved. Both are done here,
+   * once the form is built: the theme settings form calls the alter of the
+   * theme it shows (when another theme shows the form) before the form alter
+   * of UI Skins, and before it adds its own submit handler, which saves the
    * settings.
    */
   public static function hideUiSkinsColorMode(array $form, FormStateInterface $form_state): array {
     if (isset($form['third_party_settings']['ui_skins']['theme'])) {
       $form['third_party_settings']['ui_skins']['theme']['#access'] = FALSE;
     }
-    $submit = [static::class, 'colorModeSubmit'];
-    if (!\in_array($submit, $form['#submit'] ?? [], TRUE)) {
-      $form['#submit'][] = $submit;
+    $form['#submit'] ??= [];
+    $before = [static::class, 'skinBeforeSave'];
+    if (!\in_array($before, $form['#submit'], TRUE)) {
+      \array_unshift($form['#submit'], $before);
+    }
+    $after = [static::class, 'skinAfterSave'];
+    if (!\in_array($after, $form['#submit'], TRUE)) {
+      $form['#submit'][] = $after;
     }
     return $form;
   }

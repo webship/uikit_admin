@@ -10,13 +10,19 @@
 :root {
   /* Color. The UIkit defaults are below the WCAG contrast minimum, so the
      theme sets its own: the text, the muted text and the accent reach 7:1
-     (AAA) on the surface, the canvas and the muted background. */
+     (AAA) on the surface, the canvas and the muted background. UI Skins
+     offers every token below as a setting, under the same name. */
   --uikit-admin-accent: #08508a;
-  --uikit-admin-accent-hover: #063f6e;
+
+  /* The hover color and the text on the accent follow the accent, so a site
+     that changes the accent only gets both. */
+  --uikit-admin-accent-hover: color-mix(in srgb, var(--uikit-admin-accent) 80%, #000);
   --uikit-admin-on-accent: #fff;
   --uikit-admin-focus: #1f7ad4;
   --uikit-admin-surface: #fff;
   --uikit-admin-canvas: #f3f4f6;
+  --uikit-admin-muted: #eef0f3;
+  --uikit-admin-muted-hover: #e3e6ea;
 
   /* The border is for decorative dividers. The edge of a field, a checkbox,
      a radio or a toggle reaches 3:1 (WCAG 1.4.11). */
@@ -24,6 +30,13 @@
   --uikit-admin-border-control: #7d8794;
   --uikit-admin-text: #1b1f24;
   --uikit-admin-text-muted: #454d57;
+  --uikit-admin-emphasis: #0d1117;
+  --uikit-admin-code: #9e1231;
+
+  /* The text on the secondary and the danger buttons, and their colors. */
+  --uikit-admin-inverse: #fff;
+  --uikit-admin-secondary: #1b1f24;
+  --uikit-admin-secondary-hover: #0d1117;
 
   /* The alerts: text on background at 7:1. */
   --uikit-admin-alert-primary: #0b4a80;
@@ -40,92 +53,168 @@
   --uikit-admin-success: #13795a;
   --uikit-admin-warning: #8a5a12;
   --uikit-admin-danger: #9e1231;
+  --uikit-admin-danger-hover: #7f0e27;
+
+  /* Shape. */
   --uikit-admin-radius: 8px;
+  --uikit-admin-radius-control: 6px;
+  --uikit-admin-radius-large: 12px;
+  --uikit-admin-radius-pill: 999px;
   --uikit-admin-shadow: 0 1px 2px rgb(16, 24, 40, 0.06), 0 1px 3px rgb(16, 24, 40, 0.1);
   --uikit-admin-shadow-raised: 0 4px 12px rgb(16, 24, 40, 0.1);
+
+  /* Size and room. The compact density gives these other values. */
   --uikit-admin-header-height: 56px;
+  --uikit-admin-control-height: 44px;
+  --uikit-admin-control-small-height: 32px;
+  --uikit-admin-choice-size: 20px;
+  --uikit-admin-choice-height: 44px;
+  --uikit-admin-font-size: 15px;
+  --uikit-admin-line-height: 1.5;
+  --uikit-admin-title-size: 26px;
+  --uikit-admin-space-row: 12px 16px;
+  --uikit-admin-space-field: 20px;
+  --uikit-admin-space-card: 30px;
+  --uikit-admin-space-card-small: 20px;
+  --uikit-admin-space-card-large: 40px;
+  --uikit-admin-space-head: 14px;
+
+  /* Focus: one solid ring (WCAG 2.4.13). */
+  --uikit-admin-focus-width: 2px;
+  --uikit-admin-focus-offset: 2px;
 
   /* The UIkit tokens follow the same palette. */
   --uk-global-color: var(--uikit-admin-text);
-  --uk-global-emphasis-color: #0d1117;
+  --uk-global-emphasis-color: var(--uikit-admin-emphasis);
   --uk-global-muted-color: var(--uikit-admin-text-muted);
+  --uk-global-inverse-color: var(--uikit-admin-inverse);
   --uk-global-background: var(--uikit-admin-surface);
-  --uk-global-muted-background: #eef0f3;
+  --uk-global-muted-background: var(--uikit-admin-muted);
+  --uk-global-muted-background-hover: var(--uikit-admin-muted-hover);
   --uk-global-border: var(--uikit-admin-border);
   --uk-global-link-color: var(--uikit-admin-accent);
   --uk-global-link-hover-color: var(--uikit-admin-accent-hover);
   --uk-global-primary-background: var(--uikit-admin-accent);
   --uk-global-primary-background-hover: var(--uikit-admin-accent-hover);
+  --uk-global-secondary-background: var(--uikit-admin-secondary);
+  --uk-global-secondary-background-hover: var(--uikit-admin-secondary-hover);
   --uk-global-danger-background: var(--uikit-admin-danger);
+  --uk-global-danger-background-hover: var(--uikit-admin-danger-hover);
   --uk-global-success-background: var(--uikit-admin-success);
   --uk-global-warning-background: var(--uikit-admin-warning);
+  --uk-alert-primary-background: var(--uikit-admin-alert-primary-bg);
+  --uk-alert-success-background: var(--uikit-admin-alert-success-bg);
+  --uk-alert-warning-background: var(--uikit-admin-alert-warning-bg);
+  --uk-alert-danger-background: var(--uikit-admin-alert-danger-bg);
   --uk-global-font-family: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+}
+
+/* The compact density only gives the tokens of size and room other values.
+   It suits the people who work in the back office all day: the rows, the
+   panels and the fields give up their outer room, never their legibility,
+   and never the 24px minimum of a target (WCAG 2.5.8). */
+:root[data-uikit-admin-density="compact"] {
+  --uikit-admin-font-size: 14px;
+  --uikit-admin-title-size: 22px;
+  --uikit-admin-choice-height: 32px;
+  --uikit-admin-space-row: 7px 12px;
+  --uikit-admin-space-field: 14px;
+  --uikit-admin-space-card: 16px;
+  --uikit-admin-space-card-small: 16px;
+  --uikit-admin-space-card-large: 16px;
+  --uikit-admin-space-head: 10px;
+}
+
+:root[data-theme="dark"] {
+  --uikit-admin-accent: #8cbcff;
+  --uikit-admin-accent-hover: color-mix(in srgb, var(--uikit-admin-accent) 69%, #fff);
+  --uikit-admin-focus: #8cbcff;
+  --uikit-admin-surface: #1c2128;
+  --uikit-admin-canvas: #14181d;
+  --uikit-admin-muted: #232a32;
+  --uikit-admin-muted-hover: #2c343d;
+  --uikit-admin-border: #2f3742;
+  --uikit-admin-border-control: #7a8594;
+  --uikit-admin-text: #ffffffe0;
+  --uikit-admin-text-muted: #ffffffad;
+  --uikit-admin-emphasis: #fff;
+  --uikit-admin-code: #ffa8b8;
+  --uikit-admin-secondary: #3a4450;
+  --uikit-admin-secondary-hover: #4a5563;
+  --uikit-admin-alert-primary: #bcd9ff;
+  --uikit-admin-alert-primary-bg: #182f44;
+  --uikit-admin-alert-success: #b8f0d9;
+  --uikit-admin-alert-success-bg: #1a3433;
+  --uikit-admin-alert-warning: #ffd9a8;
+  --uikit-admin-alert-warning-bg: #342e23;
+  --uikit-admin-alert-danger: #ffc2cd;
+  --uikit-admin-alert-danger-bg: #411f2c;
+  --uikit-admin-shadow: none;
+  --uikit-admin-shadow-raised: 0 4px 12px rgb(0, 0, 0, 0.45);
+
+  color-scheme: dark;
+}
+
+/* White on a dark accent, black on a light one: the luminance of the accent
+   decides, so the text on a primary button reads whatever the accent is. */
+@supports (color: color(from red srgb-linear r g b)) {
+  :root {
+    --uikit-admin-on-accent: color(from var(--uikit-admin-accent) srgb-linear clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000, 1) clamp(0, (0.179 - (0.2126 * r + 0.7152 * g + 0.0722 * b)) * 1000, 1));
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --uikit-admin-accent: #8cbcff;
-    --uikit-admin-accent-hover: #b0d1ff;
-    --uikit-admin-on-accent: #0b1a2e;
+    --uikit-admin-accent-hover: color-mix(in srgb, var(--uikit-admin-accent) 69%, #fff);
     --uikit-admin-focus: #8cbcff;
     --uikit-admin-surface: #1c2128;
     --uikit-admin-canvas: #14181d;
+    --uikit-admin-muted: #232a32;
+    --uikit-admin-muted-hover: #2c343d;
     --uikit-admin-border: #2f3742;
     --uikit-admin-border-control: #7a8594;
+    --uikit-admin-text: #ffffffe0;
+    --uikit-admin-text-muted: #ffffffad;
+    --uikit-admin-emphasis: #fff;
+    --uikit-admin-code: #ffa8b8;
+    --uikit-admin-secondary: #3a4450;
+    --uikit-admin-secondary-hover: #4a5563;
     --uikit-admin-alert-primary: #bcd9ff;
-    --uikit-admin-alert-primary-bg: color-mix(in sRGB, #0a5fa8 22%, #1c2128);
+    --uikit-admin-alert-primary-bg: #182f44;
     --uikit-admin-alert-success: #b8f0d9;
-    --uikit-admin-alert-success-bg: color-mix(in sRGB, #13795a 22%, #1c2128);
+    --uikit-admin-alert-success-bg: #1a3433;
     --uikit-admin-alert-warning: #ffd9a8;
-    --uikit-admin-alert-warning-bg: color-mix(in sRGB, #8a5a12 22%, #1c2128);
+    --uikit-admin-alert-warning-bg: #342e23;
     --uikit-admin-alert-danger: #ffc2cd;
-    --uikit-admin-alert-danger-bg: color-mix(in sRGB, #c2183c 22%, #1c2128);
-    --uikit-admin-text: rgb(255, 255, 255, 0.88);
-    --uikit-admin-text-muted: rgb(255, 255, 255, 0.68);
+    --uikit-admin-alert-danger-bg: #411f2c;
     --uikit-admin-shadow: none;
     --uikit-admin-shadow-raised: 0 4px 12px rgb(0, 0, 0, 0.45);
-    --uk-global-emphasis-color: #fff;
-    --uk-global-muted-background: #232a32;
-    --uikit-admin-code: #ffa8b8;
 
     color-scheme: dark;
   }
 }
 
-:root[data-theme="dark"] {
-  --uikit-admin-accent: #8cbcff;
-  --uikit-admin-accent-hover: #b0d1ff;
-  --uikit-admin-on-accent: #0b1a2e;
-  --uikit-admin-focus: #8cbcff;
-  --uikit-admin-surface: #1c2128;
-  --uikit-admin-canvas: #14181d;
-  --uikit-admin-border: #2f3742;
-  --uikit-admin-border-control: #7a8594;
-  --uikit-admin-alert-primary: #bcd9ff;
-  --uikit-admin-alert-primary-bg: color-mix(in sRGB, #0a5fa8 22%, #1c2128);
-  --uikit-admin-alert-success: #b8f0d9;
-  --uikit-admin-alert-success-bg: color-mix(in sRGB, #13795a 22%, #1c2128);
-  --uikit-admin-alert-warning: #ffd9a8;
-  --uikit-admin-alert-warning-bg: color-mix(in sRGB, #8a5a12 22%, #1c2128);
-  --uikit-admin-alert-danger: #ffc2cd;
-  --uikit-admin-alert-danger-bg: color-mix(in sRGB, #c2183c 22%, #1c2128);
-  --uikit-admin-text: rgb(255, 255, 255, 0.88);
-  --uikit-admin-text-muted: rgb(255, 255, 255, 0.68);
-  --uikit-admin-shadow: none;
-  --uikit-admin-shadow-raised: 0 4px 12px rgb(0, 0, 0, 0.45);
-  --uk-global-emphasis-color: #fff;
-  --uk-global-muted-background: #232a32;
-  --uikit-admin-code: #ffa8b8;
+/* The browsers that do not derive a color yet keep a text that reads on the
+   default accent of the dark mode. */
+@supports not (color: color(from red srgb-linear r g b)) {
+  :root[data-theme="dark"] {
+    --uikit-admin-on-accent: #0b1a2e;
+  }
 
-  color-scheme: dark;
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --uikit-admin-on-accent: #0b1a2e;
+    }
+  }
 }
 
 html,
 body {
   color: var(--uikit-admin-text);
   background: var(--uikit-admin-canvas);
-  font-size: 15px;
-  line-height: 1.5;
+  font-size: var(--uikit-admin-font-size);
+  line-height: var(--uikit-admin-line-height);
 }
 
 /* --------------------------------------------------------------- Alerts -- */
@@ -181,7 +270,7 @@ body {
   z-index: 10;
   top: 0;
   margin: 0 0 20px;
-  padding: 14px 0;
+  padding: var(--uikit-admin-space-head) 0;
   border-bottom: 1px solid var(--uikit-admin-border);
   background: color-mix(in sRGB, var(--uikit-admin-canvas) 88%, transparent);
   gap: 12px;
@@ -192,7 +281,7 @@ body {
   margin: 0;
   letter-spacing: -0.01em;
   color: var(--uk-global-emphasis-color);
-  font-size: 26px;
+  font-size: var(--uikit-admin-title-size);
   font-weight: 650;
   line-height: 1.2;
 }
@@ -218,6 +307,23 @@ body {
   border-radius: var(--uikit-admin-radius);
   background: var(--uikit-admin-surface);
   box-shadow: var(--uikit-admin-shadow);
+}
+
+/* The room inside a panel is a token: the compact density and UI Skins give
+   it another value. */
+.uk-card-body {
+  padding: var(--uikit-admin-space-card);
+}
+
+@media (min-width: 1200px) {
+  .uk-card-body {
+    padding: var(--uikit-admin-space-card-large);
+  }
+}
+
+.uk-card-small.uk-card-body,
+.uk-card-small .uk-card-body {
+  padding: var(--uikit-admin-space-card-small);
 }
 
 .uk-card-title {
@@ -300,7 +406,7 @@ body {
 .uikit-admin-tabs--secondary > * > a {
   padding: 4px 12px;
   text-transform: none;
-  border-radius: 999px;
+  border-radius: var(--uikit-admin-radius-pill);
 }
 
 /* -------------------------------------------------------------- Actions -- */
@@ -311,14 +417,14 @@ body {
 
 .uikit-admin-actions .uk-button {
   text-transform: none;
-  border-radius: 6px;
+  border-radius: var(--uikit-admin-radius-control);
   font-weight: 600;
 }
 
 .uk-button {
   letter-spacing: 0;
   text-transform: none;
-  border-radius: 6px;
+  border-radius: var(--uikit-admin-radius-control);
   font-weight: 600;
 }
 
@@ -361,7 +467,7 @@ body {
 }
 
 .uk-table th {
-  padding: 12px 16px;
+  padding: var(--uikit-admin-space-row);
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--uikit-admin-text-muted);
@@ -371,7 +477,7 @@ body {
 }
 
 .uk-table td {
-  padding: 12px 16px;
+  padding: var(--uikit-admin-space-row);
   border-top: 1px solid var(--uikit-admin-border);
 }
 
@@ -390,7 +496,7 @@ body {
 /* ---------------------------------------------------------------- Forms -- */
 
 .uikit-admin-form-item {
-  margin-bottom: 20px;
+  margin-bottom: var(--uikit-admin-space-field);
 }
 
 .uk-form-label,
@@ -414,7 +520,7 @@ body {
 .uk-textarea {
   color: var(--uikit-admin-text);
   border-color: var(--uikit-admin-border-control);
-  border-radius: 6px;
+  border-radius: var(--uikit-admin-radius-control);
   background: var(--uikit-admin-surface);
 }
 
@@ -423,13 +529,24 @@ body {
   border-color: var(--uikit-admin-border-control);
 }
 
+/* The height of a field is a token: UIkit computes with its own variable,
+   so the rule is set here. */
+.uk-input,
+.uk-select:not([multiple], [size]) {
+  height: var(--uikit-admin-control-height);
+}
+
+.uk-form-small:not(textarea, [multiple], [size]) {
+  height: var(--uikit-admin-control-small-height);
+}
+
 /* A field with the focus gets the same solid ring as the rest (a glow alone
    is too faint a change). */
 .uk-input:focus,
 .uk-select:focus,
 .uk-textarea:focus {
   border-color: var(--uikit-admin-accent);
-  outline: 2px solid var(--uikit-admin-focus);
+  outline: var(--uikit-admin-focus-width) solid var(--uikit-admin-focus);
   outline-offset: 1px;
   box-shadow: none;
 }
@@ -440,7 +557,7 @@ body {
 .uikit-admin-form-item__choice {
   display: flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--uikit-admin-choice-height);
   gap: 10px;
 }
 
@@ -669,52 +786,18 @@ html {
   margin-right: 10px;
 }
 
-/* -------------------------------------------------------------- Density -- */
-
-/* Compact suits the people who work in the back office all day: the rows, the
-   panels and the fields give up their outer room, never their legibility. */
-[data-uikit-admin-density="compact"] {
-  font-size: 14px;
-}
-
-[data-uikit-admin-density="compact"] .uk-table th,
-[data-uikit-admin-density="compact"] .uk-table td {
-  padding: 7px 12px;
-}
-
-[data-uikit-admin-density="compact"] .uikit-admin-form-item {
-  margin-bottom: 14px;
-}
-
-/* Compact gives up the 44px rows, never the 24px minimum (WCAG 2.5.8). */
-[data-uikit-admin-density="compact"] .uikit-admin-form-item__choice {
-  min-height: 32px;
-}
-
-[data-uikit-admin-density="compact"] .uk-card-body {
-  padding: 16px;
-}
-
-[data-uikit-admin-density="compact"] .uikit-admin-page-head {
-  padding: 10px 0;
-}
-
-[data-uikit-admin-density="compact"] .uikit-admin-page-head h1 {
-  font-size: 22px;
-}
-
 /* ---------------------------------------------------------------- Focus -- */
 
 /* One solid focus ring for the whole back office, in the color of the
    settings (WCAG 2.4.13): the rail, the top bar, the breadcrumb, the actions,
    the skip link and the sign-in form too. */
 :where(a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
-  outline: 2px solid var(--uikit-admin-focus);
-  outline-offset: 2px;
+  outline: var(--uikit-admin-focus-width) solid var(--uikit-admin-focus);
+  outline-offset: var(--uikit-admin-focus-offset);
 }
 
 .uikit-admin-main :is(a, button, summary):focus-visible {
-  border-radius: 4px;
+  border-radius: calc(var(--uikit-admin-radius-control) - 2px);
 }
 
 /* UIkit and core's contextual links drop the outline of a checkbox, a radio
@@ -722,8 +805,8 @@ html {
 .uk-checkbox:focus-visible,
 .uk-radio:focus-visible,
 .contextual .trigger:focus-visible {
-  outline: 2px solid var(--uikit-admin-focus);
-  outline-offset: 2px;
+  outline: var(--uikit-admin-focus-width) solid var(--uikit-admin-focus);
+  outline-offset: var(--uikit-admin-focus-offset);
 }
 
 /* ------------------------------------------------- Content form sidebar -- */
@@ -863,7 +946,7 @@ fieldset .uikit-admin-form-item {
   cursor: pointer;
   vertical-align: middle;
   border: 1px solid var(--uikit-admin-border);
-  border-radius: 6px;
+  border-radius: var(--uikit-admin-radius-control);
   background: var(--uikit-admin-surface);
 }
 
@@ -884,7 +967,7 @@ fieldset .uikit-admin-form-item {
   cursor: pointer;
   color: var(--uikit-admin-accent);
   border: 1px solid var(--uikit-admin-border);
-  border-radius: 6px;
+  border-radius: var(--uikit-admin-radius-control);
   background: var(--uikit-admin-surface);
   font: inherit;
   font-size: 13px;
@@ -1011,6 +1094,12 @@ button.link {
     z-index: 2;
     top: var(--uikit-admin-bar-height, 0);
   }
+
+  /* A table that scrolls in its box keeps its header in the flow: sticky, it
+     would stick to the box and cover the first rows. */
+  .uikit-admin-table-scroll.is-overflowing .uk-table.sticky-header > thead > tr > th {
+    position: static;
+  }
 }
 
 /* Below that, the table scrolls in its own box, where the sticky header of
@@ -1031,7 +1120,7 @@ button.link {
   min-width: 32px;
   padding: 4px 8px;
   text-align: center;
-  border-radius: 6px;
+  border-radius: var(--uikit-admin-radius-control);
 }
 
 .uikit-admin-pager > .uk-active > * {
@@ -1221,6 +1310,15 @@ button.link {
   gap: 8px;
 }
 
+/* ------------------------------------------------------- Other modules --- */
+
+/* Swagger UI prints the version of an API as a pre inside a badge: the pre
+   keeps the background of the badge, not the one of a code block. */
+.swagger-ui :is(small, .version-stamp) pre {
+  border: 0;
+  background: transparent;
+}
+
 /* ------------------------------------------------------------ CKEditor 5 -- */
 
 /* The sticky toolbar of the editor stays under the sticky bar. The bar
@@ -1245,13 +1343,12 @@ button.link {
   color: var(--uikit-admin-on-accent);
 }
 
-/* UIkit prints code and emphasis in the danger color, 2.4:1 on the dark
-   surfaces: the dark mode lightens it. */
+/* UIkit prints code in the danger color, 2.4:1 on the dark surfaces: the
+   dark mode lightens it. Emphasis keeps the color of the text around it. */
 :not(pre) > code,
 :not(pre) > kbd,
-:not(pre) > samp,
-em {
-  color: var(--uikit-admin-code, var(--uk-global-danger-background));
+:not(pre) > samp {
+  color: var(--uikit-admin-code);
 }
 
 /* The check of a checkbox and the dot of a radio are white on the accent;
@@ -1388,6 +1485,60 @@ em {
 .uk-button-small::before {
   position: absolute;
   inset: -6px 0;
+  content: "";
+}
+
+/* The button that opens the operations of a row is as wide as it is high. */
+.uikit-admin-operations button.uk-button-small {
+  min-width: 44px;
+  padding-inline: 0;
+}
+
+/* The tabs, the secondary tabs, the items of the vertical tabs, the links
+   that sort a table and the summary of a panel are 44px high. */
+.uikit-admin-tabs > * > a,
+.uikit-admin-tabs--secondary > * > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.vertical-tabs__menu-item > a {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-sizing: border-box;
+  min-height: 44px;
+}
+
+.uk-table th > a {
+  display: inline-flex;
+  align-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  gap: 4px;
+}
+
+.uikit-admin-details__summary {
+  min-height: 44px;
+}
+
+/* A checkbox or a radio keeps its size, with a hit area as high as a choice
+   row around it: 44px, or 32px in the compact density, where the rows of a
+   table are closer. */
+.uk-checkbox,
+.uk-radio {
+  position: relative;
+  overflow: visible;
+}
+
+.uk-checkbox::before,
+.uk-radio::before {
+  position: absolute;
+  inset: calc((var(--uikit-admin-choice-size) - var(--uikit-admin-choice-height)) / 2);
   content: "";
 }
 

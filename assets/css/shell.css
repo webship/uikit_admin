@@ -6,7 +6,7 @@
 
 :root {
   --uikit-admin-rail-width: 272px;
-  --uikit-admin-rail-rail: 76px;
+  --uikit-admin-rail-width-collapsed: 76px;
 }
 
 /* ----------------------------------------------------------------- Rail -- */
@@ -53,7 +53,7 @@
   width: 30px;
   height: 30px;
   color: var(--uikit-admin-on-accent, #fff);
-  border-radius: 8px;
+  border-radius: var(--uikit-admin-radius, 8px);
   background: var(--uikit-admin-accent, #08508a);
   font-size: 14px;
   font-weight: 700;
@@ -93,7 +93,7 @@
   cursor: pointer;
   color: var(--uikit-admin-text-muted, #454d57);
   border: 1px solid var(--uikit-admin-border-control, #7d8794);
-  border-radius: 6px;
+  border-radius: var(--uikit-admin-radius-control, 6px);
   background: var(--uikit-admin-surface, #fff);
 }
 
@@ -106,7 +106,7 @@
   padding: 0 12px;
   text-decoration: none;
   color: var(--uikit-admin-text-muted, #454d57);
-  border-radius: 8px;
+  border-radius: var(--uikit-admin-radius, 8px);
   font-size: 14px;
 }
 
@@ -150,7 +150,7 @@
   padding: 8px 10px;
   text-decoration: none;
   color: var(--uikit-admin-text, #1b1f24);
-  border-radius: 7px;
+  border-radius: var(--uikit-admin-radius-control, 6px);
   font-size: 14px;
   gap: 10px;
 }
@@ -184,7 +184,7 @@
 .uikit-admin-rail__count {
   flex-shrink: 0;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: var(--uikit-admin-radius-pill, 999px);
   background: var(--uk-global-muted-background, #eef0f3);
   font-size: 11px;
   font-weight: 650;
@@ -213,9 +213,9 @@
   justify-content: center;
   width: 30px;
   height: 30px;
-  color: var(--uikit-admin-accent, #08508a);
-  border-radius: 999px;
-  background: #dbe6f2;
+  color: var(--uikit-admin-text, #1b1f24);
+  border-radius: var(--uikit-admin-radius-pill, 999px);
+  background: color-mix(in srgb, var(--uikit-admin-accent, #08508a) 16%, var(--uikit-admin-surface, #fff));
   font-size: 12px;
   font-weight: 650;
 }
@@ -240,34 +240,38 @@
   font-size: 12px;
 }
 
-/* The rail collapsed: icons only, labels kept for screen readers. */
-.uikit-admin-rail-collapsed .uikit-admin-rail {
-  width: var(--uikit-admin-rail-rail);
-  padding-inline: 10px;
-}
+/* The rail collapsed, on a wide screen: icons only, labels kept for screen
+   readers. On a narrow screen the same class opens the rail as a drawer,
+   which keeps its labels. */
+@media (min-width: 961px) {
+  .uikit-admin-rail-collapsed .uikit-admin-rail {
+    width: var(--uikit-admin-rail-width-collapsed);
+    padding-inline: 10px;
+  }
 
-.uikit-admin-rail-collapsed .uikit-admin-rail__site-text,
-.uikit-admin-rail-collapsed .uikit-admin-rail__section-title,
-.uikit-admin-rail-collapsed .uikit-admin-rail__label,
-.uikit-admin-rail-collapsed .uikit-admin-rail__count,
-.uikit-admin-rail-collapsed .uikit-admin-rail__account-text,
-.uikit-admin-rail-collapsed .uikit-admin-rail__account-link,
-.uikit-admin-rail-collapsed .uikit-admin-rail__logout-text {
-  position: absolute;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  width: 1px;
-  height: 1px;
-  white-space: nowrap;
-}
+  .uikit-admin-rail-collapsed .uikit-admin-rail__site-text,
+  .uikit-admin-rail-collapsed .uikit-admin-rail__section-title,
+  .uikit-admin-rail-collapsed .uikit-admin-rail__label,
+  .uikit-admin-rail-collapsed .uikit-admin-rail__count,
+  .uikit-admin-rail-collapsed .uikit-admin-rail__account-text,
+  .uikit-admin-rail-collapsed .uikit-admin-rail__account-link,
+  .uikit-admin-rail-collapsed .uikit-admin-rail__logout-text {
+    position: absolute;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    width: 1px;
+    height: 1px;
+    white-space: nowrap;
+  }
 
-.uikit-admin-rail-collapsed .uikit-admin-rail__item {
-  justify-content: center;
-  padding-inline: 8px;
-}
+  .uikit-admin-rail-collapsed .uikit-admin-rail__item {
+    justify-content: center;
+    padding-inline: 8px;
+  }
 
-.uikit-admin-rail-collapsed .uikit-admin-rail__toggle svg {
-  transform: rotate(180deg);
+  .uikit-admin-rail-collapsed .uikit-admin-rail__toggle svg {
+    transform: rotate(180deg);
+  }
 }
 
 /* --------------------------------------------------------------- Shell --- */
@@ -279,7 +283,7 @@
 }
 
 .uikit-admin-rail-collapsed .uikit-admin-shell {
-  margin-left: var(--uikit-admin-rail-rail);
+  margin-left: var(--uikit-admin-rail-width-collapsed);
 }
 
 @media (max-width: 960px) {
@@ -315,7 +319,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  min-height: 56px;
+  min-height: var(--uikit-admin-header-height, 56px);
   padding: 10px 28px;
 }
 
@@ -329,7 +333,7 @@
   cursor: pointer;
   color: var(--uikit-admin-text-muted, #454d57);
   border: 1px solid var(--uikit-admin-border-control, #7d8794);
-  border-radius: 8px;
+  border-radius: var(--uikit-admin-radius, 8px);
   background: var(--uikit-admin-surface, #fff);
 }
 
@@ -368,7 +372,7 @@
   text-align: left;
   color: var(--uikit-admin-text-muted, #454d57);
   border: 1px solid var(--uikit-admin-border-control, #7d8794);
-  border-radius: 8px;
+  border-radius: var(--uikit-admin-radius, 8px);
   background: var(--uikit-admin-surface, #fff);
   font: inherit;
   font-size: 14px;
@@ -385,7 +389,7 @@
   color: var(--uikit-admin-text-muted, #454d57);
   border: 1px solid var(--uikit-admin-border, #dfe3e8);
   border-bottom-width: 2px;
-  border-radius: 5px;
+  border-radius: calc(var(--uikit-admin-radius-control, 6px) - 1px);
   background: var(--uikit-admin-surface, #fff);
   font: inherit;
   font-size: 11px;
@@ -519,7 +523,7 @@
   width: min(680px, 100%);
   max-height: 70vh;
   border: 1px solid var(--uikit-admin-border-control, #7d8794);
-  border-radius: 12px;
+  border-radius: var(--uikit-admin-radius-large, 12px);
   background: var(--uikit-admin-surface, #fff);
   box-shadow: 0 16px 40px rgb(16, 24, 40, 0.26);
 }
@@ -632,7 +636,7 @@ a.visually-hidden.focusable:focus-within {
   min-height: 44px;
   padding: 12px 16px;
   color: var(--uikit-admin-text, #1b1f24);
-  border-radius: 6px;
+  border-radius: var(--uikit-admin-radius-control, 6px);
   outline: 2px solid var(--uikit-admin-focus, #1f7ad4);
   background: var(--uikit-admin-surface, #fff);
 }

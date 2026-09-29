@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 use Drupal\uikit_admin\Hook\ThemeHooks;
+use Drupal\uikit_admin\Skin;
 
 /**
  * Move the status messages out of the top bar, into their own region.
@@ -103,4 +104,37 @@ function uikit_admin_post_update_settings_langcode(): void {
   if (!$config->isNew() && !$config->get('langcode')) {
     $config->set('langcode', \Drupal::languageManager()->getDefaultLanguage()->getId())->save();
   }
+}
+
+/**
+ * Move the accent and the focus color to the keys of UI Skins.
+ *
+ * The colors are stored once, in the keys UI Skins reads. A color of the
+ * theme settings becomes the color of the light color mode: the dark color
+ * mode keeps its own accent, which reads on a dark page.
+ */
+function uikit_admin_post_update_accent_to_ui_skins(): void {
+  $config = \Drupal::configFactory()->getEditable('uikit_admin.settings');
+  if ($config->isNew()) {
+    return;
+  }
+  $colors = [];
+  // The accent of the releases before 4.0.1 was never a choice.
+  $accent = (string) $config->get('accent_color');
+  if ($accent !== '' && \strcasecmp($accent, '#0a5fa8') !== 0) {
+    $colors['accent'] = $accent;
+  }
+  $focus = (string) $config->get('focus_color');
+  if ($focus !== '') {
+    $colors['focus'] = $focus;
+  }
+  // A color saved in UI Skins wins: it is the one the screens showed last.
+  $stored = $config->get(Skin::KEY);
+  foreach (['accent' => 'uikit-admin-accent', 'focus' => 'uikit-admin-focus'] as $control => $variable) {
+    if (isset($stored[$variable][Skin::LIGHT])) {
+      unset($colors[$control]);
+    }
+  }
+  Skin::store($config, $colors);
+  $config->clear('accent_color')->clear('focus_color')->save();
 }

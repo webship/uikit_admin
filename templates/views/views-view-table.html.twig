@@ -37,7 +37,7 @@
     </caption>
   {% endif %}
   {% if header %}
-    <thead>
+    <thead{{ uikit_admin_boost ? ' hx-boost="true"' }}>
       <tr>
         {% for key, column in header %}
           {% if column.default_classes %}

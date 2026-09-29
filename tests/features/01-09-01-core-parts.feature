@@ -66,9 +66,9 @@ Feature: The parts of core drawn by the theme
      Then the element "input[name='htmx_navigation']" should exist
       And no error should have been logged
 
-  @settings
   Scenario: The accent color of the settings reaches the page
-    Given the UIkit Admin setting "accent_color" is "#c0392b"
+    Given the configuration "uikit_admin.settings" is put back after the scenario
+      And the design token "uikit-admin-accent" is "#c0392b" in the light color mode
       And I am logged in as the Drupal administrator
      When I go to "/admin/content"
      Then the style "background-color" of the element ".uk-button-primary" should be "rgb(192, 57, 43)"

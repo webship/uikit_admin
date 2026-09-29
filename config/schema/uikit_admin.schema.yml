@@ -1,4 +1,10 @@
 # Schema for the configuration files of the UIkit Admin theme.
+#
+# Each setting says what it does and which values it takes, so a person, a
+# recipe or an assistant can set it without reading the code. The colors and
+# the other design tokens are not settings of their own: they are stored in
+# the keys of UI Skins (third_party_settings.ui_skins.css_variables), under
+# the names of uikit_admin.ui_skins.css_variables.yml.
 
 uikit_admin.settings:
   type: theme_settings
@@ -7,18 +13,15 @@ uikit_admin.settings:
     htmx_navigation:
       type: boolean
       label: 'Navigate with HTMX'
+      description: 'True: links, pagers, sorting and filters load only the page, and the rail and the top bar stay. False: every link loads the page in full.'
     navbar_sticky:
       type: boolean
       label: 'Keep the navbar at the top of the screen'
-    accent_color:
-      type: color_hex
-      label: 'Accent color'
-    focus_color:
-      type: color_hex
-      label: 'Focus color'
+      description: 'True: the top bar stays in view while the page scrolls.'
     color_mode:
       type: string
       label: 'Color mode'
+      description: 'auto follows the operating system of the person, light and dark force one mode for everyone.'
       constraints:
         Choice:
           - auto
@@ -27,6 +30,7 @@ uikit_admin.settings:
     density:
       type: string
       label: 'Density'
+      description: 'How much room the rows, the panels and the fields take: comfortable, or compact for the people who work in the back office all day.'
       constraints:
         Choice:
           - comfortable
@@ -34,12 +38,15 @@ uikit_admin.settings:
     sticky_actions:
       type: boolean
       label: 'Keep the buttons of a form in reach'
+      description: 'True: the Save row stays at the bottom of the screen while a long form scrolls.'
     edit_form_sidebar:
       type: boolean
       label: 'Put the meta of a content form in a sidebar'
+      description: 'True: the authoring information, the revision log and the other advanced groups of a content form sit next to the fields.'
     sign_in_layout:
       type: string
       label: 'Sign-in layout'
+      description: 'Where the form of the sign-in screens sits: center, start, end, top, bottom or spotlight.'
       constraints:
         # @see \Drupal\uikit_admin\Hook\PreprocessHooks::SIGN_IN_LAYOUTS
         Choice:
@@ -52,3 +59,4 @@ uikit_admin.settings:
     sign_in_message:
       type: label
       label: 'Sign-in message'
+      description: 'A sentence shown with the site name on the sign-in screens.'

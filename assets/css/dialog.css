@@ -59,7 +59,7 @@
   margin: 0;
   padding: 0;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--uikit-admin-radius-control, 6px);
   background: transparent;
 }
 
@@ -103,7 +103,7 @@
   padding: 0 18px;
   color: var(--uikit-admin-text);
   border: 1px solid var(--uikit-admin-border);
-  border-radius: 6px;
+  border-radius: var(--uikit-admin-radius-control, 6px);
   background: var(--uikit-admin-surface);
   font-family: inherit;
   font-size: 14px;

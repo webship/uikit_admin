@@ -1,0 +1,25 @@
+{
+  "release": "4.0.1",
+  "rail": {
+    "/admin/content": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M4 5h16v14H4z\"></path><path d=\"M8 9h8M8 13h5\"></path></svg>",
+    "/admin/content/media": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M4 6h16v12H4z\"></path><path d=\"M4 15l4-4 4 4 3-3 5 5\"></path></svg>",
+    "/admin/structure": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M5 4h6v6H5zM13 14h6v6h-6zM8 10v4h5\"></path></svg>",
+    "/admin/appearance": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 4a8 8 0 100 16 3 3 0 002-5h2a4 4 0 004-4 7 7 0 00-8-7z\"></path></svg>",
+    "/admin/modules": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M7 4h4v4h4V4h2v16H7z\"></path></svg>",
+    "/admin/config": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M5 7h14M5 12h14M5 17h14\"></path><circle cx=\"9\" cy=\"7\" r=\"2\"></circle><circle cx=\"15\" cy=\"12\" r=\"2\"></circle><circle cx=\"8\" cy=\"17\" r=\"2\"></circle></svg>",
+    "/admin/people": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"9\" cy=\"8\" r=\"3\"></circle><path d=\"M4 19a5 5 0 0110 0M16 11h5M18.5 8.5v5\"></path></svg>",
+    "/admin/reports": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M5 19V9M12 19V5M19 19v-7\"></path></svg>",
+    "/admin/help": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><circle cx=\"12\" cy=\"12\" r=\"9\"></circle><path d=\"M9.5 9.5a2.5 2.5 0 113 2.5v1.5M12 17h.01\"></path></svg>",
+    "/admin/webdashboard": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M4 4h7v9H4zM13 4h7v5h-7zM13 11h7v9h-7zM4 15h7v5H4z\"></path></svg>",
+    "/admin/announcements_feed": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M4 10v4h3l7 4V6l-7 4z\"></path><path d=\"M17.5 9a4 4 0 010 6\"></path></svg>"
+  },
+  "fallback": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M5 7h14M5 12h14M5 17h14\"></path><circle cx=\"9\" cy=\"7\" r=\"2\"></circle><circle cx=\"15\" cy=\"12\" r=\"2\"></circle><circle cx=\"8\" cy=\"17\" r=\"2\"></circle></svg>",
+  "controls": {
+    "[data-uikit-admin-rail-toggle]": "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M15 6l-6 6 6 6\"></path></svg>",
+    ".uikit-admin-rail__account-link": "<svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M9 6l6 6-6 6\"></path></svg>",
+    ".uikit-admin-rail__logout": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10\"></path></svg>",
+    "[data-uikit-admin-rail-open]": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><path d=\"M4 6h16M4 12h16M4 18h16\"></path></svg>",
+    ".uikit-admin-topbar__search": "<svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6\"></circle><path d=\"M16 16l4 4\"></path></svg>",
+    ".uikit-admin-palette__search": "<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" aria-hidden=\"true\"><circle cx=\"11\" cy=\"11\" r=\"6\"></circle><path d=\"M16 16l4 4\"></path></svg>"
+  }
+}

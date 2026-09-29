@@ -250,10 +250,14 @@
     if (parsed.searchParams.has('token')) {
       return true;
     }
-    return Boolean(
-      element?.closest(
-        '.use-ajax, [data-dialog-type], [target], [download], [data-contextual-id], .contextual, [hx-boost="false"]',
-      ),
+    // The nearest hx-boost decides, as it does for HTMX: the sort links and
+    // the pager of a bulk form turn it back on inside the form that posts.
+    return (
+      Boolean(
+        element?.closest(
+          '.use-ajax, [data-dialog-type], [target], [download], [data-contextual-id], .contextual',
+        ),
+      ) || element?.closest('[hx-boost]')?.getAttribute('hx-boost') === 'false'
     );
   };
 

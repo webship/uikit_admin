@@ -53,3 +53,11 @@ Feature: HTMX navigation
     Given I am logged in as the Drupal administrator
      When I go to "/admin/content"
      Then the page should load nothing from another host
+
+  Scenario: The sort links of a bulk listing go through HTMX
+    Given I am logged in as the Drupal administrator
+     When I go to "/admin/content"
+      And I mark the current page
+      And I click on the element "thead a[href*='order=title']"
+     Then the page should have been swapped by HTMX
+      And the current path should end with "/admin/content"

@@ -37,6 +37,6 @@
   {{ include('uikit_admin:pagination', {
     items: list,
     alignment: 'center',
-    attributes: create_attribute({ class: ['pager__items', 'js-pager__items', 'uikit-admin-pager'] }),
+    attributes: create_attribute({ class: ['pager__items', 'js-pager__items', 'uikit-admin-pager'], 'hx-boost': uikit_admin_boost ? 'true' : false }),
   }, with_context: false) }}
 {% endif %}

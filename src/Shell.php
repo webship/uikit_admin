@@ -158,7 +158,12 @@ class Shell {
     $items = [];
     $this->flatten($tree, '', $items);
 
-    return \array_merge($items, $this->extraDestinations());
+    // One entry for each place, the first one found keeps its group.
+    $unique = [];
+    foreach (\array_merge($items, $this->extraDestinations()) as $item) {
+      $unique[$item['url']] ??= $item;
+    }
+    return \array_values($unique);
   }
 
   /**
@@ -169,6 +174,10 @@ class Shell {
    */
   protected function extraDestinations(): array {
     $routes = [
+      'node.add_page' => [$this->t('Content'), $this->t('Add content')],
+      'system.admin_content' => [$this->t('Content'), $this->t('Content')],
+      'entity.media.collection' => [$this->t('Content'), $this->t('Media')],
+      'entity.media.add_page' => [$this->t('Content'), $this->t('Add media')],
       'user.admin_permissions' => [$this->t('People'), $this->t('Permissions')],
       'entity.user_role.collection' => [$this->t('People'), $this->t('Roles')],
       'system.status' => [$this->t('Reports'), $this->t('Status report')],
@@ -201,6 +210,20 @@ class Shell {
       }
     }
 
+    // Each content type the person may create.
+    if ($this->entityTypeManager->hasDefinition('node_type')) {
+      foreach ($this->entityTypeManager->getStorage('node_type')->loadMultiple() as $type) {
+        $url = Url::fromRoute('node.add', ['node_type' => $type->id()]);
+        if ($url->access($this->currentUser)) {
+          $items[] = [
+            'title' => (string) $this->t('Add @type', ['@type' => $type->label()]),
+            'group' => (string) $this->t('Content'),
+            'url' => $url->toString(),
+          ];
+        }
+      }
+    }
+
     return $items;
   }
 
@@ -227,9 +250,17 @@ class Shell {
     $best = NULL;
     $best_length = 0;
     foreach ($tree as $element) {
+      // Core keeps a link the person may not follow as an "Inaccessible"
+      // placeholder to the front page: the rail leaves it out.
+      if (!$element->access?->isAllowed()) {
+        continue;
+      }
       $link = $element->link;
       $route = $link->getRouteName();
       $url = $link->getUrlObject();
+      if ($route === '<front>') {
+        continue;
+      }
       $links[$route] = [
         'title' => $link->getTitle(),
         'url' => $url->toString(),

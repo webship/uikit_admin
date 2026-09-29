@@ -43,7 +43,7 @@
   width: 44px;
   height: 44px;
   color: #0a2540;
-  border-radius: 12px;
+  border-radius: var(--uikit-admin-radius-large, 12px);
   background: #fff;
   font-size: 20px;
 }
@@ -78,7 +78,7 @@
   max-width: 26rem;
   padding: 32px;
   border: 1px solid var(--uikit-admin-border, #dfe3e8);
-  border-radius: 12px;
+  border-radius: var(--uikit-admin-radius-large, 12px);
   background: var(--uikit-admin-surface, #fff);
   box-shadow: var(--uikit-admin-shadow-raised, 0 4px 12px rgb(16, 24, 40, 0.1));
 }

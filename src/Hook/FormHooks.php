@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Drupal\uikit_admin\Hook;
 
 use Drupal\Core\Extension\ThemeSettingsProvider;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Render\Element;
 
 /**
  * Form hooks for UIkit Admin.
@@ -42,6 +44,29 @@ class FormHooks {
       return;
     }
     $this->ensureAdvancedSettings($form);
+  }
+
+  /**
+   * Implements hook_form_alter().
+   *
+   * The CSS variables form of UI Skins puts the panel of each category inside
+   * its vertical tabs element. Without the Field Group module, which makes
+   * the vertical tabs element itself the holder of its panels, the panels
+   * come before the holder core adds, are marked as printed when they render
+   * in place, and the holder then prints nothing. The panels get a weight, so
+   * the holder renders first and every design token shows.
+   */
+  #[Hook('form_alter')]
+  public function formAlter(array &$form, FormStateInterface $form_state, string $form_id): void {
+    if ($form_id !== 'ui_skins.css_variables.theme_settings' || !isset($form['ui_skins_css_variables'])) {
+      return;
+    }
+    foreach (Element::children($form['ui_skins_css_variables']) as $key) {
+      $panel = &$form['ui_skins_css_variables'][$key];
+      if (($panel['#type'] ?? '') === 'details' && isset($panel['#group'])) {
+        $panel['#weight'] = 1;
+      }
+    }
   }
 
   /**

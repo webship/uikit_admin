@@ -1,4 +1,4 @@
-@a11y @aaa
+@a11y @aaa @cleanup
 Feature: The administration screens meet WCAG 2.2 AAA
   As a person with low vision, or who uses the keyboard or a pointer with
   little precision
@@ -95,3 +95,23 @@ Feature: The administration screens meet WCAG 2.2 AAA
       And I set the viewport to 390 by 800
      When I go to "/admin/content"
      Then every visible ".uikit-admin-topbar a, .uikit-admin-topbar button, .uikit-admin-topbar input" should offer a target of at least 44 by 44 pixels
+
+  Scenario Outline: The buttons keep a 7 to 1 contrast under the pointer in the <scheme> scheme
+    Given the "page" content item "qa-UIkit hover" exists
+      And I am logged in as the Drupal administrator
+      And the color scheme is "<scheme>"
+     When I go to "/admin/content?title=qa-UIkit+hover"
+      And I click on the element ".uikit-admin-operations a"
+      And I wait until the page is loaded
+     Then the hovered element ".uk-button-danger" should have a contrast of at least 7 to 1
+      And the hovered element ".uk-button-primary" should have a contrast of at least 7 to 1
+      And the hovered element ".uk-button-default" should have a contrast of at least 7 to 1
+    Given the page shows a specimen of the class "uk-icon-button"
+     Then the hovered element ".uk-icon-button" should have a contrast of at least 7 to 1
+    Given the page shows a specimen of the class "uk-button uk-button-secondary"
+     Then the hovered element ".uk-button-secondary" should have a contrast of at least 7 to 1
+
+    Examples:
+      | scheme |
+      | light  |
+      | dark   |

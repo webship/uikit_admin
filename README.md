@@ -57,13 +57,60 @@ Display Builder and the AI component agents can read them.
 
 - **Navigate with HTMX**: on by default; turn it off for full page loads everywhere.
 - **Sticky navbar**: keep the navbar at the top of the screen.
-- **Appearance**: the accent and focus colors, light, dark or the system's color mode, comfortable
-  or compact density, a sticky Save row and the content form sidebar. The color mode is the one
-  control of the mode: it is stored for UI Skins too (`uikit_admin_light`, `uikit_admin_dark`), and
-  the UI Skins select does not show on this form. UI Suite UIkit and Webtheme have the same setting.
+- **Appearance**: the accent and focus colors of the light and the dark color mode, light, dark
+  or the system's color mode, comfortable or compact density, a sticky Save row and the content
+  form sidebar. The color mode is the one control of the mode: it is stored for UI Skins too
+  (`uikit_admin_light`, `uikit_admin_dark`), and the UI Skins select does not show on this form.
+  UI Suite UIkit and Webtheme have the same setting. The colors are [design tokens](#design-tokens):
+  the form stores them where UI Skins reads them.
 - **Sign-in screens**: the layout of the log in, password reset and registration screens, and a
   sentence shown with the site name. They apply only when the sign-in routes use this theme: see
   [Sign-in screens](#sign-in-screens).
+
+## Design tokens
+
+Every color, size and shape of the screens is a CSS custom property, a design token, defined in
+`assets/css/admin.css`. [UI Skins](https://www.drupal.org/project/ui_skins) offers each one as a
+setting at *Appearance > CSS variables > UIkit Admin*, with a description, its default and a field
+for each scope:
+
+| Group | Tokens (`--uikit-admin-…`) |
+|---|---|
+| Brand | `accent`, `accent-hover`, `on-accent`, `focus` |
+| Surfaces | `canvas`, `surface`, `muted`, `muted-hover`, `border`, `border-control` |
+| Text colors | `text`, `text-muted`, `emphasis`, `code`, `inverse` |
+| States | `success`, `warning`, `danger`, `danger-hover`, `secondary`, `secondary-hover` |
+| Alerts | `alert-primary`, `alert-success`, `alert-warning`, `alert-danger`, and the same with `-bg` |
+| Shape | `radius`, `radius-control`, `radius-large`, `radius-pill`, `shadow`, `shadow-raised` |
+| Size and room | `rail-width`, `rail-width-collapsed`, `header-height`, `control-height`, `control-small-height`, `choice-size`, `choice-height`, `font-size`, `line-height`, `title-size`, `space-row`, `space-field`, `space-card`, `space-card-small`, `space-card-large`, `space-head` |
+| Focus | `focus-width`, `focus-offset` |
+
+- **Scopes.** `:root` is the light color mode and every value without a mode. The colors have a
+  second default for the dark color mode, `:root[data-theme="dark"]`, and the tokens of size and
+  room a second one for the compact density, `:root[data-uikit-admin-density="compact"]`.
+- **One stored value.** A changed token is stored once, in the settings of the theme, under
+  `third_party_settings.ui_skins.css_variables`. The theme settings form, the UI Skins form and a
+  recipe write the same keys:
+
+  ```yaml
+  third_party_settings:
+    ui_skins:
+      css_variables:
+        uikit-admin-accent:
+          ':root': '#7a1f5c'
+          ':root[data-theme="dark"]': '#ffb3e0'
+        uikit-admin-radius-control:
+          ':root': '0'
+  ```
+
+- **Without UI Skins** the theme prints the stored values itself, so the same configuration works
+  on a site that does not install the module.
+- **Follow the operating system.** The values of the dark color mode also apply when the color
+  mode follows the system and the system asks for the dark one.
+- **What follows the accent.** The hover color and the text on the accent are derived from the
+  accent in the style sheet: a site that changes only the accent gets both.
+- **Keep the contrast.** The defaults reach WCAG 2.2 AAA: 7:1 for a text on its background, 3:1
+  for the edge of a control, 44px for a target. The description of each token says what to keep.
 
 ## Next to a front theme
 
@@ -132,8 +179,8 @@ The sign-in routes are `user.login`, `user.pass`, `user.register`, `user.reset`,
 
 - Drupal core, the standard profile, with UIkit Admin as the administration theme.
 - The `website_starter` site template of the Webship stack.
-- UI Patterns 2, which the tests install for the scenarios that need it: the
-  CI gets it from the `require-dev` of `composer.json`.
+- UI Patterns 2 and UI Skins, which the tests install for the scenarios that
+  need them: the CI gets them from the `require-dev` of `composer.json`.
 
 The webship-js suite in `tests/` walks the back office in a browser, with
 WCAG 2.2 AAA checks in the light and the dark color scheme

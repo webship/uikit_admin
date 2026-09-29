@@ -7,14 +7,17 @@ namespace Drupal\uikit_admin\Hook;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Extension\ThemeSettingsProvider;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Template\Attribute;
 use Drupal\uikit_admin\Shell;
+use Drupal\uikit_admin\Skin;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -50,6 +53,7 @@ class PreprocessHooks {
     // when they are installed.
     #[Autowire(service: 'service_container')]
     protected ContainerInterface $container,
+    protected ModuleHandlerInterface $moduleHandler,
   ) {}
 
   /**
@@ -150,13 +154,11 @@ class PreprocessHooks {
   /**
    * Implements hook_preprocess_HOOK() for html.
    *
-   * The settings of the theme reach the screens as attributes and custom
-   * properties, so the color, the density and the color mode are one place.
+   * The settings of the theme reach the screens as attributes of the root
+   * element, and the design tokens a site changed as a style element.
    */
   #[Hook('preprocess_html')]
   public function preprocessHtml(array &$variables): void {
-    $accent = $this->themeSettingsProvider->getSetting('accent_color', 'uikit_admin') ?: ThemeHooks::ACCENT_COLOR;
-    $focus = $this->themeSettingsProvider->getSetting('focus_color', 'uikit_admin') ?: ThemeHooks::FOCUS_COLOR;
     $mode = $this->themeSettingsProvider->getSetting('color_mode', 'uikit_admin') ?: 'auto';
     $density = $this->themeSettingsProvider->getSetting('density', 'uikit_admin') ?: 'comfortable';
 
@@ -173,27 +175,21 @@ class PreprocessHooks {
     if ($mode !== 'auto') {
       $variables['html_attributes']->setAttribute('data-theme', $mode);
     }
-    // A color of the settings wins over the defaults of the stylesheet and
-    // over the color mode: the style attribute of the root element comes
-    // after every rule of the style sheets.
-    $properties = [];
-    $accent = $this->safeColor($accent, ThemeHooks::ACCENT_COLOR);
-    // The old default is not a custom color: the stylesheet default wins,
-    // with its dark scheme counterpart.
-    if (strcasecmp($accent, ThemeHooks::LEGACY_ACCENT_COLOR) === 0) {
-      $accent = ThemeHooks::ACCENT_COLOR;
-    }
-    if (strcasecmp($accent, ThemeHooks::ACCENT_COLOR) !== 0) {
-      $properties[] = '--uikit-admin-accent:' . $accent;
-      $properties[] = '--uikit-admin-accent-hover:color-mix(in srgb, ' . $accent . ' 82%, #000)';
-      $properties[] = '--uikit-admin-on-accent:' . $this->onColor($accent);
-    }
-    $focus = $this->safeColor($focus, ThemeHooks::FOCUS_COLOR);
-    if (strcasecmp($focus, ThemeHooks::FOCUS_COLOR) !== 0) {
-      $properties[] = '--uikit-admin-focus:' . $focus;
-    }
-    if ($properties) {
-      $variables['html_attributes']->setAttribute('style', implode(';', $properties));
+    // The design tokens a site changed are stored once, in the keys of UI
+    // Skins. The module prints them when it is installed, for the light and
+    // the dark color mode. The theme prints what is left: every value on a
+    // site without UI Skins, and the values of the dark mode for a person
+    // whose system asks for it. Like UI Skins, it prints them at the top of
+    // the body, after every style sheet.
+    $stored = $this->themeSettingsProvider->getSetting(Skin::KEY, 'uikit_admin');
+    $css = Skin::css(\is_array($stored) ? $stored : [], !$this->moduleHandler->moduleExists('ui_skins'));
+    if ($css !== '') {
+      $variables['page_top']['uikit_admin_skin'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'style',
+        '#value' => Markup::create($css),
+        '#attributes' => ['data-uikit-admin-skin' => TRUE],
+      ];
     }
     $variables['#cache']['tags'][] = 'config:uikit_admin.settings';
 
@@ -251,23 +247,6 @@ class PreprocessHooks {
   }
 
   /**
-   * The text color that reads on a background color: white or near black.
-   */
-  protected function onColor(string $hex): string {
-    $hex = ltrim($hex, '#');
-    if (\strlen($hex) < 6) {
-      $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
-    }
-    $channels = array_map(static function (string $pair): float {
-      $value = hexdec($pair) / 255;
-      return $value <= 0.03928 ? $value / 12.92 : (($value + 0.055) / 1.055) ** 2.4;
-    }, str_split(substr($hex, 0, 6), 2));
-    $luminance = 0.2126 * $channels[0] + 0.7152 * $channels[1] + 0.0722 * $channels[2];
-    // The contrast with white against the contrast with #111.
-    return (1.05 / ($luminance + 0.05)) >= (($luminance + 0.05) / 0.0555) ? '#fff' : '#111';
-  }
-
-  /**
    * Implements hook_preprocess_HOOK() for form.
    *
    * A content form keeps its meta next to the fields, the way the editors of
@@ -304,10 +283,23 @@ class PreprocessHooks {
   }
 
   /**
-   * Only a hexadecimal color reaches the page.
+   * Implements hook_preprocess_HOOK() for pager.
+   *
+   * The links of a pager load the next page with HTMX, also inside a form
+   * that posts, like the bulk form of a listing.
    */
-  protected function safeColor(?string $value, string $fallback): string {
-    return \is_string($value) && \preg_match('/^#[0-9a-fA-F]{3,8}$/', $value) ? $value : $fallback;
+  #[Hook('preprocess_pager')]
+  public function preprocessPager(array &$variables): void {
+    $variables['uikit_admin_boost'] = $this->htmxNavigation();
+    $variables['#cache']['tags'][] = 'config:uikit_admin.settings';
+  }
+
+  /**
+   * Implements hook_preprocess_HOOK() for views_mini_pager.
+   */
+  #[Hook('preprocess_views_mini_pager')]
+  public function preprocessViewsMiniPager(array &$variables): void {
+    $this->preprocessPager($variables);
   }
 
   /**
@@ -345,6 +337,9 @@ class PreprocessHooks {
    */
   #[Hook('preprocess_views_view_table')]
   public function preprocessViewsViewTable(array &$variables): void {
+    // A table of a bulk form sits in a form that posts, which turns HTMX
+    // off for what it holds: its sort links turn it back on.
+    $variables['uikit_admin_boost'] = $this->htmxNavigation();
     $view = $variables['view'] ?? NULL;
     foreach ($variables['header'] ?? [] as $key => $column) {
       if (!\is_array($column) || trim(strip_tags((string) ($column['content'] ?? ''))) !== '') {

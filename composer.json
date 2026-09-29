@@ -15,7 +15,8 @@
         "drupal/core": "^11.4.8 || ^12"
     },
     "require-dev": {
-        "drupal/ui_patterns": "^2.0"
+        "drupal/ui_patterns": "^2.0",
+        "drupal/ui_skins": "^1.2"
     },
     "support": {
         "issues": "https://www.drupal.org/project/issues/uikit_admin",

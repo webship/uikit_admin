@@ -11,9 +11,9 @@
 html {
   /* 1 */
   font-family: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
-  font-size: 15px;
+  font-size: var(--uikit-admin-font-size, 15px);
   font-weight: normal;
-  line-height: 1.5;
+  line-height: var(--uikit-admin-line-height, 1.5);
   /* 2 */
   -webkit-text-size-adjust: 100%;
   /* 3 */
@@ -413,7 +413,7 @@ pre code {
   outline: none;
 }
 :focus-visible {
-  outline: 2px solid var(--uikit-admin-focus, #1f7ad4);
+  outline: var(--uikit-admin-focus-width, 2px) solid var(--uikit-admin-focus, #1f7ad4);
 }
 /* Selection pseudo-element
  ========================================================================== */
@@ -1475,7 +1475,7 @@ a:hover .uk-icon-overlay {
   /* 1 */
   display: inline-block;
   /* 2 */
-  line-height: 42px;
+  line-height: calc(var(--uikit-admin-control-height, 44px) - 2px);
   /* 3 */
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1629,8 +1629,8 @@ select.uk-form-width-xsmall {
 .uk-checkbox {
   /* 1 */
   display: inline-block;
-  height: 20px;
-  width: 20px;
+  height: var(--uikit-admin-choice-size, 20px);
+  width: var(--uikit-admin-choice-size, 20px);
   /* 2 */
   overflow: hidden;
   /* 3 */
@@ -1721,7 +1721,7 @@ select.uk-form-width-xsmall {
 }
 /* Any element */
 .uk-form-small:not(select):not(input):not(textarea):not([type="radio"]):not([type="checkbox"]) {
-  line-height: 30px;
+  line-height: calc(var(--uikit-admin-control-small-height, 32px) - 2px);
 }
 /* Radio + Checkbox */
 .uk-form-small:is(.uk-radio, .uk-checkbox) {
@@ -1951,7 +1951,7 @@ select.uk-form-width-xsmall {
   vertical-align: middle;
   font-size: 0.875rem;
   /* 8 */
-  line-height: 42px;
+  line-height: calc(var(--uikit-admin-control-height, 44px) - 2px);
   /* 9 */
   text-align: center;
   /* 10 */
@@ -2072,7 +2072,7 @@ select.uk-form-width-xsmall {
  ========================================================================== */
 .uk-button-small {
   padding: 0 15px;
-  line-height: 30px;
+  line-height: calc(var(--uikit-admin-control-small-height, 32px) - 2px);
   font-size: 0.875rem;
 }
 .uk-button-large {
@@ -3463,7 +3463,7 @@ select.uk-form-width-xsmall {
  * Input
  */
 .uk-search-default .uk-search-input {
-  height: 44px;
+  height: var(--uikit-admin-control-height, 44px);
   padding-left: 10px;
   padding-right: 10px;
   background: transparent;
@@ -3496,7 +3496,7 @@ select.uk-form-width-xsmall {
  * Input
  */
 .uk-search-navbar .uk-search-input {
-  height: 44px;
+  height: var(--uikit-admin-control-height, 44px);
   padding-left: 10px;
   padding-right: 10px;
   background: #fff;

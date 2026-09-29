@@ -1,4 +1,4 @@
-// UIkit, compiled with the colors, type and radius of UIkit Admin.
+// UIkit, compiled with the colors, type and sizes of UIkit Admin.
 //
 // Run "yarn build:uikit" after changing this file: it writes
 // assets/vendor/uikit/css/uikit.css.
@@ -36,18 +36,27 @@
 @form-radio-border: ~"var(--uikit-admin-border-control, #7d8794)";
 
 // Focus: one solid 2px ring, in the color of the settings (WCAG 2.4.13).
-@base-focus-outline-width: 2px;
+@base-focus-outline-width: ~"var(--uikit-admin-focus-width, 2px)";
 @base-focus-outline-style: solid;
 @base-focus-outline: ~"var(--uikit-admin-focus, #1f7ad4)";
-@base-focus-outline-offset: 2px;
+@base-focus-outline-offset: ~"var(--uikit-admin-focus-offset, 2px)";
 
 // Targets: the controls are 44px high (WCAG 2.5.5). The small ones keep a
 // 32px look and get a 44px hit area in admin.css.
 @global-control-height: 44px;
 @global-control-small-height: 32px;
-@form-radio-size: 20px;
 
-// Shape.
-@button-border-radius: 6px;
-@form-border-radius: 6px;
-@card-border-radius: 8px;
+// Tokens. UIkit computes with the global variables above and with the
+// heights of the fields, so they stay numbers, and admin.css sets the height
+// of a field. The variables a rule only prints read the custom properties of
+// the theme, which UI Skins and the density setting can change. The value
+// after the comma is the one of admin.css.
+@base-body-font-size: ~"var(--uikit-admin-font-size, 15px)";
+@base-body-line-height: ~"var(--uikit-admin-line-height, 1.5)";
+@form-line-height: ~"calc(var(--uikit-admin-control-height, 44px) - 2px)";
+@form-small-line-height: ~"calc(var(--uikit-admin-control-small-height, 32px) - 2px)";
+@form-radio-size: ~"var(--uikit-admin-choice-size, 20px)";
+@button-line-height: ~"calc(var(--uikit-admin-control-height, 44px) - 2px)";
+@button-small-line-height: ~"calc(var(--uikit-admin-control-small-height, 32px) - 2px)";
+@search-default-height: ~"var(--uikit-admin-control-height, 44px)";
+@search-navbar-height: ~"var(--uikit-admin-control-height, 44px)";

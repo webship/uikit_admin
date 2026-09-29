@@ -15,7 +15,7 @@
   height: auto;
   text-indent: 0;
   border: 1px solid var(--uikit-admin-border);
-  border-radius: 6px;
+  border-radius: var(--uikit-admin-radius-control, 6px);
   background: var(--uikit-admin-surface);
   box-shadow: none;
 }
@@ -57,7 +57,7 @@
   padding: 4px 12px;
   text-decoration: none;
   border: 1px solid var(--uikit-admin-border);
-  border-radius: 999px;
+  border-radius: var(--uikit-admin-radius-pill, 999px);
   background: var(--uikit-admin-surface);
   font-size: 13px;
   font-weight: 600;

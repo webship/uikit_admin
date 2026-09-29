@@ -1,8 +1,6 @@
 langcode: en
 htmx_navigation: true
 navbar_sticky: true
-accent_color: '#08508a'
-focus_color: '#1f7ad4'
 color_mode: auto
 density: comfortable
 sticky_actions: true

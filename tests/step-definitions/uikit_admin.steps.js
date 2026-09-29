@@ -5,6 +5,7 @@
 
 const assert = require('node:assert');
 const { execSync } = require('node:child_process');
+const fs = require('node:fs');
 const path = require('node:path');
 const {
   Given,
@@ -1762,5 +1763,307 @@ When(
       { timeout: Number(seconds) * 1000 },
     );
     await this.page.waitForLoadState('load');
+  },
+);
+
+/**
+ * Compares the icons of the rail, the top bar and the palette with the ones
+ * of the last release: they are part of how people find their way, so a
+ * change of the theme never redraws them. An item the release did not know
+ * may bring its own icon.
+ *
+ * Example: Then the icons of the shell should be the ones of the last release
+ */
+Then(
+  /^the icons of the shell should be the ones of the last release$/,
+  async function () {
+    const expected = JSON.parse(
+      fs.readFileSync(
+        path.join(__dirname, '../fixtures/shell-icons.json'),
+        'utf8',
+      ),
+    );
+    const found = await this.page.evaluate((controls) => {
+      const markup = (element) =>
+        element ? element.innerHTML.replace(/>\s+</g, '><').trim() : null;
+      return {
+        rail: [...document.querySelectorAll('.uikit-admin-rail__item')].map(
+          (item) => ({
+            path: new URL(item.href).pathname,
+            icon: markup(item.querySelector('.uikit-admin-rail__icon')),
+          }),
+        ),
+        controls: controls.map((selector) => {
+          const svg = document.querySelector(`${selector} svg`);
+          return { selector, icon: svg ? svg.outerHTML : null };
+        }),
+      };
+    }, Object.keys(expected.controls));
+    assert.ok(found.rail.length > 0, 'The rail has no item.');
+    const faults = [];
+    let compared = 0;
+    found.rail.forEach(({ path: itemPath, icon }) => {
+      // The site may live in a folder: the end of the path names the item.
+      const known = Object.keys(expected.rail).find((key) =>
+        itemPath.endsWith(key),
+      );
+      if (known) {
+        compared += 1;
+        if (icon !== expected.rail[known]) {
+          faults.push(`${itemPath}: ${icon}`);
+        }
+      } else if (!icon || !icon.startsWith('<svg')) {
+        faults.push(`${itemPath} has no icon`);
+      }
+    });
+    found.controls.forEach(({ selector, icon }) => {
+      if (icon !== expected.controls[selector]) {
+        faults.push(`${selector}: ${icon}`);
+      }
+    });
+    assert.ok(compared > 0, 'No item of the rail is one the release knew.');
+    assert.strictEqual(
+      faults.length,
+      0,
+      `Icons that differ from the release ${expected.release}:\n${faults.join('\n')}`,
+    );
+  },
+);
+
+/**
+ * The scopes UI Skins stores the design tokens under.
+ */
+const TOKEN_SCOPES = {
+  light: ':root',
+  dark: ':root[data-theme="dark"]',
+};
+
+/**
+ * Stores a design token the way UI Skins and the theme settings store it.
+ * Put the settings back after the scenario with the "is put back" step.
+ *
+ * Example: Given the design token "uikit-admin-accent" is "#c0392b" in the light color mode
+ */
+Given(
+  /^the design token "([a-z0-9-]+)" is "([^"]*)" in the (light|dark) color mode$/,
+  { timeout: 60000 },
+  function (token, value, mode) {
+    const data = Buffer.from(
+      JSON.stringify({ token, value, scope: TOKEN_SCOPES[mode] }),
+    ).toString('base64');
+    drushPhp(`
+      $token = json_decode(base64_decode("${data}"), TRUE);
+      $config = \\Drupal::configFactory()->getEditable("uikit_admin.settings");
+      $variables = $config->get("third_party_settings.ui_skins.css_variables") ?: [];
+      $variables[$token["token"]][$token["scope"]] = $token["value"];
+      $config->set("third_party_settings.ui_skins.css_variables", $variables)->save();
+    `);
+  },
+);
+
+/**
+ * Example: Then the design token "uikit-admin-accent" of the page should be "#c0392b"
+ */
+Then(
+  /^the design token "([a-z0-9-]+)" of the page should be "([^"]*)"$/,
+  async function (token, value) {
+    const actual = await this.page.evaluate(
+      (name) =>
+        getComputedStyle(document.documentElement)
+          .getPropertyValue(`--${name}`)
+          .trim(),
+      token,
+    );
+    assert.strictEqual(actual, value, `--${token}`);
+  },
+);
+
+/**
+ * Checks that the form of UI Skins offers a field for every design token
+ * the theme declares, and for each of the scopes of the token.
+ *
+ * Example: Then every design token of the theme should have a field
+ */
+Then(
+  /^every design token of the theme should have a field$/,
+  async function () {
+    const declared = fs.readFileSync(
+      path.join(__dirname, '../../uikit_admin.ui_skins.css_variables.yml'),
+      'utf8',
+    );
+    const tokens = [];
+    declared.split('\n').forEach((line) => {
+      const id = line.match(/^([a-z0-9-]+):$/);
+      if (id) {
+        tokens.push({ id: id[1], scopes: 0 });
+      } else if (/^ {4}\S/.test(line) && tokens.length) {
+        tokens[tokens.length - 1].scopes += 1;
+      }
+    });
+    assert.ok(tokens.length > 0, 'The theme declares no design token.');
+    const missing = await this.page.evaluate(
+      (list) =>
+        list
+          .map(({ id, scopes }) => {
+            const fields = document.querySelectorAll(
+              `:is(input, select, textarea)[name*="[${id}][values_container]"][name*="[value]"]:not([type="hidden"])`,
+            );
+            // A color with a transparency has two fields for each scope.
+            const rows = new Set(
+              [...fields].map(
+                (field) => field.name.match(/values_container\]\[(\d+)\]/)[1],
+              ),
+            );
+            return rows.size >= scopes
+              ? null
+              : `${id}: ${rows.size} of ${scopes}`;
+          })
+          .filter(Boolean),
+      tokens,
+    );
+    assert.strictEqual(
+      missing.length,
+      0,
+      `Design tokens without a field:\n${missing.join('\n')}`,
+    );
+  },
+);
+
+/**
+ * Adds an element to the page, for the classes of UIkit no screen of core
+ * prints, like the icon button.
+ *
+ * Example: Given the page shows a specimen of the class "uk-icon-button"
+ */
+Given(
+  /^the page shows a specimen of the class "([a-z0-9 -]+)"$/,
+  async function (classes) {
+    await this.page.evaluate((names) => {
+      const specimen = document.createElement('a');
+      specimen.href = '#';
+      specimen.className = `${names} uikit-admin-specimen`;
+      specimen.textContent = 'Specimen';
+      document
+        .querySelector('.uikit-admin-main .uk-container')
+        .prepend(specimen);
+    }, classes);
+  },
+);
+
+/**
+ * Hovers an element and measures the contrast of its text with what is
+ * behind it (WCAG 1.4.6). The colors are painted on a canvas, so every
+ * notation the browser computes is read the same way.
+ *
+ * Example: Then the hovered element ".uk-button-danger" should have a contrast of at least 7 to 1
+ */
+Then(
+  /^the hovered element "([^"]*)" should have a contrast of at least ([\d.]+) to 1$/,
+  async function (selector, ratio) {
+    const element = this.page.locator(selector).first();
+    await element.scrollIntoViewIfNeeded();
+    await element.hover();
+    // The transition of the button ends first.
+    await this.page.waitForTimeout(400);
+    const contrast = await element.evaluate((target) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 1;
+      canvas.height = 1;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      const paint = (color) => {
+        context.clearRect(0, 0, 1, 1);
+        context.fillStyle = color;
+        context.fillRect(0, 0, 1, 1);
+        const [r, g, b, a] = context.getImageData(0, 0, 1, 1).data;
+        return { r, g, b, a: a / 255 };
+      };
+      const over = (top, under) => ({
+        r: top.r * top.a + under.r * (1 - top.a),
+        g: top.g * top.a + under.g * (1 - top.a),
+        b: top.b * top.a + under.b * (1 - top.a),
+        a: 1,
+      });
+      // What is behind the text: the backgrounds from the element up.
+      const layers = [];
+      for (let node = target; node; node = node.parentElement) {
+        const layer = paint(getComputedStyle(node).backgroundColor);
+        if (layer.a > 0) {
+          layers.push(layer);
+        }
+        if (layer.a === 1) {
+          break;
+        }
+      }
+      let background = { r: 255, g: 255, b: 255, a: 1 };
+      layers.reverse().forEach((layer) => {
+        background = over(layer, background);
+      });
+      const text = over(paint(getComputedStyle(target).color), background);
+      const luminance = ({ r, g, b }) => {
+        const [lr, lg, lb] = [r, g, b].map((channel) => {
+          const value = channel / 255;
+          return value <= 0.03928
+            ? value / 12.92
+            : ((value + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * lr + 0.7152 * lg + 0.0722 * lb;
+      };
+      const [light, dark] = [luminance(text), luminance(background)].sort(
+        (a, b) => b - a,
+      );
+      return (light + 0.05) / (dark + 0.05);
+    });
+    assert.ok(
+      contrast >= Number(ratio),
+      `${selector}: ${contrast.toFixed(2)} to 1 when hovered.`,
+    );
+  },
+);
+
+/**
+ * Makes an account with one role and the permissions the back office needs
+ * to show it the administration theme. The name starts with "qa-", so the
+ * cleanup deletes it.
+ *
+ * Example: Given the user "qa-editor" with the role "content_editor" exists
+ */
+Given(
+  /^the user "(qa-[^"]*)" with the role "([a-z0-9_]+)" exists$/,
+  { timeout: 60000 },
+  function (name, role) {
+    drushPhp(`
+      if (!\\Drupal\\user\\Entity\\Role::load("${role}")) {
+        \\Drupal\\user\\Entity\\Role::create(["id" => "${role}", "label" => "${role}"])->save();
+      }
+      $role = \\Drupal\\user\\Entity\\Role::load("${role}");
+      foreach (["access administration pages", "view the administration theme", "access content overview"] as $permission) {
+        $role->grantPermission($permission);
+      }
+      $role->save();
+      if (!user_load_by_name("${name}")) {
+        $account = \\Drupal\\user\\Entity\\User::create(["name" => "${name}", "mail" => "${name}@example.com", "status" => 1]);
+        $account->addRole("${role}");
+        $account->save();
+      }
+    `);
+  },
+);
+
+/**
+ * Signs in as an account with a one-time link from Drush.
+ *
+ * Example: Given I am logged in as the user "qa-editor"
+ */
+Given(
+  /^(I am |we are )?logged in as the user "([^"]*)"$/,
+  { timeout: 60000 },
+  async function (pronoun, name) {
+    const link = drush(`user:login --name=${name} --no-browser`)
+      .split('\n')
+      .pop();
+    await this.page.goto(`${this.launchUrl}${new URL(link).pathname}`);
+    await this.page.waitForURL((url) => /\/user\/\d+/.test(url.pathname), {
+      timeout: 30000,
+    });
   },
 );

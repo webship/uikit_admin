@@ -1,9 +1,12 @@
 # The design tokens of the administration screens, for UI Skins.
 #
 # The theme runs without UI Skins: these are the same custom properties its
-# stylesheets read, so the module only offers them as settings. Keep every
-# pair of text and background at 7:1 (WCAG AAA), and the edges of the
-# controls at 3:1.
+# stylesheets read, so the module only offers them as settings. Each default
+# is the value of assets/css/admin.css. Keep every pair of text and
+# background at 7:1 (WCAG AAA), and the edges of the controls at 3:1.
+#
+# The dark color mode and the compact density have their own scope, with
+# their own default.
 
 ################################################################################
 # Brand.
@@ -11,24 +14,39 @@
 
 uikit-admin-accent:
   category: "Brand"
-  label: "Accent (links, primary buttons, active rail item)"
+  label: "Accent"
+  description: "The color of the links, the primary buttons and the active item of the rail. Keep 7:1 with the surface and the canvas."
   type: "color"
   default_values:
     ":root": "#08508a"
+    ':root[data-theme="dark"]': "#8cbcff"
 
 uikit-admin-accent-hover:
   category: "Brand"
   label: "Accent on hover"
+  description: "The accent under the pointer. Left at its default, the theme darkens the accent in the light mode and lightens it in the dark mode."
   type: "color"
   default_values:
-    ":root": "#063f6e"
+    ":root": "#06406e"
+    ':root[data-theme="dark"]': "#b0d1ff"
+
+uikit-admin-on-accent:
+  category: "Brand"
+  label: "Text on the accent"
+  description: "The text of a primary button and of the active item of the rail. Left at its default, the theme picks white or black, whichever reads best on the accent."
+  type: "color"
+  default_values:
+    ":root": "#ffffff"
+    ':root[data-theme="dark"]': "#000000"
 
 uikit-admin-focus:
   category: "Brand"
   label: "Focus ring"
+  description: "The ring around the element the keyboard is on. Keep 3:1 with the surface and the canvas."
   type: "color"
   default_values:
     ":root": "#1f7ad4"
+    ':root[data-theme="dark"]': "#8cbcff"
 
 ################################################################################
 # Surfaces.
@@ -36,58 +54,115 @@ uikit-admin-focus:
 
 uikit-admin-canvas:
   category: "Surfaces"
-  label: "Canvas (behind the panels)"
+  label: "Canvas"
+  description: "The background of the page, behind the panels."
   type: "color"
   default_values:
     ":root": "#f3f4f6"
+    ':root[data-theme="dark"]': "#14181d"
 
 uikit-admin-surface:
   category: "Surfaces"
-  label: "Surface (panels, tables, the rail)"
+  label: "Surface"
+  description: "The background of the panels, the tables, the fields and the rail."
   type: "color"
   default_values:
     ":root": "#ffffff"
+    ':root[data-theme="dark"]': "#1c2128"
+
+uikit-admin-muted:
+  category: "Surfaces"
+  label: "Muted background"
+  description: "The background of a table header, a code sample and the item of the rail under the pointer."
+  type: "color"
+  default_values:
+    ":root": "#eef0f3"
+    ':root[data-theme="dark"]': "#232a32"
+
+uikit-admin-muted-hover:
+  category: "Surfaces"
+  label: "Muted background on hover"
+  description: "The background of a quiet button under the pointer. Keep 7:1 with the text."
+  type: "color"
+  default_values:
+    ":root": "#e3e6ea"
+    ':root[data-theme="dark"]': "#2c343d"
 
 uikit-admin-border:
   category: "Surfaces"
-  label: "Border (decorative dividers)"
+  label: "Border"
+  description: "The decorative dividers: the edge of a panel, the lines of a table."
   type: "color"
   default_values:
     ":root": "#dfe3e8"
+    ':root[data-theme="dark"]': "#2f3742"
 
 uikit-admin-border-control:
   category: "Surfaces"
-  label: "Border of the fields, checkboxes and toggles (3:1)"
+  label: "Border of the controls"
+  description: "The edge of the fields, the checkboxes, the radios and the toggles. Keep 3:1 with the surface (WCAG 1.4.11)."
   type: "color"
   default_values:
     ":root": "#7d8794"
+    ':root[data-theme="dark"]': "#7a8594"
 
 ################################################################################
-# Text colors.
+# Text colors. The colors of the text take a transparency: 255 is solid.
 ################################################################################
 
 uikit-admin-text:
   category: "Text colors"
-  label: "Text color"
-  type: "color"
+  label: "Text"
+  description: "The text of the page. Keep 7:1 with the surface and the canvas."
+  type: "ui_skins_alpha_color"
   default_values:
-    ":root": "#1b1f24"
+    ":root": "#1b1f24ff"
+    ':root[data-theme="dark"]': "#ffffffe0"
 
 uikit-admin-text-muted:
   category: "Text colors"
-  label: "Muted text color"
+  label: "Muted text"
+  description: "The help text, the meta lines and the section titles of the rail. Keep 7:1 with the surface and the canvas."
+  type: "ui_skins_alpha_color"
+  default_values:
+    ":root": "#454d57ff"
+    ':root[data-theme="dark"]': "#ffffffad"
+
+uikit-admin-emphasis:
+  category: "Text colors"
+  label: "Emphasis"
+  description: "The titles, the labels of the fields and the names in a listing."
   type: "color"
   default_values:
-    ":root": "#454d57"
+    ":root": "#0d1117"
+    ':root[data-theme="dark"]': "#ffffff"
+
+uikit-admin-code:
+  category: "Text colors"
+  label: "Code"
+  description: "The inline code, keyboard keys and samples. Keep 7:1 with the muted background."
+  type: "color"
+  default_values:
+    ":root": "#9e1231"
+    ':root[data-theme="dark"]': "#ffa8b8"
+
+uikit-admin-inverse:
+  category: "Text colors"
+  label: "Text on a solid color"
+  description: "The text of the secondary and the danger buttons, and of the labels on a state color."
+  type: "color"
+  default_values:
+    ":root": "#ffffff"
 
 ################################################################################
-# States. The ids carry the theme name: the ids of UI Skins are shared by
-# every theme of the site, and the front theme declares the UIkit ones.
+# States. The ids carry the theme name: the ids of UI Skins are shared by every
+# theme of the site, and the front theme declares the UIkit ones.
 ################################################################################
 
 uikit-admin-success:
   category: "States"
   label: "Success"
+  description: "The color of what went well. Keep 7:1 with white text."
   type: "color"
   default_values:
     ":root": "#13795a"
@@ -95,6 +170,7 @@ uikit-admin-success:
 uikit-admin-warning:
   category: "States"
   label: "Warning"
+  description: "The color of what needs attention. Keep 7:1 with white text."
   type: "color"
   default_values:
     ":root": "#8a5a12"
@@ -102,25 +178,327 @@ uikit-admin-warning:
 uikit-admin-danger:
   category: "States"
   label: "Danger"
+  description: "The color of the delete buttons, the errors and the required marker. Keep 7:1 with white text."
   type: "color"
   default_values:
     ":root": "#9e1231"
 
+uikit-admin-danger-hover:
+  category: "States"
+  label: "Danger on hover"
+  description: "A delete button under the pointer. Keep 7:1 with white text."
+  type: "color"
+  default_values:
+    ":root": "#7f0e27"
+
+uikit-admin-secondary:
+  category: "States"
+  label: "Secondary"
+  description: "The background of a secondary button. Keep 7:1 with white text."
+  type: "color"
+  default_values:
+    ":root": "#1b1f24"
+    ':root[data-theme="dark"]': "#3a4450"
+
+uikit-admin-secondary-hover:
+  category: "States"
+  label: "Secondary on hover"
+  description: "A secondary button under the pointer. Keep 7:1 with white text."
+  type: "color"
+  default_values:
+    ":root": "#0d1117"
+    ':root[data-theme="dark"]': "#4a5563"
+
 ################################################################################
-# Layout. A length is a "textfield": the type is the form element of the
-# field, and the UI Skins form cannot save a type that has none.
+# Alerts. Each message has a text color and a background: keep 7:1 between the
+# two.
+################################################################################
+
+uikit-admin-alert-primary:
+  category: "Alerts"
+  label: "Information, text"
+  description: "The text of an information message."
+  type: "color"
+  default_values:
+    ":root": "#0b4a80"
+    ':root[data-theme="dark"]': "#bcd9ff"
+
+uikit-admin-alert-primary-bg:
+  category: "Alerts"
+  label: "Information, background"
+  description: "The background of an information message."
+  type: "color"
+  default_values:
+    ":root": "#d8eafc"
+    ':root[data-theme="dark"]': "#182f44"
+
+uikit-admin-alert-success:
+  category: "Alerts"
+  label: "Success, text"
+  description: "The text of a status message."
+  type: "color"
+  default_values:
+    ":root": "#0e5c43"
+    ':root[data-theme="dark"]': "#b8f0d9"
+
+uikit-admin-alert-success-bg:
+  category: "Alerts"
+  label: "Success, background"
+  description: "The background of a status message."
+  type: "color"
+  default_values:
+    ":root": "#edfbf6"
+    ':root[data-theme="dark"]': "#1a3433"
+
+uikit-admin-alert-warning:
+  category: "Alerts"
+  label: "Warning, text"
+  description: "The text of a warning message."
+  type: "color"
+  default_values:
+    ":root": "#6e3c0e"
+    ':root[data-theme="dark"]': "#ffd9a8"
+
+uikit-admin-alert-warning-bg:
+  category: "Alerts"
+  label: "Warning, background"
+  description: "The background of a warning message."
+  type: "color"
+  default_values:
+    ":root": "#fff6ee"
+    ':root[data-theme="dark"]': "#342e23"
+
+uikit-admin-alert-danger:
+  category: "Alerts"
+  label: "Error, text"
+  description: "The text of an error message."
+  type: "color"
+  default_values:
+    ":root": "#9e1231"
+    ':root[data-theme="dark"]': "#ffc2cd"
+
+uikit-admin-alert-danger-bg:
+  category: "Alerts"
+  label: "Error, background"
+  description: "The background of an error message."
+  type: "color"
+  default_values:
+    ":root": "#fef4f6"
+    ':root[data-theme="dark"]': "#411f2c"
+
+################################################################################
+# Shape. A length or a shadow is a "textfield": the type is the form element of
+# the field, and the UI Skins form cannot save a type that has none.
 ################################################################################
 
 uikit-admin-radius:
-  category: "Layout"
+  category: "Shape"
   label: "Corner radius of the panels"
+  description: "The corners of the panels, the tables and the dialogs. A CSS length, like 8px or 0."
   type: "textfield"
   default_values:
     ":root": "8px"
 
+uikit-admin-radius-control:
+  category: "Shape"
+  label: "Corner radius of the controls"
+  description: "The corners of the buttons, the fields and the items of the rail. A CSS length, like 6px or 0."
+  type: "textfield"
+  default_values:
+    ":root": "6px"
+
+uikit-admin-radius-large:
+  category: "Shape"
+  label: "Corner radius of the large panels"
+  description: "The corners of the command palette and of the sign-in card. A CSS length, like 12px or 0."
+  type: "textfield"
+  default_values:
+    ":root": "12px"
+
+uikit-admin-radius-pill:
+  category: "Shape"
+  label: "Corner radius of the pills"
+  description: "The corners of the counts, the avatar and the secondary tabs. 999px draws a pill, 0 a rectangle."
+  type: "textfield"
+  default_values:
+    ":root": "999px"
+
+uikit-admin-shadow:
+  category: "Shape"
+  label: "Shadow of the panels"
+  description: "A CSS box shadow, or none."
+  type: "textfield"
+  default_values:
+    ":root": "0 1px 2px rgb(16, 24, 40, 0.06), 0 1px 3px rgb(16, 24, 40, 0.1)"
+    ':root[data-theme="dark"]': "none"
+
+uikit-admin-shadow-raised:
+  category: "Shape"
+  label: "Shadow of the raised panels"
+  description: "The shadow of a panel under the pointer and of the sign-in card. A CSS box shadow, or none."
+  type: "textfield"
+  default_values:
+    ":root": "0 4px 12px rgb(16, 24, 40, 0.1)"
+    ':root[data-theme="dark"]': "0 4px 12px rgb(0, 0, 0, 0.45)"
+
+################################################################################
+# Size and room. The compact density of the theme settings has its own values:
+# they sit in the scope of the compact density.
+################################################################################
+
 uikit-admin-rail-width:
-  category: "Layout"
+  category: "Size and room"
   label: "Width of the sidebar"
+  description: "The width of the rail when it is open. A CSS length, like 272px."
   type: "textfield"
   default_values:
     ":root": "272px"
+
+uikit-admin-rail-width-collapsed:
+  category: "Size and room"
+  label: "Width of the collapsed sidebar"
+  description: "The width of the rail when it shows icons only. A CSS length of 60px or more, so each icon keeps a 44px target."
+  type: "textfield"
+  default_values:
+    ":root": "76px"
+
+uikit-admin-header-height:
+  category: "Size and room"
+  label: "Height of the top bar"
+  description: "The least height of the bar above the page. A CSS length of 56px or more."
+  type: "textfield"
+  default_values:
+    ":root": "56px"
+
+uikit-admin-control-height:
+  category: "Size and room"
+  label: "Height of the controls"
+  description: "The height of the buttons, the fields and the selects. Keep 44px or more (WCAG 2.5.5)."
+  type: "textfield"
+  default_values:
+    ":root": "44px"
+
+uikit-admin-control-small-height:
+  category: "Size and room"
+  label: "Height of the small controls"
+  description: "The height of a small button or field. The theme adds a 44px hit area around it. Keep 24px or more (WCAG 2.5.8)."
+  type: "textfield"
+  default_values:
+    ":root": "32px"
+
+uikit-admin-choice-size:
+  category: "Size and room"
+  label: "Size of a checkbox or a radio"
+  description: "The width and the height of the box. A CSS length, like 20px."
+  type: "textfield"
+  default_values:
+    ":root": "20px"
+
+uikit-admin-choice-height:
+  category: "Size and room"
+  label: "Height of a choice row"
+  description: "The height of the row of a checkbox or a radio with its label. Keep 44px or more for WCAG 2.5.5, and never under 24px."
+  type: "textfield"
+  default_values:
+    ":root": "44px"
+    ':root[data-uikit-admin-density="compact"]': "32px"
+
+uikit-admin-font-size:
+  category: "Size and room"
+  label: "Text size"
+  description: "The size of the text of the page. A CSS length, like 15px. Keep 14px or more."
+  type: "textfield"
+  default_values:
+    ":root": "15px"
+    ':root[data-uikit-admin-density="compact"]': "14px"
+
+uikit-admin-line-height:
+  category: "Size and room"
+  label: "Line height"
+  description: "The height of a line of text, as a number. Keep 1.5 or more (WCAG 1.4.8)."
+  type: "textfield"
+  default_values:
+    ":root": "1.5"
+
+uikit-admin-title-size:
+  category: "Size and room"
+  label: "Size of the page title"
+  description: "The size of the title in the page header. A CSS length, like 26px."
+  type: "textfield"
+  default_values:
+    ":root": "26px"
+    ':root[data-uikit-admin-density="compact"]': "22px"
+
+uikit-admin-space-row:
+  category: "Size and room"
+  label: "Room in a table row"
+  description: "The padding of a table cell: one CSS length, or two for top and bottom, then left and right."
+  type: "textfield"
+  default_values:
+    ":root": "12px 16px"
+    ':root[data-uikit-admin-density="compact"]': "7px 12px"
+
+uikit-admin-space-field:
+  category: "Size and room"
+  label: "Room under a field"
+  description: "The space between two fields of a form. A CSS length, like 20px."
+  type: "textfield"
+  default_values:
+    ":root": "20px"
+    ':root[data-uikit-admin-density="compact"]': "14px"
+
+uikit-admin-space-card:
+  category: "Size and room"
+  label: "Room in a panel"
+  description: "The padding of a panel. A CSS length, like 30px."
+  type: "textfield"
+  default_values:
+    ":root": "30px"
+    ':root[data-uikit-admin-density="compact"]': "16px"
+
+uikit-admin-space-card-small:
+  category: "Size and room"
+  label: "Room in a small panel"
+  description: "The padding of a small panel, like the ones of the administration index. A CSS length, like 20px."
+  type: "textfield"
+  default_values:
+    ":root": "20px"
+    ':root[data-uikit-admin-density="compact"]': "16px"
+
+uikit-admin-space-card-large:
+  category: "Size and room"
+  label: "Room in a panel on a wide screen"
+  description: "The padding of a panel from 1200px. A CSS length, like 40px."
+  type: "textfield"
+  default_values:
+    ":root": "40px"
+    ':root[data-uikit-admin-density="compact"]': "16px"
+
+uikit-admin-space-head:
+  category: "Size and room"
+  label: "Room in the page header"
+  description: "The padding above and under the page header. A CSS length, like 14px."
+  type: "textfield"
+  default_values:
+    ":root": "14px"
+    ':root[data-uikit-admin-density="compact"]': "10px"
+
+################################################################################
+# Focus.
+################################################################################
+
+uikit-admin-focus-width:
+  category: "Focus"
+  label: "Width of the focus ring"
+  description: "The thickness of the ring. Keep 2px or more (WCAG 2.4.13)."
+  type: "textfield"
+  default_values:
+    ":root": "2px"
+
+uikit-admin-focus-offset:
+  category: "Focus"
+  label: "Offset of the focus ring"
+  description: "The space between an element and its ring. A CSS length, like 2px."
+  type: "textfield"
+  default_values:
+    ":root": "2px"
