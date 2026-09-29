@@ -10,7 +10,7 @@
  */
 html {
   /* 1 */
-  font-family: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+  font-family: var(--uikit-admin-font-family, system-ui, -apple-system, 'Segoe UI', roboto, 'Helvetica Neue', arial, sans-serif);
   font-size: var(--uikit-admin-font-size, 15px);
   font-weight: normal;
   line-height: var(--uikit-admin-line-height, 1.5);
@@ -79,7 +79,7 @@ strong {
 :not(pre) > kbd,
 :not(pre) > samp {
   /* 1 */
-  font-family: Consolas, monaco, monospace;
+  font-family: var(--uikit-admin-code-font-family, ui-monospace, 'SFMono-Regular', menlo, consolas, 'Liberation Mono', monospace);
   /* 2 */
   font-size: 0.875rem;
   /* 3 */
@@ -238,7 +238,7 @@ h6,
 .uk-heading-2xlarge,
 .uk-heading-3xlarge {
   margin: 0 0 20px 0;
-  font-family: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+  font-family: var(--uikit-admin-heading-font-family, var(--uikit-admin-font-family, system-ui, sans-serif));
   font-weight: normal;
   color: #0d1117;
   text-transform: none;
@@ -393,7 +393,7 @@ blockquote footer::before {
  * 1. Contain overflow in all browsers.
  */
 pre {
-  font: 0.875rem / 1.5 Consolas, monaco, monospace;
+  font: 0.875rem / 1.5 var(--uikit-admin-code-font-family, ui-monospace, 'SFMono-Regular', menlo, consolas, 'Liberation Mono', monospace);
   color: #1b1f24;
   -moz-tab-size: 4;
   tab-size: 4;
@@ -405,7 +405,7 @@ pre {
   background: #fff;
 }
 pre code {
-  font-family: Consolas, monaco, monospace;
+  font-family: var(--uikit-admin-code-font-family, ui-monospace, 'SFMono-Regular', menlo, consolas, 'Liberation Mono', monospace);
 }
 /* Focus
  ========================================================================== */
@@ -5649,7 +5649,7 @@ ul.uk-nav-sub {
   min-height: 80px;
   /* 4 */
   font-size: 0.875rem;
-  font-family: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+  font-family: var(--uikit-admin-font-family, system-ui, -apple-system, 'Segoe UI', roboto, 'Helvetica Neue', arial, sans-serif);
   /* 5 */
   text-decoration: none;
 }
@@ -8754,7 +8754,7 @@ iframe[data-uk-cover] {
 .uk-logo {
   /* 1 */
   font-size: 1.5rem;
-  font-family: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+  font-family: var(--uikit-admin-font-family, system-ui, -apple-system, 'Segoe UI', roboto, 'Helvetica Neue', arial, sans-serif);
   color: #0d1117;
   /* 2 */
   text-decoration: none;

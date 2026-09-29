@@ -83,6 +83,13 @@
   --uikit-admin-focus-width: 2px;
   --uikit-admin-focus-offset: 2px;
 
+  /* Type. The stacks come from fonts.css; a line of running text stops at
+     about 72 characters, under the 80 of WCAG 1.4.8. */
+  --uikit-admin-font-family: var(--uk-font-family-sans);
+  --uikit-admin-heading-font-family: var(--uikit-admin-font-family);
+  --uikit-admin-code-font-family: var(--uk-font-family-mono);
+  --uikit-admin-measure: 32em;
+
   /* The UIkit tokens follow the same palette. */
   --uk-global-color: var(--uikit-admin-text);
   --uk-global-emphasis-color: var(--uikit-admin-emphasis);
@@ -106,7 +113,9 @@
   --uk-alert-success-background: var(--uikit-admin-alert-success-bg);
   --uk-alert-warning-background: var(--uikit-admin-alert-warning-bg);
   --uk-alert-danger-background: var(--uikit-admin-alert-danger-bg);
-  --uk-global-font-family: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+  --uk-global-font-family: var(--uikit-admin-font-family);
+  --uk-base-heading-font-family: var(--uikit-admin-heading-font-family);
+  --uk-base-code-font-family: var(--uikit-admin-code-font-family);
 }
 
 /* The compact density only gives the tokens of size and room other values.
@@ -215,6 +224,20 @@ body {
   background: var(--uikit-admin-canvas);
   font-size: var(--uikit-admin-font-size);
   line-height: var(--uikit-admin-line-height);
+}
+
+/* Code shows each character as it is, and the numbers of a table and of the
+   counts of the rail line up. */
+code,
+kbd,
+samp,
+pre {
+  font-variant-ligatures: none;
+}
+
+table,
+.uikit-admin-rail__count {
+  font-variant-numeric: tabular-nums;
 }
 
 /* --------------------------------------------------------------- Alerts -- */
@@ -509,7 +532,7 @@ body {
 /* Help text stays readable: 14px, a line height of 1.5 and lines no longer
    than 80 characters (WCAG 1.4.8). */
 .uikit-admin-form-item__description {
-  max-width: 80ch;
+  max-width: var(--uikit-admin-measure);
   margin-top: 6px;
   font-size: 14px;
   line-height: 1.5;
@@ -1549,7 +1572,7 @@ button.link {
 
 .uikit-admin-topbar__place .uk-breadcrumb a::before {
   position: absolute;
-  inset: -10px -4px;
+  inset: -10px -6px;
   content: "";
 }
 

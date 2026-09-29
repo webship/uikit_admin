@@ -129,6 +129,17 @@ class ThemeHooks {
     // form): hide its control once the form is built, and add the submit
     // callbacks that store the colors.
     $form['#after_build'][] = [static::class, 'hideUiSkinsColorMode'];
+    $form['uikit_admin']['appearance']['font_family'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Font'),
+      '#description' => $this->t('The fonts of the theme tell I, l and 1 apart, and O and 0, and load from the theme itself. The system font is the one of the operating system of each person.'),
+      '#default_value' => $this->themeSettingsProvider->getSetting('font_family', 'uikit_admin') ?: 'atkinson',
+      '#options' => [
+        'atkinson' => $this->t('Atkinson Hyperlegible Next, with Atkinson Hyperlegible Mono for code'),
+        'system' => $this->t('The font of the system'),
+      ],
+      '#attributes' => ['class' => ['uikit-admin-font-choice']],
+    ];
     $form['uikit_admin']['appearance']['density'] = [
       '#type' => 'radios',
       '#title' => $this->t('Density'),

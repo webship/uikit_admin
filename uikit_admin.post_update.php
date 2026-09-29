@@ -138,3 +138,13 @@ function uikit_admin_post_update_accent_to_ui_skins(): void {
   Skin::store($config, $colors);
   $config->clear('accent_color')->clear('focus_color')->save();
 }
+
+/**
+ * Set the font of the theme on the sites that had none.
+ */
+function uikit_admin_post_update_font_family(): void {
+  $config = \Drupal::configFactory()->getEditable('uikit_admin.settings');
+  if (!$config->isNew() && !$config->get('font_family')) {
+    $config->set('font_family', 'atkinson')->save();
+  }
+}

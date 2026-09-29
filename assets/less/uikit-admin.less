@@ -5,8 +5,12 @@
 
 @import "uikit.theme.less";
 
-// Type.
-@global-font-family: system-ui, -apple-system, "Segoe UI", roboto, "Helvetica Neue", arial, sans-serif;
+// Type. The families are tokens: the fonts of the theme, or the ones of the
+// system, or what UI Skins says. The headings keep their weight of 650.
+@global-font-family: ~"var(--uikit-admin-font-family, system-ui, -apple-system, 'Segoe UI', roboto, 'Helvetica Neue', arial, sans-serif)";
+@base-heading-font-family: ~"var(--uikit-admin-heading-font-family, var(--uikit-admin-font-family, system-ui, sans-serif))";
+@base-code-font-family: ~"var(--uikit-admin-code-font-family, ui-monospace, 'SFMono-Regular', menlo, consolas, 'Liberation Mono', monospace)";
+@base-pre-font-family: @base-code-font-family;
 @global-font-size: 15px;
 @global-line-height: 1.5;
 

@@ -19,6 +19,7 @@ uikit:
 base:
   css:
     theme:
+      assets/css/fonts.css: {}
       assets/css/tokens.css: {}
       assets/css/admin.css: {}
       assets/css/shell.css: {}

@@ -35,6 +35,14 @@ uikit_admin.settings:
         Choice:
           - comfortable
           - compact
+    font_family:
+      type: string
+      label: 'Font'
+      description: 'atkinson: the fonts of the theme, Atkinson Hyperlegible Next and Mono, served from the theme. system: the fonts of the operating system of the person.'
+      constraints:
+        Choice:
+          - atkinson
+          - system
     sticky_actions:
       type: boolean
       label: 'Keep the buttons of a form in reach'

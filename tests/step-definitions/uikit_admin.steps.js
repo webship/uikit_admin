@@ -2067,3 +2067,105 @@ Given(
     });
   },
 );
+
+/**
+ * Example: Then the style "font-family" of the element "body" should start with "\"Atkinson Hyperlegible Next\""
+ */
+Then(
+  /^the style "([^"]*)" of the element "([^"]*)" should (not )?start with "(.*)"$/,
+  async function (property, selector, not, value) {
+    const actual = await computedStyle(this.page, selector, property, '');
+    const expected = value.replace(/\\"/g, '"');
+    assert.strictEqual(
+      actual.startsWith(expected),
+      !not,
+      `${selector} ${property} is "${actual}"`,
+    );
+  },
+);
+
+/**
+ * Checks that the browser fetched a font file of the theme, with success.
+ *
+ * Example: Then the page should have loaded the font "atkinson-hyperlegible-next-latin-wght-normal.woff2" from the theme
+ */
+Then(
+  /^the page should have loaded the font "([^"]*)" from the theme$/,
+  async function (file) {
+    await this.page.waitForFunction(
+      (name) =>
+        document.fonts.status === 'loaded' &&
+        performance
+          .getEntriesByType('resource')
+          .some((entry) => entry.name.endsWith(name)),
+      file,
+      { timeout: 15000 },
+    );
+    const entry = await this.page.evaluate((name) => {
+      const found = performance
+        .getEntriesByType('resource')
+        .find((item) => item.name.endsWith(name));
+      return {
+        path: new URL(found.name).pathname,
+        status: found.responseStatus,
+        size: found.decodedBodySize,
+      };
+    }, file);
+    assert.ok(
+      entry.path.includes('/uikit_admin/assets/fonts/'),
+      `The font came from ${entry.path}.`,
+    );
+    assert.ok(
+      entry.status === 200 || (entry.status === 0 && entry.size > 0),
+      `The font answered ${entry.status} with ${entry.size} bytes.`,
+    );
+  },
+);
+
+/**
+ * Measures how many characters a line of an element holds (WCAG 1.4.8): the
+ * width of its text in its font, against the width of the element.
+ *
+ * Example: Then the element ".uikit-admin-form-item__description" should show at most 80 characters per line
+ */
+Then(
+  /^the element "([^"]*)" should show at most (\d+) characters per line$/,
+  async function (selector, limit) {
+    const perLine = await this.page
+      .locator(selector)
+      .first()
+      .evaluate((element) => {
+        const style = getComputedStyle(element);
+        const text = element.textContent.replace(/\s+/g, ' ').trim();
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        context.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+        const width = context.measureText(text).width;
+        return (text.length * element.clientWidth) / Math.max(width, 1);
+      });
+    assert.ok(
+      perLine <= Number(limit),
+      `${selector} shows ${perLine.toFixed(1)} characters per line.`,
+    );
+  },
+);
+
+/**
+ * Adds an element with a text to the main column, for the elements a screen
+ * of core may not print, like inline code.
+ *
+ * Example: Given the page shows a specimen of the element "code"
+ */
+Given(
+  /^the page shows a specimen of the element "([a-z]+)"$/,
+  async function (tag) {
+    await this.page.evaluate((name) => {
+      const specimen = document.createElement(name);
+      specimen.className = 'uikit-admin-specimen';
+      specimen.textContent = 'Il1 O0 specimen';
+      document
+        .querySelector('.uikit-admin-main .uk-container')
+        .prepend(specimen);
+    }, tag);
+  },
+);

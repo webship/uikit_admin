@@ -58,14 +58,36 @@ Display Builder and the AI component agents can read them.
 - **Navigate with HTMX**: on by default; turn it off for full page loads everywhere.
 - **Sticky navbar**: keep the navbar at the top of the screen.
 - **Appearance**: the accent and focus colors of the light and the dark color mode, light, dark
-  or the system's color mode, comfortable or compact density, a sticky Save row and the content
-  form sidebar. The color mode is the one control of the mode: it is stored for UI Skins too
+  or the system's color mode, the font, comfortable or compact density, a sticky Save row and the
+  content form sidebar. The color mode is the one control of the mode: it is stored for UI Skins too
   (`uikit_admin_light`, `uikit_admin_dark`), and the UI Skins select does not show on this form.
   UI Suite UIkit and Webtheme have the same setting. The colors are [design tokens](#design-tokens):
   the form stores them where UI Skins reads them.
 - **Sign-in screens**: the layout of the log in, password reset and registration screens, and a
   sentence shown with the site name. They apply only when the sign-in routes use this theme: see
   [Sign-in screens](#sign-in-screens).
+
+## Fonts
+
+The theme serves its own fonts, so the screens read the same on every machine and nothing loads
+from a font service:
+
+| Role | Family | License |
+|---|---|---|
+| Text, interface and titles | [Atkinson Hyperlegible Next](https://github.com/googlefonts/atkinson-hyperlegible-next) 2.001 | SIL OFL 1.1 |
+| Code | [Atkinson Hyperlegible Mono](https://github.com/googlefonts/atkinson-hyperlegible-next-mono) 2.001 | SIL OFL 1.1 |
+| Arabic script | [Noto Sans Arabic](https://github.com/notofonts/arabic) 2.013 | SIL OFL 1.1 |
+
+Both Atkinson families tell I, l and 1 apart, and O and 0. The files in `assets/fonts/` are
+subsets, one per script (`googlefonts/atkinson-hyperlegible-next` at `7925f50f649b`,
+`googlefonts/atkinson-hyperlegible-next-mono` at `154d50362016`), with the license of each family
+next to its files: a page fetches only the files of the characters it prints, 34 kB for an English
+page. The fallback faces are tuned to the same metrics, so the page does not move when a font
+arrives. Running text stops at 32em, about 72 characters a line (WCAG 1.4.8).
+
+The **Font** setting switches to the font of the system, and the UI Skins tokens of the
+*Typography* group (`uikit-admin-font-family`, `uikit-admin-heading-font-family`,
+`uikit-admin-code-font-family`, `uikit-admin-measure`) take any family.
 
 ## Design tokens
 
@@ -83,6 +105,7 @@ for each scope:
 | Alerts | `alert-primary`, `alert-success`, `alert-warning`, `alert-danger`, and the same with `-bg` |
 | Shape | `radius`, `radius-control`, `radius-large`, `radius-pill`, `shadow`, `shadow-raised` |
 | Size and room | `rail-width`, `rail-width-collapsed`, `header-height`, `control-height`, `control-small-height`, `choice-size`, `choice-height`, `font-size`, `line-height`, `title-size`, `space-row`, `space-field`, `space-card`, `space-card-small`, `space-card-large`, `space-head` |
+| Typography | `font-family`, `heading-font-family`, `code-font-family`, `measure` |
 | Focus | `focus-width`, `focus-offset` |
 
 - **Scopes.** `:root` is the light color mode and every value without a mode. The colors have a

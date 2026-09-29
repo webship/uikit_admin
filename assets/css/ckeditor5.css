@@ -10,5 +10,5 @@
 
 .ck-content {
   color: var(--uk-global-color, #666);
-  font-family: var(--uk-global-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  font-family: var(--uikit-admin-font-family, var(--uk-font-family-sans, system-ui, sans-serif));
 }

@@ -4,6 +4,7 @@ navbar_sticky: true
 color_mode: auto
 density: comfortable
 sticky_actions: true
+font_family: atkinson
 edit_form_sidebar: true
 sign_in_layout: center
 sign_in_message: ''

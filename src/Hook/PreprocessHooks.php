@@ -163,6 +163,10 @@ class PreprocessHooks {
     $density = $this->themeSettingsProvider->getSetting('density', 'uikit_admin') ?: 'comfortable';
 
     $variables['html_attributes']->setAttribute('data-uikit-admin-density', $density);
+    // The font of the system replaces the stacks of the theme.
+    if (($this->themeSettingsProvider->getSetting('font_family', 'uikit_admin') ?: 'atkinson') === 'system') {
+      $variables['html_attributes']->setAttribute('data-uikit-admin-font', 'system');
+    }
     // The Save row of a form sticks to the bottom of the screen only when the
     // setting asks for it.
     $sticky_actions = (bool) ($this->themeSettingsProvider->getSetting('sticky_actions', 'uikit_admin') ?? TRUE);

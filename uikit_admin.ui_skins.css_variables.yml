@@ -484,6 +484,43 @@ uikit-admin-space-head:
     ':root[data-uikit-admin-density="compact"]': "10px"
 
 ################################################################################
+# Typography. The fonts of the theme are the default of each stack: another
+# family is typed in, with its fallbacks, like a CSS font-family value.
+################################################################################
+
+uikit-admin-font-family:
+  category: "Typography"
+  label: "Font of the text and the interface"
+  description: "The family of the text, the fields, the buttons and the rail. The default is the font of the theme, Atkinson Hyperlegible Next, or the system font when the settings say so."
+  type: "textfield"
+  default_values:
+    ":root": "var(--uk-font-family-sans)"
+
+uikit-admin-heading-font-family:
+  category: "Typography"
+  label: "Font of the titles"
+  description: "The family of the page titles and the headings. The default follows the font of the text."
+  type: "textfield"
+  default_values:
+    ":root": "var(--uikit-admin-font-family)"
+
+uikit-admin-code-font-family:
+  category: "Typography"
+  label: "Font of the code"
+  description: "The family of the code samples, the keyboard keys and the machine names. The default is Atkinson Hyperlegible Mono, or the monospace font of the system."
+  type: "textfield"
+  default_values:
+    ":root": "var(--uk-font-family-mono)"
+
+uikit-admin-measure:
+  category: "Typography"
+  label: "Length of a line of text"
+  description: "The longest line of help text and running text. Keep it at 32em or less, so a line stays under 80 characters (WCAG 1.4.8)."
+  type: "textfield"
+  default_values:
+    ":root": "32em"
+
+################################################################################
 # Focus.
 ################################################################################
 
