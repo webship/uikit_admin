@@ -7,19 +7,24 @@
   middle ? 'uk-table-middle',
   responsive ? 'uk-table-responsive',
 ]) %}
+{# Captured, not filtered with render: a slot may be markup captured by the
+   template that includes the component, which render would escape. #}
+{% set header_out %}{{ header }}{% endset %}
+{% set footer_out %}{{ footer }}{% endset %}
 {% if overflow %}
 <div class="uk-overflow-auto">
 {% endif %}
 <table{{ attributes }}>
   {% if caption %}
-    <caption>{{ caption }}</caption>
+    <caption{% if caption_id %} id="{{ caption_id }}"{% endif %}>{{ caption }}</caption>
   {% endif %}
-  {% if header %}
-    <thead>{{ header }}</thead>
+  {{ colgroups }}
+  {% if header_out|trim is not empty %}
+    <thead>{{ header_out }}</thead>
   {% endif %}
   <tbody>{{ rows }}</tbody>
-  {% if footer %}
-    <tfoot>{{ footer }}</tfoot>
+  {% if footer_out|trim is not empty %}
+    <tfoot>{{ footer_out }}</tfoot>
   {% endif %}
 </table>
 {% if overflow %}

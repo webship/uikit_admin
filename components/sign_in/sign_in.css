@@ -133,6 +133,21 @@
   z-index: 1;
   min-width: 0;
   max-width: 28rem;
+  font-size: 20px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+/* What the brand slot holds, like the branding block of a page layout. */
+.uikit-admin-sign-in__brand-inner a:not(.uikit-admin-sign-in__site) {
+  color: inherit;
+}
+
+.uikit-admin-sign-in__brand-inner > img {
+  max-width: 160px;
+  max-height: 48px;
+  margin-inline-end: 10px;
+  vertical-align: middle;
 }
 
 .uikit-admin-sign-in__site {
@@ -204,6 +219,7 @@
   margin: 16px 0 0;
   color: #fff;
   font-size: 18px;
+  font-weight: 400;
   line-height: 1.5;
 }
 
@@ -211,6 +227,7 @@
   margin: 24px 0 0;
   color: #fff;
   font-size: 13px;
+  font-weight: 400;
 }
 
 /* ------------------------------------------------------------------- Card -- */
@@ -459,6 +476,10 @@
 .uikit-admin-sign-in--center.uikit-admin-sign-in--with-image .uikit-admin-sign-in__brand::after,
 .uikit-admin-sign-in--spotlight.uikit-admin-sign-in--with-image .uikit-admin-sign-in__brand::after {
   display: none;
+}
+
+.uikit-admin-sign-in--center .uikit-admin-sign-in__brand {
+  color: var(--uikit-admin-emphasis, #0d1117);
 }
 
 .uikit-admin-sign-in--center .uikit-admin-sign-in__site,

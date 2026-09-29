@@ -1,16 +1,16 @@
 {#
 /**
  * @file
- * A table with the UIkit table classes.
+ * A table, rendered by the table, table_row and table_cell components.
  *
  * A table wider than the screen scrolls in its own box, not the whole page
- * (WCAG 1.4.10). The box is named by the caption, when there is one.
+ * (WCAG 1.4.10). The box is named by the caption, when there is one. The
+ * cells keep the attributes core gives them: tabledrag, tableselect and the
+ * responsive table find them by their classes.
  */
 #}
 {% set caption_id = 'uikit-admin-table-caption'|clean_unique_id %}
-<div class="uikit-admin-table-scroll"{% if caption %} role="region" aria-labelledby="{{ caption_id }}"{% endif %}>
-<table{{ attributes.addClass(['uk-table', 'uk-table-divider', 'uk-table-middle', 'uk-table-small', 'uk-table-responsive']) }}>
-  {% if caption %}<caption id="{{ caption_id }}">{{ caption }}</caption>{% endif %}
+{% set colgroups_out %}
   {% for colgroup in colgroups %}
     {% if colgroup.cols %}
       <colgroup{{ colgroup.attributes }}>
@@ -20,38 +20,56 @@
       <colgroup{{ colgroup.attributes }} />
     {% endif %}
   {% endfor %}
+{% endset %}
+{% set header_out %}
   {% if header %}
-    <thead>
-      <tr>
-        {% for cell in header %}
-          <{{ cell.tag }}{{ cell.attributes }}>{{ cell.content }}</{{ cell.tag }}>
-        {% endfor %}
-      </tr>
-    </thead>
-  {% endif %}
-  <tbody>
-    {% if rows %}
-      {% for row in rows %}
-        <tr{{ row.attributes }}>
-          {% for cell in row.cells %}
-            <{{ cell.tag }}{{ cell.attributes }}>{{ cell.content }}</{{ cell.tag }}>
-          {% endfor %}
-        </tr>
+    {% set cells %}
+      {% for cell in header %}
+        {{ include('uikit_admin:table_cell', { tag: cell.tag == 'th' ? 'th' : 'td', attributes: cell.attributes, content: cell.content }, with_context: false) }}
       {% endfor %}
-    {% elseif empty %}
-      <tr><td colspan="{{ header|length ?: 1 }}">{{ empty }}</td></tr>
+    {% endset %}
+    {{ include('uikit_admin:table_row', { cells: cells }, with_context: false) }}
+  {% endif %}
+{% endset %}
+{% set rows_out %}
+  {% for row in rows %}
+    {% set cells %}
+      {% for cell in row.cells %}
+        {{ include('uikit_admin:table_cell', { tag: cell.tag == 'th' ? 'th' : 'td', attributes: cell.attributes, content: cell.content }, with_context: false) }}
+      {% endfor %}
+    {% endset %}
+    {{ include('uikit_admin:table_row', { attributes: row.attributes, cells: cells }, with_context: false) }}
+  {% else %}
+    {% if empty %}
+      {% set cells %}
+        {{ include('uikit_admin:table_cell', { attributes: create_attribute({ colspan: header|length ?: 1 }), content: empty }, with_context: false) }}
+      {% endset %}
+      {{ include('uikit_admin:table_row', { cells: cells }, with_context: false) }}
     {% endif %}
-  </tbody>
-  {% if footer %}
-    <tfoot>
-      {% for row in footer %}
-        <tr{{ row.attributes }}>
-          {% for cell in row.cells %}
-            <{{ cell.tag }}{{ cell.attributes }}>{{ cell.content }}</{{ cell.tag }}>
-          {% endfor %}
-        </tr>
+  {% endfor %}
+{% endset %}
+{% set footer_out %}
+  {% for row in footer %}
+    {% set cells %}
+      {% for cell in row.cells %}
+        {{ include('uikit_admin:table_cell', { tag: cell.tag == 'th' ? 'th' : 'td', attributes: cell.attributes, content: cell.content }, with_context: false) }}
       {% endfor %}
-    </tfoot>
-  {% endif %}
-</table>
+    {% endset %}
+    {{ include('uikit_admin:table_row', { attributes: row.attributes, cells: cells }, with_context: false) }}
+  {% endfor %}
+{% endset %}
+<div class="uikit-admin-table-scroll"{% if caption %} role="region" aria-labelledby="{{ caption_id }}"{% endif %}>
+  {{ include('uikit_admin:table', {
+    attributes: attributes,
+    variant: 'divider',
+    size: 'small',
+    middle: true,
+    responsive: true,
+    caption: caption ? caption|render : '',
+    caption_id: caption_id,
+    colgroups: colgroups_out,
+    header: header_out,
+    rows: rows_out,
+    footer: footer_out,
+  }, with_context: false) }}
 </div>

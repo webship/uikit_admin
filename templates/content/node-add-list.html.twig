@@ -1,24 +1,40 @@
 {#
 /**
  * @file
- * The content types to add, as a grid of UIkit cards.
+ * The content types to add, as a grid of card components.
  *
  * The whole card follows its link.
  */
 #}
 {% if types is not empty %}
-  <ul class="uk-grid uk-grid-small uk-child-width-1-2@s uk-child-width-1-3@l uikit-admin-type-list" uk-grid="masonry: false">
-    {% for type in types %}
-      <li>
-        <div class="uk-card uk-card-default uk-card-small uk-card-body uikit-admin-type-tile">
-          <h2 class="uk-card-title uikit-admin-type-tile__title">{{ type.add_link }}</h2>
-          {% if type.description['#markup'] is not empty %}
-            <div class="uk-text-meta">{{ type.description }}</div>
-          {% endif %}
-        </div>
-      </li>
-    {% endfor %}
-  </ul>
+  {% set cards = [] %}
+  {% for type in types %}
+    {% set description %}
+      {% if type.description['#markup'] is not empty %}
+        <div class="uk-text-meta">{{ type.description }}</div>
+      {% endif %}
+    {% endset %}
+    {% set cards = cards|merge([{
+      '#type': 'component',
+      '#component': 'uikit_admin:card',
+      '#props': {
+        heading_level: 2,
+        size: 'small',
+        attributes: create_attribute({ class: ['uikit-admin-type-tile'] }),
+      },
+      '#slots': {
+        title: { '#markup': type.add_link },
+        content: { '#markup': description },
+      },
+    }]) %}
+  {% endfor %}
+  {{ include('uikit_admin:grid', {
+    attributes: create_attribute({ class: ['uikit-admin-type-list'] }),
+    child_width_s: '1-2',
+    child_width_l: '1-3',
+    gap: 'small',
+    items: cards,
+  }, with_context: false) }}
 {% else %}
   <p>
     {% set create_content = path('node.type_add') %}

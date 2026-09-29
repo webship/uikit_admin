@@ -80,3 +80,9 @@ htmx:
     - core/drupal.announce
     - core/drupal.htmx
     - core/drupalSettings
+
+# The media library of core: the grid, its dialog and the widget.
+media_library:
+  css:
+    theme:
+      assets/css/media-library.css: {}

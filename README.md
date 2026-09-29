@@ -135,6 +135,31 @@ for each scope:
 - **Keep the contrast.** The defaults reach WCAG 2.2 AAA: 7:1 for a text on its background, 3:1
   for the edge of a control, 44px for a target. The description of each token says what to keep.
 
+## Display Builder
+
+When [Display Builder](https://www.drupal.org/project/display_builder) is installed, the theme
+adds, as optional configuration:
+
+- `display_builder.profile.uikit_admin`: the profile for the back office, like a dashboard. Its
+  component library leaves out the components of the front themes (UI Suite UIkit, Webtheme) and
+  the shell of the back office (the page, the rail, the top bar, the palette, the sign-in screens
+  and the form parts); the design tokens panel is on.
+- `display_builder.profile.uikit_admin_sign_in`: the same for the sign-in screens, with the
+  `sign_in` component and without the navigation components.
+- `display_builder_page_layout.page_layout.uikit_admin_sign_in`: a page layout of the sign-in
+  screens built with the `sign_in` component (the branding, the title, the messages, the form and
+  the tabs), turned off. Choose it in the theme settings to turn it on. A recipe imports the three
+  with `config: import: uikit_admin: [...]`, since a recipe does not install optional
+  configuration.
+
+The media library of core (the grid, its dialog and the widget of a content form) has the look of
+the theme: cards that fill the row, the box on the picture, the media types on the side.
+
+The screens of the back office are drawn by the components too: the tables and the module list
+by `table`, `table_row` and `table_cell`, the pagers by `pagination`, the administration indexes
+by `grid`, the content types to add by `card`, the messages by `alert`. The shell itself stays
+a Twig page: Display Builder does not build the pages of administration routes.
+
 ## Next to a front theme
 
 UIkit Admin runs next to a UIkit front theme (UI Suite UIkit, Webtheme) on the same site, and

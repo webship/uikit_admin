@@ -1093,11 +1093,29 @@ Given(
 );
 
 After({ timeout: 180000 }, function () {
-  if (scenarioModules.length) {
-    drush(`pm:uninstall ${scenarioModules.reverse().join(' ')} -y`);
-    drush('cache:rebuild');
-  }
+  const modules = scenarioModules.reverse();
   scenarioModules = [];
+  if (!modules.length) {
+    return;
+  }
+  // The content the modules keep, like the instances of Display Builder,
+  // goes first: a module with content cannot be uninstalled.
+  const list = Buffer.from(JSON.stringify(modules)).toString('base64');
+  drushPhp(`
+    $modules = json_decode(base64_decode("${list}"), TRUE);
+    $etm = \\Drupal::entityTypeManager();
+    foreach ($etm->getDefinitions() as $id => $definition) {
+      if ($definition instanceof \\Drupal\\Core\\Entity\\ContentEntityTypeInterface && in_array($definition->getProvider(), $modules, TRUE)) {
+        $storage = $etm->getStorage($id);
+        $ids = $storage->getQuery()->accessCheck(FALSE)->execute();
+        if ($ids) {
+          $storage->delete($storage->loadMultiple($ids));
+        }
+      }
+    }
+  `);
+  drush(`pm:uninstall ${modules.join(' ')} -y`);
+  drush('cache:rebuild');
 });
 
 /**
@@ -2289,5 +2307,77 @@ Given(
         .querySelector('.uikit-admin-main .uk-container')
         .prepend(specimen);
     }, tag);
+  },
+);
+
+/**
+ * Example: Then the configuration "display_builder.profile.uikit_admin" should exist
+ */
+Then(
+  /^the configuration "([a-z0-9_.]+)" should exist$/,
+  { timeout: 60000 },
+  function (name) {
+    const exists = drushPhp(
+      `print \\Drupal::config("${name}")->isNew() ? 0 : 1;`,
+    );
+    assert.strictEqual(exists, '1', `${name} does not exist.`);
+  },
+);
+
+/**
+ * Example: Then the configuration "system.site" should have "name" set to "UIkit Admin"
+ */
+Then(
+  /^the configuration "([a-z0-9_.]+)" should have "([a-z0-9_.]+)" set to "([^"]*)"$/,
+  { timeout: 60000 },
+  function (name, key, value) {
+    const actual = drushPhp(
+      `print json_encode(\\Drupal::config("${name}")->get("${key}"));`,
+    );
+    assert.strictEqual(actual.replace(/^"|"$/g, ''), value, `${name}:${key}`);
+  },
+);
+
+/**
+ * Example: Then the component library of the profile "uikit_admin" should leave out "ui_suite_uikit, webtheme"
+ */
+Then(
+  /^the component library of the profile "([a-z0-9_]+)" should leave out (the components )?"([^"]*)"$/,
+  { timeout: 60000 },
+  function (profile, components, list) {
+    const library = JSON.parse(
+      drushPhp(
+        `print json_encode(\\Drupal::config("display_builder.profile.${profile}")->get("islands.component_library"));`,
+      ),
+    );
+    list.split(',').forEach((item) => {
+      const name = item.trim();
+      if (components) {
+        assert.ok(
+          library.exclude_id.split(/\r?\n/).includes(name),
+          `${name} is not left out.`,
+        );
+      } else {
+        assert.ok(name in library.exclude, `${name} is not left out.`);
+      }
+    });
+  },
+);
+
+/**
+ * Chooses a page layout for the sign-in screens, the way the theme settings
+ * form does: the layout is turned on.
+ *
+ * Example: Given the sign-in page layout "uikit_admin_sign_in" is chosen
+ */
+Given(
+  /^the sign-in page layout "([a-z0-9_]+)" is chosen$/,
+  { timeout: 120000 },
+  function (id) {
+    drushPhp(`
+      \\Drupal::configFactory()->getEditable("uikit_admin.settings")->set("sign_in_page_layout", "${id}")->save();
+      \\Drupal\\uikit_admin\\Hook\\ThemeHooks::syncSignInPageLayout("", "${id}");
+    `);
+    drush('cache:rebuild');
   },
 );

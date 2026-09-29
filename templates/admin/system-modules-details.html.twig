@@ -1,43 +1,53 @@
 {#
 /**
  * @file
- * The module list, as a UIkit table.
+ * The module list, rendered by the table components.
  *
  * The description of a module is plain text next to its name: core wraps it in
  * a summary with the button role, which then holds its own links, and a
  * button may not hold anything focusable.
  */
 #}
-<table class="uk-table uk-table-divider uk-table-middle uk-table-small uikit-admin-modules">
-  <thead>
-    <tr>
-      <th class="uk-table-shrink uk-hidden-visually">{{ 'Installed'|t }}</th>
-      <th class="uk-width-medium@m">{{ 'Name'|t }}</th>
-      <th>{{ 'Description'|t }}</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for module in modules %}
-      <tr{{ module.attributes }}>
-        <td class="uk-table-shrink">{{ module.checkbox }}</td>
-        <td>
-          <label id="{{ module.id }}" for="{{ module.enable_id }}" class="uikit-admin-modules__name table-filter-text-source">{{ module.name }}</label>
-          <div class="uk-text-meta uikit-admin-modules__meta">
-            <span class="table-filter-text-source">{{ module.machine_name }}</span>
-            {% if module.version %} · {{ module.version }}{% endif %}
-          </div>
-        </td>
-        <td>
-          <div class="uikit-admin-modules__description">{{ module.description }}</div>
-          {% if module.requires or module.required_by or module.links %}
-            <div class="uk-text-meta uikit-admin-modules__requirements">
-              {% if module.requires %}<div>{{ 'Requires: @module-list'|t({'@module-list': module.requires}) }}</div>{% endif %}
-              {% if module.required_by %}<div>{{ 'Required by: @module-list'|t({'@module-list': module.required_by}) }}</div>{% endif %}
-              {% if module.links %}<div class="uikit-admin-modules__links">{{ module.links }}</div>{% endif %}
-            </div>
-          {% endif %}
-        </td>
-      </tr>
-    {% endfor %}
-  </tbody>
-</table>
+{% set header %}
+  {% set cells %}
+    {{ include('uikit_admin:table_cell', { tag: 'th', width: 'shrink', attributes: create_attribute({ class: ['uk-hidden-visually'] }), content: 'Installed'|t }, with_context: false) }}
+    {{ include('uikit_admin:table_cell', { tag: 'th', attributes: create_attribute({ class: ['uk-width-medium@m'] }), content: 'Name'|t }, with_context: false) }}
+    {{ include('uikit_admin:table_cell', { tag: 'th', content: 'Description'|t }, with_context: false) }}
+  {% endset %}
+  {{ include('uikit_admin:table_row', { cells: cells }, with_context: false) }}
+{% endset %}
+{% set rows %}
+  {% for module in modules %}
+    {% set name %}
+      <label id="{{ module.id }}" for="{{ module.enable_id }}" class="uikit-admin-modules__name table-filter-text-source">{{ module.name }}</label>
+      <div class="uk-text-meta uikit-admin-modules__meta">
+        <span class="table-filter-text-source">{{ module.machine_name }}</span>
+        {% if module.version %} · {{ module.version }}{% endif %}
+      </div>
+    {% endset %}
+    {% set description %}
+      <div class="uikit-admin-modules__description">{{ module.description }}</div>
+      {% if module.requires or module.required_by or module.links %}
+        <div class="uk-text-meta uikit-admin-modules__requirements">
+          {% if module.requires %}<div>{{ 'Requires: @module-list'|t({'@module-list': module.requires}) }}</div>{% endif %}
+          {% if module.required_by %}<div>{{ 'Required by: @module-list'|t({'@module-list': module.required_by}) }}</div>{% endif %}
+          {% if module.links %}<div class="uikit-admin-modules__links">{{ module.links }}</div>{% endif %}
+        </div>
+      {% endif %}
+    {% endset %}
+    {% set cells %}
+      {{ include('uikit_admin:table_cell', { width: 'shrink', content: module.checkbox }, with_context: false) }}
+      {{ include('uikit_admin:table_cell', { content: name }, with_context: false) }}
+      {{ include('uikit_admin:table_cell', { content: description }, with_context: false) }}
+    {% endset %}
+    {{ include('uikit_admin:table_row', { attributes: module.attributes, cells: cells }, with_context: false) }}
+  {% endfor %}
+{% endset %}
+{{ include('uikit_admin:table', {
+  attributes: create_attribute({ class: ['uikit-admin-modules'] }),
+  variant: 'divider',
+  size: 'small',
+  middle: true,
+  header: header,
+  rows: rows,
+}, with_context: false) }}

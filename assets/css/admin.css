@@ -916,6 +916,27 @@ em,
   border-color: var(--uikit-admin-alert-danger);
 }
 
+/* A file field: the button of the browser takes the look of a button of
+   the theme, 44px high. */
+.uk-input[type="file"] {
+  height: auto;
+  min-height: var(--uikit-admin-control-height);
+  padding: 4px;
+}
+
+.uk-input[type="file"]::file-selector-button {
+  min-height: 34px;
+  margin-inline-end: 12px;
+  padding-inline: 14px;
+  cursor: pointer;
+  color: var(--uikit-admin-text);
+  border: 1px solid var(--uikit-admin-border-control);
+  border-radius: var(--uikit-admin-radius-control);
+  background: var(--uikit-admin-muted);
+  font: inherit;
+  font-weight: 600;
+}
+
 /* A number never needs the whole row. */
 .uikit-admin-main .uk-input[type="number"] {
   width: 10em;
@@ -1250,7 +1271,6 @@ button.link {
 
 .uikit-admin-type-list {
   margin-top: 0;
-  list-style: none;
 }
 
 .uikit-admin-type-tile {
@@ -1263,17 +1283,17 @@ button.link {
   box-shadow: var(--uikit-admin-shadow-raised);
 }
 
-.uikit-admin-type-tile__title {
+.uikit-admin-type-tile .uk-card-title {
   margin-bottom: 6px;
 }
 
-.uikit-admin-type-tile__title a {
+.uikit-admin-type-tile .uk-card-title a {
   text-decoration: none;
   color: var(--uikit-admin-accent);
 }
 
 /* The whole card follows the link. */
-.uikit-admin-type-tile__title a::after {
+.uikit-admin-type-tile .uk-card-title a::after {
   position: absolute;
   content: "";
   inset: 0;

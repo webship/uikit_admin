@@ -1,14 +1,21 @@
 {#
 /**
  * @file
- * The administration index: the panels of every container in one UIkit grid.
+ * The administration index: the panels of every container, rendered by the
+ * grid component.
  */
 #}
-{{ system_compact_link }}
-<div class="uk-grid uk-grid-small uk-child-width-1-2@m uk-child-width-1-3@l uikit-admin-index" uk-grid>
-  {% for container in containers %}
-    {% for block in container.blocks %}
-      <div>{{ block }}</div>
-    {% endfor %}
+{% set panels = [] %}
+{% for container in containers %}
+  {% for block in container.blocks %}
+    {% set panels = panels|merge([block]) %}
   {% endfor %}
-</div>
+{% endfor %}
+{{ system_compact_link }}
+{{ include('uikit_admin:grid', {
+  attributes: create_attribute({ class: ['uikit-admin-index'] }),
+  child_width_m: '1-2',
+  child_width_l: '1-3',
+  gap: 'small',
+  items: panels,
+}, with_context: false) }}

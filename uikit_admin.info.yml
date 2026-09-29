@@ -67,3 +67,9 @@ libraries-extend:
     - uikit_admin/views_ui
   ckeditor5/internal.drupal.ckeditor5:
     - uikit_admin/ckeditor5
+  media_library/click_to_select:
+    - uikit_admin/media_library
+  media_library/ui:
+    - uikit_admin/media_library
+  media_library/widget:
+    - uikit_admin/media_library

@@ -1,11 +1,12 @@
 name: "(Table row)"
-description: "Internal: to be used in the 'Table' component."
+description: "One row of the table component: its cells are table_cell components."
 group: "Data display"
 links:
   - "https://getuikit.com/docs/table"
 slots:
   cells:
     title: Cells
+    description: "The cells of the row."
     expected:
       - "uikit_admin:table_cell"
 props:

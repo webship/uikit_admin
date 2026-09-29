@@ -236,8 +236,8 @@ class ThemeHooks {
     ];
     // A Display Builder page layout can draw the sign-in screens instead.
     $layouts = [];
-    if ($this->entityTypeManager->hasDefinition('display_builder_page_layout')) {
-      foreach ($this->entityTypeManager->getStorage('display_builder_page_layout')->loadMultiple() as $id => $layout) {
+    if ($this->entityTypeManager->hasDefinition('page_layout')) {
+      foreach ($this->entityTypeManager->getStorage('page_layout')->loadMultiple() as $id => $layout) {
         $layouts[$id] = $layout->label();
       }
     }
@@ -289,10 +289,10 @@ class ThemeHooks {
    *   The id of the layout chosen now, or an empty string.
    */
   public static function syncSignInPageLayout(string $before, string $now): void {
-    if ($before === $now || !\Drupal::entityTypeManager()->hasDefinition('display_builder_page_layout')) {
+    if ($before === $now || !\Drupal::entityTypeManager()->hasDefinition('page_layout')) {
       return;
     }
-    $storage = \Drupal::entityTypeManager()->getStorage('display_builder_page_layout');
+    $storage = \Drupal::entityTypeManager()->getStorage('page_layout');
     if ($before !== '' && ($layout = $storage->load($before))) {
       $layout->setStatus(FALSE)->save();
     }

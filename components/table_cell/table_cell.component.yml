@@ -1,16 +1,18 @@
 name: "(Table cell)"
-description: "Internal: to be used in the 'Table row' component."
+description: "One cell of a table_row component: a data cell or a header cell."
 group: "Data display"
 links:
   - "https://getuikit.com/docs/table"
 slots:
   content:
     title: Content
+    description: "What the cell holds."
 props:
   type: object
   properties:
     tag:
       title: "Cell type"
+      description: "td for data, th for a header."
       type: string
       enum:
         - td
@@ -20,6 +22,7 @@ props:
         th: Header
     width:
       title: Width
+      description: "The width of the column of the cell."
       type: string
       enum:
         - shrink

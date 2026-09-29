@@ -1,16 +1,22 @@
 name: Table
-description: "Create nicely looking tables, which come in different styles."
+description: "A UIkit table: the header, the rows and the footer are table_row components, each cell a table_cell. The administration listings of core print through it."
 group: "Data display"
 links:
   - "https://getuikit.com/docs/table"
 variants:
   default:
     title: Default
+    description: "No lines between the rows."
   divider:
     title: Divider
+    description: "A line between the rows: the look of the listings of the back office."
   striped:
     title: Striped
+    description: "Every other row on the muted background."
 slots:
+  colgroups:
+    title: "Column groups"
+    description: "The colgroup elements of the table, when core prints some."
   header:
     title: Header
     description: "Table rows with header cells."
@@ -18,10 +24,12 @@ slots:
       - "uikit_admin:table_row"
   rows:
     title: Rows
+    description: "The rows of the table body."
     expected:
       - "uikit_admin:table_row"
   footer:
     title: Footer
+    description: "The rows of the table foot."
     expected:
       - "uikit_admin:table_row"
 props:
@@ -29,12 +37,19 @@ props:
   properties:
     caption:
       title: Caption
+      description: "The name of the table, printed above it."
+      type: string
+    caption_id:
+      title: "Caption id"
+      description: "The id of the caption, so a scroll box around the table can take its name."
       type: string
     hover:
       title: "Hover effect"
+      description: "Highlight the row under the pointer."
       type: boolean
     size:
       title: "Cell padding"
+      description: "Smaller or larger padding in the cells."
       type: string
       enum:
         - small
@@ -48,9 +63,11 @@ props:
       type: boolean
     middle:
       title: "Vertically centered cells"
+      description: "Center the content of each cell vertically."
       type: boolean
     responsive:
       title: "Stacked on small screens"
+      description: "Stack the cells of a row on a phone."
       type: boolean
     overflow:
       title: "Horizontal scroll"
