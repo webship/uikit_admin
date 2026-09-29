@@ -55,17 +55,28 @@ Display Builder and the AI component agents can read them.
 
 ## Theme settings
 
-- **Navigate with HTMX**: on by default; turn it off for full page loads everywhere.
-- **Sticky navbar**: keep the navbar at the top of the screen.
-- **Appearance**: the accent and focus colors of the light and the dark color mode, light, dark
-  or the system's color mode, the font, comfortable or compact density, a sticky Save row and the
-  content form sidebar. The color mode is the one control of the mode: it is stored for UI Skins too
-  (`uikit_admin_light`, `uikit_admin_dark`), and the UI Skins select does not show on this form.
-  UI Suite UIkit and Webtheme have the same setting. The colors are [design tokens](#design-tokens):
-  the form stores them where UI Skins reads them.
-- **Sign-in screens**: the layout of the log in, password reset and registration screens, and a
-  sentence shown with the site name. They apply only when the sign-in routes use this theme: see
+The settings page (*Appearance > Settings > UIkit Admin*) groups the settings in sections, with a
+visual picker where a choice is easier to see than to read:
+
+- **Appearance**: the color mode (follow the system, light or dark), the accent color of the
+  light and the dark mode, and the density (comfortable or compact), each with a thumbnail.
+- **Typography**: the font, with a live specimen: Atkinson Hyperlegible, served from the theme,
+  or the system font.
+- **Navigation**: navigate with HTMX, and keep the top bar at the top of the screen.
+- **Editing**: keep the Save row in reach, and the content form sidebar.
+- **Sign-in screens**: the layout, with a thumbnail of each, the message, the header and footer
+  of the site, the logo, the image and its credit, the help line and the Display Builder page
+  layout. They apply only when the sign-in routes use this theme: see
   [Sign-in screens](#sign-in-screens).
+- **Accessibility**: the focus color of the light and the dark mode.
+- **Advanced**: a link to every design token in UI Skins.
+
+The Save row stays at the bottom of the screen. The pickers are radios with CSS thumbnails: no
+script, the keyboard and the screen readers use them as any radio. The color mode is the one
+control of the mode: it is stored for UI Skins too (`uikit_admin_light`, `uikit_admin_dark`), and
+the UI Skins select does not show on this form. The colors are [design tokens](#design-tokens):
+the form stores them where UI Skins reads them. Every setting has a schema with its choices and a
+description, in `config/schema/uikit_admin.schema.yml`.
 
 ## Fonts
 

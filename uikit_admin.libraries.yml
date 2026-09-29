@@ -86,3 +86,9 @@ media_library:
   css:
     theme:
       assets/css/media-library.css: {}
+
+# The settings page of the theme: its sections and its visual pickers.
+settings:
+  css:
+    theme:
+      assets/css/settings.css: {}

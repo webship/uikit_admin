@@ -1,0 +1,292 @@
+/**
+ * @file
+ * The settings page of the theme: sections, visual pickers and a sticky Save.
+ *
+ * The pickers are radios: the thumbnails are drawn with CSS inside the label
+ * of each option, so the keyboard, the screen readers and the form of core
+ * work as for any radio.
+ */
+
+.uikit-admin-settings {
+  max-width: 64rem;
+}
+
+.uikit-admin-settings__section > .uikit-admin-details__summary {
+  font-size: 18px;
+}
+
+.uikit-admin-settings__intro {
+  max-width: var(--uikit-admin-measure, 32em);
+  margin: 0 0 20px;
+  color: var(--uikit-admin-text-muted, #454d57);
+}
+
+/* The colors side by side, each with its line of help. */
+.uikit-admin-settings__colors {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0 24px;
+}
+
+.uikit-admin-settings__colors > .uikit-admin-form-item {
+  margin-top: 0 !important;
+}
+
+.uikit-admin-settings input[type="color"].uk-input {
+  width: 88px;
+  height: 44px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+/* ---------------------------------------------------------------- Pickers -- */
+
+/* The radios of a picker: core prints them in a fieldset, then a wrapper,
+   then the list of the options. */
+fieldset.uikit-admin-picker > .fieldset-wrapper > div {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 12px;
+}
+
+fieldset.uikit-admin-picker--fonts > .fieldset-wrapper > div {
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+}
+
+fieldset.uikit-admin-picker > .fieldset-wrapper > div > .uikit-admin-form-item {
+  position: relative;
+  /* UIkit spaces the fields of a form with an important margin: the cards
+     of a grid line up without it. */
+  margin: 0 !important;
+  padding: 12px;
+  border: 1px solid var(--uikit-admin-border-control, #7d8794);
+  border-radius: var(--uikit-admin-radius, 8px);
+  background: var(--uikit-admin-surface, #fff);
+}
+
+fieldset.uikit-admin-picker > .fieldset-wrapper > div > .uikit-admin-form-item:hover {
+  border-color: var(--uikit-admin-accent, #08508a);
+}
+
+fieldset.uikit-admin-picker > .fieldset-wrapper > div > .uikit-admin-form-item:has(input:checked) {
+  border-color: var(--uikit-admin-accent, #08508a);
+  background: color-mix(in srgb, var(--uikit-admin-accent, #08508a) 8%, var(--uikit-admin-surface, #fff));
+  box-shadow: inset 0 0 0 1px var(--uikit-admin-accent, #08508a);
+}
+
+fieldset.uikit-admin-picker > .fieldset-wrapper > div > .uikit-admin-form-item:has(input:focus-visible) {
+  outline: var(--uikit-admin-focus-width, 2px) solid var(--uikit-admin-focus, #1f7ad4);
+  outline-offset: 2px;
+}
+
+fieldset.uikit-admin-picker .uikit-admin-form-item__choice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: start;
+  min-height: 0;
+  gap: 4px 10px;
+}
+
+fieldset.uikit-admin-picker .uikit-admin-form-item__choice > input {
+  grid-row: 2;
+  margin-top: 2px;
+}
+
+/* The thumbnail, the name and the line of help choose the option: they are
+   the label of the radio. */
+fieldset.uikit-admin-picker .uikit-admin-form-item__choice > label {
+  display: contents;
+  cursor: pointer;
+}
+
+.uikit-admin-picker__thumb {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  grid-column: 1 / -1;
+  box-sizing: border-box;
+  height: 72px;
+  margin-bottom: 8px;
+  border: 1px solid var(--uikit-admin-border, #dfe3e8);
+  border-radius: var(--uikit-admin-radius-control, 6px);
+  background: #f3f4f6;
+}
+
+.uikit-admin-picker__title {
+  grid-row: 2;
+  grid-column: 2;
+  color: var(--uikit-admin-emphasis, #0d1117);
+  font-weight: 650;
+}
+
+.uikit-admin-picker__text {
+  grid-column: 1 / -1;
+  color: var(--uikit-admin-text-muted, #454d57);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* The three lines of a thumbnail: a bar, a panel and a button. */
+.uikit-admin-picker__thumb > span {
+  position: absolute;
+  display: block;
+  border-radius: 3px;
+}
+
+.uikit-admin-picker__thumb > span:nth-child(1) {
+  width: 22%;
+  background: #fff;
+  inset: 0 auto 0 0;
+}
+
+.uikit-admin-picker__thumb > span:nth-child(2) {
+  height: 12px;
+  background: #1b1f24;
+  inset: 12px 12px auto 30%;
+}
+
+.uikit-admin-picker__thumb > span:nth-child(3) {
+  width: 28%;
+  height: 12px;
+  background: #08508a;
+  inset: auto auto 12px 30%;
+}
+
+/* Color modes. */
+.uikit-admin-picker__thumb--mode-dark {
+  background: #14181d;
+}
+
+.uikit-admin-picker__thumb--mode-dark > span:nth-child(1) {
+  background: #1c2128;
+}
+
+.uikit-admin-picker__thumb--mode-dark > span:nth-child(2) {
+  background: #e6e6e6;
+}
+
+.uikit-admin-picker__thumb--mode-dark > span:nth-child(3) {
+  background: #8cbcff;
+}
+
+.uikit-admin-picker__thumb--mode-auto {
+  background: linear-gradient(135deg, #f3f4f6 50%, #14181d 50%);
+}
+
+.uikit-admin-picker__thumb--mode-auto > span:nth-child(2) {
+  background: linear-gradient(135deg, #1b1f24 50%, #e6e6e6 50%);
+}
+
+/* Density: the rows of a table, far apart or close. */
+.uikit-admin-picker__thumb--density-comfortable,
+.uikit-admin-picker__thumb--density-compact {
+  background: repeating-linear-gradient(#fff 0 17px, #c9ced6 17px 18px);
+}
+
+.uikit-admin-picker__thumb--density-compact {
+  background: repeating-linear-gradient(#fff 0 10px, #c9ced6 10px 11px);
+}
+
+.uikit-admin-picker__thumb--density-comfortable > span,
+.uikit-admin-picker__thumb--density-compact > span {
+  display: none;
+}
+
+/* Fonts: a live specimen in the font itself. */
+.uikit-admin-picker__thumb--font-atkinson,
+.uikit-admin-picker__thumb--font-system {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  letter-spacing: 0.04em;
+  color: #1b1f24;
+  background: #fff;
+  font-size: 28px;
+}
+
+.uikit-admin-picker__thumb--font-atkinson {
+  font-family: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible Next Fallback", sans-serif;
+}
+
+.uikit-admin-picker__thumb--font-system {
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    roboto,
+    sans-serif;
+}
+
+/* Sign-in layouts: the brand color and the card, where each layout puts
+   them. */
+[class*="uikit-admin-picker__thumb--sign-in-"] {
+  background: #f3f4f6;
+}
+
+[class*="uikit-admin-picker__thumb--sign-in-"] > span:nth-child(1) {
+  width: auto;
+  background: linear-gradient(150deg, #08508a, #0a2540);
+  inset: 0 50% 0 0;
+}
+
+[class*="uikit-admin-picker__thumb--sign-in-"] > span:nth-child(2) {
+  width: 26%;
+  height: 40px;
+  border: 1px solid #c9ced6;
+  background: #fff;
+  inset: 16px 12% auto auto;
+}
+
+[class*="uikit-admin-picker__thumb--sign-in-"] > span:nth-child(3) {
+  display: none;
+}
+
+.uikit-admin-picker__thumb--sign-in-start > span:nth-child(1) {
+  inset: 0 0 0 50%;
+}
+
+.uikit-admin-picker__thumb--sign-in-start > span:nth-child(2) {
+  inset: 16px auto auto 12%;
+}
+
+.uikit-admin-picker__thumb--sign-in-center > span:nth-child(1) {
+  display: none;
+}
+
+.uikit-admin-picker__thumb--sign-in-center > span:nth-child(2),
+.uikit-admin-picker__thumb--sign-in-spotlight > span:nth-child(2) {
+  inset: 16px 37% auto 37%;
+}
+
+.uikit-admin-picker__thumb--sign-in-top > span:nth-child(1) {
+  inset: 0 0 55% 0;
+}
+
+.uikit-admin-picker__thumb--sign-in-top > span:nth-child(2) {
+  inset: 22px 37% auto 37%;
+}
+
+.uikit-admin-picker__thumb--sign-in-bottom > span:nth-child(1) {
+  inset: 55% 0 0 0;
+}
+
+.uikit-admin-picker__thumb--sign-in-bottom > span:nth-child(2) {
+  inset: 10px 37% auto 37%;
+}
+
+.uikit-admin-picker__thumb--sign-in-spotlight {
+  background: radial-gradient(circle at 20% 25%, rgb(255, 255, 255, 0.25), transparent 40%), linear-gradient(135deg, #08508a, #0a2540 70%);
+}
+
+.uikit-admin-picker__thumb--sign-in-spotlight > span:nth-child(1) {
+  display: none;
+}
+
+/* ----------------------------------------------------------- Sticky Save -- */
+
+/* The Save row of the settings always stays in reach: the page is long. */
+.uikit-admin-main .uikit-admin-settings > .form-actions {
+  position: sticky;
+  z-index: 9;
+  bottom: 0;
+}
