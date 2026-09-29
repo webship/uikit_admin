@@ -185,6 +185,22 @@ site name and logo in a brand panel, and no rail or top bar. Pick the layout in 
 - **Top** and **Bottom**: a brand band above or under the form.
 - **Spotlight**: a frosted card floating over the accent color.
 
+Each screen has a layout of its own class (`--login`, `--register`, `--password`, `--reset`,
+`--logout`, and `--denied` for an access denied page on a sign-in path), and the settings add:
+
+- **Header and footer**: the site name with one level of the main menu above the screen, the
+  footer menu under it. Never the rail or the top bar of the back office.
+- **Logo**: the logo of the site (its default theme), the logo of this theme, or none.
+- **Image and credit**: an image behind the brand panel of the Start, End, Top and Bottom layouts,
+  under a dark layer that keeps the text at 7:1.
+- **Help line**: a short line under the links.
+- **Display Builder page layout**: a page layout that draws the screens instead; choosing one turns
+  it on.
+
+The messages show in the card (a wrong password, a sent link, an expired link), the password
+fields read 16px, the show-password button of the View Password module is a 44px button inside
+the field, and a reset request goes back to the log in screen.
+
 On a stock site these screens never show: Drupal renders the sign-in routes in the default
 theme of the site, not in the administration theme. The layouts above apply only when the
 sign-in routes use UIkit Admin, which happens when:
@@ -196,7 +212,7 @@ sign-in routes use UIkit Admin, which happens when:
   (`_admin_route: TRUE`) works too.
 
 The sign-in routes are `user.login`, `user.pass`, `user.register`, `user.reset`,
-`user.reset.form` and `user.reset.login`.
+`user.reset.form`, `user.reset.login` and `user.logout.confirm`.
 
 ## Tested with
 

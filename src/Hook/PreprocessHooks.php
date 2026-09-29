@@ -10,6 +10,7 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Extension\ThemeSettingsProvider;
 use Drupal\Core\Hook\Attribute\Hook;
+use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -38,6 +39,20 @@ class PreprocessHooks {
     'user.reset',
     'user.reset.form',
     'user.reset.login',
+    'user.logout.confirm',
+  ];
+
+  /**
+   * The screen of each sign-in route, for the sign_in component.
+   */
+  public const SIGN_IN_SCREENS = [
+    'user.login' => 'login',
+    'user.pass' => 'password',
+    'user.register' => 'register',
+    'user.reset' => 'reset',
+    'user.reset.form' => 'reset',
+    'user.reset.login' => 'reset',
+    'user.logout.confirm' => 'logout',
   ];
 
   /**
@@ -58,9 +73,30 @@ class PreprocessHooks {
 
   /**
    * Tells if the page is one of the sign-in screens.
+   *
+   * An access denied page on a sign-in path is one too, like /user/register
+   * when only administrators create accounts: a visitor never gets the rail
+   * and the top bar of the back office.
    */
   protected function isSignIn(): bool {
-    return \in_array($this->routeMatch->getRouteName(), self::SIGN_IN_ROUTES, TRUE);
+    return $this->signInScreen() !== NULL;
+  }
+
+  /**
+   * The sign-in screen of the page, or NULL.
+   */
+  protected function signInScreen(): ?string {
+    $route = (string) $this->routeMatch->getRouteName();
+    if (isset(self::SIGN_IN_SCREENS[$route])) {
+      return self::SIGN_IN_SCREENS[$route];
+    }
+    if ($route === 'system.403') {
+      $main = $this->container->get('request_stack')->getMainRequest();
+      if ($main && isset(self::SIGN_IN_SCREENS[(string) $main->attributes->get('_route')])) {
+        return 'denied';
+      }
+    }
+    return NULL;
   }
 
   /**
@@ -110,14 +146,106 @@ class PreprocessHooks {
       $variables['page']['pre_content']['uikit_admin_entity_tasks'] = $entity_tasks;
     }
 
-    if ($this->isSignIn()) {
-      $variables['#cache']['tags'][] = 'config:uikit_admin.settings';
-      $layout = $this->themeSettingsProvider->getSetting('sign_in_layout', 'uikit_admin') ?: 'center';
-      $variables['sign_in_layout'] = \in_array($layout, self::SIGN_IN_LAYOUTS, TRUE) ? $layout : 'center';
-      $variables['sign_in_message'] = (string) ($this->themeSettingsProvider->getSetting('sign_in_message', 'uikit_admin') ?? '');
-      $use_default = $this->themeSettingsProvider->getSetting('logo.use_default', 'uikit_admin') ?? TRUE;
-      $variables['sign_in_logo'] = $use_default ? '' : (string) ($this->themeSettingsProvider->getSetting('logo.url', 'uikit_admin') ?? '');
+    $screen = $this->signInScreen();
+    if ($screen !== NULL) {
+      $this->preprocessSignIn($variables, $screen);
     }
+  }
+
+  /**
+   * The values of the sign-in screens.
+   */
+  protected function preprocessSignIn(array &$variables, string $screen): void {
+    $setting = fn (string $name) => $this->themeSettingsProvider->getSetting($name, 'uikit_admin');
+    $variables['#cache']['tags'][] = 'config:uikit_admin.settings';
+    $variables['#cache']['tags'][] = 'config:system.theme';
+    $variables['#cache']['contexts'][] = 'url.path';
+    $layout = $setting('sign_in_layout') ?: 'center';
+    $variables['sign_in_layout'] = \in_array($layout, self::SIGN_IN_LAYOUTS, TRUE) ? $layout : 'center';
+    $variables['sign_in_screen'] = $screen;
+    $variables['sign_in_message'] = (string) ($setting('sign_in_message') ?? '');
+    $variables['sign_in_help'] = (string) ($setting('sign_in_help') ?? '');
+    if ($screen === 'denied' && $this->container->get('config.factory')->get('user.settings')->get('register') === 'admin_only') {
+      $variables['sign_in_help'] = (string) $this->t('Accounts are created by an administrator.');
+      $variables['#cache']['tags'][] = 'config:user.settings';
+    }
+    $variables['sign_in_header'] = (bool) $setting('sign_in_header');
+    $variables['sign_in_footer'] = (bool) $setting('sign_in_footer');
+
+    // The logo: the one of the site (its default theme), the one of this
+    // theme, or none.
+    $variables['sign_in_logo'] = '';
+    $variables['sign_in_show_mark'] = TRUE;
+    switch ($setting('sign_in_logo') ?: 'site') {
+      case 'none':
+        $variables['sign_in_show_mark'] = FALSE;
+        break;
+
+      case 'theme':
+        $variables['sign_in_logo'] = $this->logoOf('uikit_admin', FALSE);
+        break;
+
+      default:
+        $default = (string) $this->container->get('config.factory')->get('system.theme')->get('default');
+        $variables['sign_in_logo'] = $this->logoOf($default ?: 'uikit_admin', $default === 'uikit_admin');
+    }
+
+    // An image behind the brand panel: a path of the site, a stream wrapper
+    // URI or an address on the web.
+    $image = \trim((string) ($setting('sign_in_image') ?? ''));
+    $variables['sign_in_image'] = '';
+    if ($image !== '') {
+      if (\str_contains($image, '://') && !\preg_match('#^https?://#', $image)) {
+        $image = $this->container->get('file_url_generator')->generateString($image);
+      }
+      $variables['sign_in_image'] = UrlHelper::filterBadProtocol($image);
+    }
+    $variables['sign_in_image_credit'] = (string) ($setting('sign_in_image_credit') ?? '');
+
+    $variables['sign_in_header_links'] = $variables['sign_in_header'] ? $this->menuLinks('main', $variables) : [];
+    $variables['sign_in_footer_links'] = $variables['sign_in_footer'] ? $this->menuLinks('footer', $variables) : [];
+  }
+
+  /**
+   * The logo of a theme, from its settings.
+   *
+   * @param string $theme
+   *   The theme.
+   * @param bool $custom_only
+   *   TRUE to leave out the logo the theme ships, which is the UIkit Admin
+   *   mark when this theme is also the default theme of the site.
+   */
+  protected function logoOf(string $theme, bool $custom_only): string {
+    if ($custom_only && ($this->themeSettingsProvider->getSetting('logo.use_default', $theme) ?? TRUE)) {
+      return '';
+    }
+    return (string) ($this->themeSettingsProvider->getSetting('logo.url', $theme) ?? '');
+  }
+
+  /**
+   * The first level of a menu, as plain links the person may follow.
+   */
+  protected function menuLinks(string $menu, array &$variables): array {
+    $variables['#cache']['tags'][] = 'config:system.menu.' . $menu;
+    $variables['#cache']['contexts'][] = 'user.permissions';
+    $tree_service = $this->container->get('menu.link_tree');
+    $parameters = new MenuTreeParameters();
+    $parameters->setMaxDepth(1)->onlyEnabledLinks();
+    $tree = $tree_service->transform($tree_service->load($menu, $parameters), [
+      ['callable' => 'menu.default_tree_manipulators:checkAccess'],
+      ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
+    ]);
+    $links = [];
+    foreach ($tree as $element) {
+      if (!$element->access?->isAllowed()) {
+        continue;
+      }
+      $links[] = [
+        'title' => $element->link->getTitle(),
+        'url' => $element->link->getUrlObject()->toString(),
+      ];
+    }
+    return $links;
   }
 
   /**
@@ -394,6 +522,17 @@ class PreprocessHooks {
     foreach (['primary', 'secondary'] as $level) {
       $variables['tabs'][$level] = $this->tabItems($variables[$level] ?? []);
     }
+    // On a sign-in screen the tabs are links to the other screens: the
+    // screen itself, and the reset link the log in form already carries,
+    // are left out.
+    $screen = $this->signInScreen();
+    if ($screen !== NULL) {
+      $variables['tabs']['primary'] = \array_values(\array_filter(
+        $variables['tabs']['primary'],
+        static fn (array $tab): bool => !$tab['active'] && !($screen === 'login' && $tab['route'] === 'user.pass'),
+      ));
+      $variables['tabs']['secondary'] = [];
+    }
   }
 
   /**
@@ -449,6 +588,7 @@ class PreprocessHooks {
       $items[] = [
         'title' => $link['title'] ?? '',
         'url' => isset($link['url']) ? $link['url']->toString() : '',
+        'route' => isset($link['url']) && $link['url']->isRouted() ? $link['url']->getRouteName() : '',
         'active' => !empty($task['#active']),
       ];
     }

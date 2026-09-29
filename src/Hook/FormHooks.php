@@ -8,11 +8,15 @@ use Drupal\Core\Extension\ThemeSettingsProvider;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Render\Element;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\Url;
 
 /**
  * Form hooks for UIkit Admin.
  */
 class FormHooks {
+
+  use StringTranslationTrait;
 
   public function __construct(
     protected ThemeSettingsProvider $themeSettingsProvider,
@@ -67,6 +71,54 @@ class FormHooks {
         $panel['#weight'] = 1;
       }
     }
+  }
+
+  /**
+   * Implements hook_form_FORM_ID_alter() for user_login_form.
+   *
+   * The keyboard starts at the skip link, not in the name field; the name
+   * field needs no help text, and the way to reset a password sits under the
+   * password.
+   */
+  #[Hook('form_user_login_form_alter')]
+  public function formUserLoginFormAlter(array &$form): void {
+    if (isset($form['name'])) {
+      unset($form['name']['#description'], $form['name']['#attributes']['autofocus']);
+      $form['name']['#attributes']['autocomplete'] = 'username';
+    }
+    if (isset($form['pass'])) {
+      unset($form['pass']['#description']);
+      $form['pass']['#attributes']['autocomplete'] = 'current-password';
+      $url = Url::fromRoute('user.pass');
+      if ($url->access()) {
+        $form['pass']['#suffix'] = '<p class="uikit-admin-sign-in__forgot"><a href="' . $url->toString() . '">' . $this->t('Forgot your password?') . '</a></p>';
+      }
+    }
+  }
+
+  /**
+   * Implements hook_form_FORM_ID_alter() for user_pass.
+   *
+   * The button says what happens, and the person goes back to the log in
+   * screen, where the message says to check the mail.
+   */
+  #[Hook('form_user_pass_alter')]
+  public function formUserPassAlter(array &$form): void {
+    if (isset($form['actions']['submit'])) {
+      $form['actions']['submit']['#value'] = $this->t('Send reset link');
+    }
+    if (isset($form['name'])) {
+      unset($form['name']['#attributes']['autofocus']);
+      $form['name']['#attributes']['autocomplete'] = 'username';
+    }
+    $form['#submit'][] = [static::class, 'userPassRedirect'];
+  }
+
+  /**
+   * Submit callback: back to the log in screen after a reset request.
+   */
+  public static function userPassRedirect(array &$form, FormStateInterface $form_state): void {
+    $form_state->setRedirect('user.login');
   }
 
   /**

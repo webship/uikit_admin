@@ -1,25 +1,40 @@
 name: 'Sign in'
-description: "The sign-in, password reset and registration screens: the form in a card, next to a panel with the site's name."
+description: "The sign-in screens (log in, create an account, reset the password, set a new password, log out): the form in a card, next to a brand panel with the site's name and logo, with an optional slim header and footer."
 group: Page
 slots:
   title:
     title: Title
-    description: 'The title of the screen, like "Log in".'
+    description: 'The title of the screen, like "Log in". The page title block prints it as the h1 of the page.'
   messages:
     title: Messages
-    description: 'The status messages, above the form.'
-  tabs:
-    title: Tabs
-    description: 'The links to the other sign-in screens.'
+    description: 'The status messages, printed in the card above the form: a wrong password, a sent link, an expired link.'
   content:
     title: Content
-    description: 'The form.'
+    description: 'The form of the screen.'
+  links:
+    title: Links
+    description: 'The links to the other sign-in screens, printed under the form. The wrapper is left out when the slot is empty.'
+  tabs:
+    title: 'Tabs (deprecated)'
+    description: 'The old name of the links slot, kept for one release: use links.'
+  help:
+    title: Help
+    description: 'A short support line under the links, like who to ask for an account.'
+  brand:
+    title: Brand
+    description: 'Replaces what the brand panel prints: the logo, the site name, the message and the image credit.'
+  header:
+    title: Header
+    description: 'The slim bar above the screen, printed only when show_header is true: the site branding and the main menu.'
+  footer:
+    title: Footer
+    description: 'The bar under the screen, printed only when show_footer is true: the footer menu.'
 props:
   type: object
   properties:
     layout:
       title: Layout
-      description: 'Where the form sits: centered, at the start or the end of the screen, under or above the brand panel, or floating over the accent.'
+      description: 'Where the form sits: centered, at the start or the end of the screen next to the brand panel, under or above a brand band, or in a frosted card over the accent.'
       type: string
       enum:
         - center
@@ -28,14 +43,70 @@ props:
         - top
         - bottom
         - spotlight
+      "meta:enum":
+        center: 'Centered'
+        start: 'Start'
+        end: 'End'
+        top: 'Top'
+        bottom: 'Bottom'
+        spotlight: 'Spotlight'
       default: center
+    screen:
+      title: Screen
+      description: 'Which sign-in screen this is: it names a modifier class, so each screen can be styled on its own.'
+      type: string
+      enum:
+        - login
+        - register
+        - password
+        - reset
+        - logout
+        - denied
+      "meta:enum":
+        login: 'Log in'
+        register: 'Create an account'
+        password: 'Reset the password'
+        reset: 'Set a new password'
+        logout: 'Log out'
+        denied: 'Access denied'
+      default: login
     site_name:
       title: 'Site name'
-      type: string
-    message:
-      title: Message
-      description: 'A sentence shown in the brand panel.'
+      description: 'The name of the site, printed in the brand panel and in the header.'
       type: string
     logo:
       title: 'Logo URL'
+      description: 'The URL of the logo image. Empty: a letter mark, or nothing with show_mark false.'
       type: string
+    logo_alt:
+      title: 'Logo text alternative'
+      description: 'The text alternative of the logo. Empty when the site name is printed next to it.'
+      type: string
+    show_mark:
+      title: 'Show a letter mark'
+      description: 'Print the first letter of the site name in a square when there is no logo.'
+      type: boolean
+      default: true
+    message:
+      title: Message
+      description: 'A short sentence shown with the site name, like "The back office of the site."'
+      type: string
+      maxLength: 160
+    image:
+      title: 'Image URL'
+      description: 'An image behind the brand panel of the start, end, top and bottom layouts. A dark layer keeps the text of the panel at 7:1.'
+      type: string
+    image_credit:
+      title: 'Image credit'
+      description: 'Who made the image, printed small in the brand panel.'
+      type: string
+    show_header:
+      title: 'Show the header'
+      description: 'Print the header slot above the screen. The site name then leaves the brand panel.'
+      type: boolean
+      default: false
+    show_footer:
+      title: 'Show the footer'
+      description: 'Print the footer slot under the screen.'
+      type: boolean
+      default: false

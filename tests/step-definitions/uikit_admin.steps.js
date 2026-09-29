@@ -206,6 +206,128 @@ Given(
   },
 );
 
+/**
+ * The settings of the sign-in screens a scenario changed, put back after it.
+ */
+let signInSettings = null;
+
+/**
+ * Example: Given the sign-in screens show the header and the footer
+ * Example: Given the sign-in screens show the header
+ */
+Given(
+  /^the sign-in screens show (the header|the footer|the header and the footer|no header and no footer)$/,
+  { timeout: 120000 },
+  function (parts) {
+    if (signInSettings === null) {
+      signInSettings = drushPhp(
+        'print base64_encode(json_encode(\\Drupal::config("uikit_admin.settings")->getRawData()));',
+      );
+    }
+    const header = parts.includes('the header') ? 1 : 0;
+    const footer = parts.includes('the footer') ? 1 : 0;
+    drushPhp(`
+      \\Drupal::configFactory()->getEditable("uikit_admin.settings")
+        ->set("sign_in_header", (bool) ${header})
+        ->set("sign_in_footer", (bool) ${footer})
+        ->save();
+    `);
+  },
+);
+
+/**
+ * Example: Given the sign-in setting "sign_in_logo" is "none"
+ */
+Given(
+  /^the sign-in setting "(sign_in_[a-z_]+)" is "([^"]*)"$/,
+  { timeout: 120000 },
+  function (key, value) {
+    if (signInSettings === null) {
+      signInSettings = drushPhp(
+        'print base64_encode(json_encode(\\Drupal::config("uikit_admin.settings")->getRawData()));',
+      );
+    }
+    const data = Buffer.from(JSON.stringify(value)).toString('base64');
+    drushPhp(`
+      \\Drupal::configFactory()->getEditable("uikit_admin.settings")
+        ->set("${key}", json_decode(base64_decode("${data}")))
+        ->save();
+    `);
+  },
+);
+
+After({ tags: '@sign-in', timeout: 120000 }, function () {
+  if (signInSettings) {
+    drushPhp(`
+      \\Drupal::configFactory()->getEditable("uikit_admin.settings")
+        ->setData(json_decode(base64_decode("${signInSettings}"), TRUE))
+        ->save();
+    `);
+    signInSettings = null;
+  }
+  // The failed logins of a scenario do not block the next one.
+  drushPhp(`
+    if (\\Drupal::database()->schema()->tableExists("flood")) {
+      \\Drupal::database()->delete("flood")->condition("event", "user.failed_login_%", "LIKE")->execute();
+    }
+  `);
+});
+
+/**
+ * Sets one value of a configuration object. Put it back with the "is put
+ * back after the scenario" step.
+ *
+ * Example: Given the configuration "user.settings" has "register" set to "admin_only"
+ */
+Given(
+  /^the configuration "([a-z0-9_.]+)" has "([a-z0-9_.]+)" set to "([^"]*)"$/,
+  { timeout: 120000 },
+  function (name, key, value) {
+    const data = Buffer.from(JSON.stringify(value)).toString('base64');
+    drushPhp(`
+      \\Drupal::configFactory()->getEditable("${name}")
+        ->set("${key}", json_decode(base64_decode("${data}")))
+        ->save();
+    `);
+    drush('cache:rebuild');
+  },
+);
+
+/**
+ * Shows the page right to left, the way a language like Arabic does.
+ *
+ * Example: When the page is shown right to left
+ */
+When(/^the page is shown right to left$/, async function () {
+  await this.page.evaluate(() => {
+    document.documentElement.setAttribute('dir', 'rtl');
+  });
+});
+
+/**
+ * Example: Then the element ".uikit-admin-sign-in__card" should sit inside the viewport
+ */
+Then(
+  /^the element "([^"]*)" should sit inside the viewport$/,
+  async function (selector) {
+    const box = await this.page
+      .locator(selector)
+      .first()
+      .evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        return {
+          left: rect.left,
+          right: rect.right,
+          width: document.documentElement.clientWidth,
+        };
+      });
+    assert.ok(
+      box.left >= 0 && box.right <= box.width + 1,
+      `${selector} spans ${box.left} to ${box.right} of ${box.width}.`,
+    );
+  },
+);
+
 After({ tags: '@sign-in', timeout: 120000 }, function () {
   if (previousDefaultTheme && previousDefaultTheme !== 'uikit_admin') {
     drush(`config:set system.theme default ${previousDefaultTheme} -y`);

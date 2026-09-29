@@ -1,0 +1,25 @@
+name: 'With a header and a footer'
+description: 'The centered log in screen with the site header and footer.'
+slots:
+  title:
+    type: html_tag
+    tag: h1
+    value: 'Log in'
+  content:
+    type: html_tag
+    tag: p
+    value: 'The form of the screen.'
+  header:
+    type: html_tag
+    tag: p
+    value: 'The site branding and the main menu.'
+  footer:
+    type: html_tag
+    tag: p
+    value: 'The footer menu.'
+props:
+  layout: center
+  screen: login
+  site_name: 'UIkit Admin'
+  show_header: true
+  show_footer: true

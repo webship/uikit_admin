@@ -1,0 +1,22 @@
+name: 'Top layout'
+description: 'The log in screen with the top layout.'
+slots:
+  title:
+    type: html_tag
+    tag: h1
+    value: 'Log in'
+  content:
+    type: html_tag
+    tag: p
+    value: 'The form of the screen.'
+  links:
+    type: html_tag
+    tag: a
+    value: 'Create new account'
+    attributes:
+      href: '#'
+props:
+  layout: top
+  screen: login
+  site_name: 'UIkit Admin'
+  message: 'The back office of the site.'

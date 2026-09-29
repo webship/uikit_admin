@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Drupal\uikit_admin\Hook;
 
 use Drupal\Core\Config\Config;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ThemeSettingsProvider;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
@@ -31,6 +32,7 @@ class ThemeHooks {
 
   public function __construct(
     protected ThemeSettingsProvider $themeSettingsProvider,
+    protected EntityTypeManagerInterface $entityTypeManager,
   ) {}
 
   /**
@@ -189,6 +191,65 @@ class ThemeHooks {
       '#maxlength' => 160,
       '#default_value' => $this->themeSettingsProvider->getSetting('sign_in_message', 'uikit_admin') ?? '',
     ];
+    $form['uikit_admin']['sign_in']['sign_in_header'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Show the header of the site'),
+      '#description' => $this->t('A slim bar with the site name and the main menu above the screen.'),
+      '#default_value' => (bool) $this->themeSettingsProvider->getSetting('sign_in_header', 'uikit_admin'),
+    ];
+    $form['uikit_admin']['sign_in']['sign_in_footer'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Show the footer of the site'),
+      '#description' => $this->t('A bar with the footer menu under the screen.'),
+      '#default_value' => (bool) $this->themeSettingsProvider->getSetting('sign_in_footer', 'uikit_admin'),
+    ];
+    $form['uikit_admin']['sign_in']['sign_in_logo'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Logo'),
+      '#default_value' => $this->themeSettingsProvider->getSetting('sign_in_logo', 'uikit_admin') ?: 'site',
+      '#options' => [
+        'site' => $this->t('The logo of the site, from its default theme'),
+        'theme' => $this->t('The logo of this theme'),
+        'none' => $this->t('No logo: the site name only'),
+      ],
+    ];
+    $form['uikit_admin']['sign_in']['sign_in_image'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Image of the brand panel'),
+      '#description' => $this->t('A path on this site, like /sites/default/files/welcome.jpg, or a public:// file. It shows behind the brand panel of the Start, End, Top and Bottom layouts, under a dark layer that keeps the text readable.'),
+      '#maxlength' => 512,
+      '#default_value' => $this->themeSettingsProvider->getSetting('sign_in_image', 'uikit_admin') ?? '',
+    ];
+    $form['uikit_admin']['sign_in']['sign_in_image_credit'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Credit of the image'),
+      '#description' => $this->t('Who made the image, like "Photo: NASA".'),
+      '#maxlength' => 160,
+      '#default_value' => $this->themeSettingsProvider->getSetting('sign_in_image_credit', 'uikit_admin') ?? '',
+    ];
+    $form['uikit_admin']['sign_in']['sign_in_help'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Help line'),
+      '#description' => $this->t('A short line under the links, like "No account yet? Ask the webmaster."'),
+      '#maxlength' => 160,
+      '#default_value' => $this->themeSettingsProvider->getSetting('sign_in_help', 'uikit_admin') ?? '',
+    ];
+    // A Display Builder page layout can draw the sign-in screens instead.
+    $layouts = [];
+    if ($this->entityTypeManager->hasDefinition('display_builder_page_layout')) {
+      foreach ($this->entityTypeManager->getStorage('display_builder_page_layout')->loadMultiple() as $id => $layout) {
+        $layouts[$id] = $layout->label();
+      }
+    }
+    $form['uikit_admin']['sign_in']['sign_in_page_layout'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Display Builder page layout'),
+      '#description' => $this->t('A page layout that draws the sign-in screens in place of the layouts above. Choosing one turns it on, and turns off the one chosen before.'),
+      '#options' => $layouts,
+      '#empty_option' => $this->t('- None: the layout above -'),
+      '#default_value' => $this->themeSettingsProvider->getSetting('sign_in_page_layout', 'uikit_admin') ?: '',
+      '#access' => (bool) $layouts,
+    ];
   }
 
   /**
@@ -214,6 +275,30 @@ class ThemeHooks {
     $config = \Drupal::configFactory()->getEditable('uikit_admin.settings');
     Skin::store($config, $form_state->get('uikit_admin_skin') ?: []);
     static::syncUiSkinsColorMode($config);
+    static::syncSignInPageLayout((string) ($form['uikit_admin']['sign_in']['sign_in_page_layout']['#default_value'] ?? ''), (string) $config->get('sign_in_page_layout'));
+  }
+
+  /**
+   * Turns on the page layout chosen for the sign-in screens.
+   *
+   * The layout chosen before is turned off, so only one draws the screens.
+   *
+   * @param string $before
+   *   The id of the layout chosen before, or an empty string.
+   * @param string $now
+   *   The id of the layout chosen now, or an empty string.
+   */
+  public static function syncSignInPageLayout(string $before, string $now): void {
+    if ($before === $now || !\Drupal::entityTypeManager()->hasDefinition('display_builder_page_layout')) {
+      return;
+    }
+    $storage = \Drupal::entityTypeManager()->getStorage('display_builder_page_layout');
+    if ($before !== '' && ($layout = $storage->load($before))) {
+      $layout->setStatus(FALSE)->save();
+    }
+    if ($now !== '' && ($layout = $storage->load($now))) {
+      $layout->setStatus(TRUE)->save();
+    }
   }
 
   /**

@@ -68,3 +68,45 @@ uikit_admin.settings:
       type: label
       label: 'Sign-in message'
       description: 'A sentence shown with the site name on the sign-in screens.'
+      constraints:
+        Length:
+          max: 160
+    sign_in_header:
+      type: boolean
+      label: 'Show the header of the site on the sign-in screens'
+      description: 'True: a slim bar with the site name and one level of the main menu above the screen.'
+    sign_in_footer:
+      type: boolean
+      label: 'Show the footer of the site on the sign-in screens'
+      description: 'True: a bar with the footer menu under the screen.'
+    sign_in_logo:
+      type: string
+      label: 'Sign-in logo'
+      description: 'site: the logo of the default theme of the site. theme: the logo of UIkit Admin. none: the site name only.'
+      constraints:
+        Choice:
+          - site
+          - theme
+          - none
+    sign_in_image:
+      type: string
+      label: 'Sign-in image'
+      description: 'An image behind the brand panel: a path on the site (/sites/default/files/welcome.jpg), a stream wrapper URI (public://welcome.jpg) or an https address. Empty for none.'
+    sign_in_image_credit:
+      type: label
+      label: 'Sign-in image credit'
+      description: 'Who made the image, printed small in the brand panel.'
+      constraints:
+        Length:
+          max: 160
+    sign_in_help:
+      type: label
+      label: 'Sign-in help line'
+      description: 'A short support line under the links of the sign-in screens.'
+      constraints:
+        Length:
+          max: 160
+    sign_in_page_layout:
+      type: string
+      label: 'Sign-in page layout'
+      description: 'The id of a Display Builder page layout that draws the sign-in screens, like uikit_admin_sign_in. Empty: the layout of sign_in_layout.'

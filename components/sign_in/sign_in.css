@@ -1,29 +1,144 @@
 /**
  * @file
  * The sign-in screens.
+ *
+ * Logical properties only, so a right-to-left language mirrors the screen.
+ * Every text reaches 7:1 on what is behind it, light and dark, and every
+ * control is 44px (WCAG 2.2 AAA).
  */
 
 .uikit-admin-sign-in {
-  display: grid;
+  --uikit-admin-sign-in-brand-start: color-mix(in srgb, var(--uikit-admin-accent, #08508a) 85%, #0a2540);
+  --uikit-admin-sign-in-brand-end: #0a2540;
+
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh;
+  color: var(--uikit-admin-text, #1b1f24);
   background: var(--uikit-admin-canvas, #f3f4f6);
 }
 
-.uikit-admin-sign-in__brand {
+/* In the dark mode the accent is light: the brand panel keeps a dark blue
+   of its own, so its white text keeps 7:1. */
+:root[data-theme="dark"] .uikit-admin-sign-in {
+  --uikit-admin-sign-in-brand-start: #12355c;
+  --uikit-admin-sign-in-brand-end: #0a1626;
+}
+
+.uikit-admin-sign-in__body {
+  display: grid;
+  flex: 1 0 auto;
+}
+
+/* --------------------------------------------------------- Header, footer -- */
+
+.uikit-admin-sign-in__header,
+.uikit-admin-sign-in__footer {
+  background: var(--uikit-admin-surface, #fff);
+}
+
+.uikit-admin-sign-in__header {
+  border-block-end: 1px solid var(--uikit-admin-border, #dfe3e8);
+}
+
+.uikit-admin-sign-in__footer {
+  border-block-start: 1px solid var(--uikit-admin-border, #dfe3e8);
+  font-size: 14px;
+}
+
+.uikit-admin-sign-in__bar {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1200px;
+  min-height: var(--uikit-admin-header-height, 56px);
+  margin-inline: auto;
+  padding-block: 6px;
+  padding-inline: 16px;
+  gap: 4px 24px;
+}
+
+.uikit-admin-sign-in__bar-site {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: none;
+  color: var(--uikit-admin-text, #1b1f24);
+  font-weight: 650;
+  gap: 10px;
+}
+
+.uikit-admin-sign-in__bar-site img {
+  max-width: 120px;
+  max-height: 28px;
+}
+
+.uikit-admin-sign-in__bar-site .uikit-admin-sign-in__logo-tile {
+  padding: 4px 8px;
+  box-shadow: 0 0 0 1px var(--uikit-admin-border, #dfe3e8);
+}
+
+.uikit-admin-sign-in__menu {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  gap: 0 8px;
+}
+
+.uikit-admin-sign-in__menu a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: 8px;
+  color: var(--uikit-admin-accent, #08508a);
+}
+
+/* ------------------------------------------------------------ Brand panel -- */
+
+.uikit-admin-sign-in__brand {
+  position: relative;
+  display: flex;
+  overflow: hidden;
   align-items: flex-end;
   padding: 40px;
   color: #fff;
-  background: linear-gradient(150deg, var(--uikit-admin-accent, #08508a), #0a2540);
+  background: linear-gradient(150deg, var(--uikit-admin-sign-in-brand-start), var(--uikit-admin-sign-in-brand-end));
+}
+
+.uikit-admin-sign-in__image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  inset: 0;
+}
+
+/* A dark layer over the image: white text stays at 7:1 whatever the image
+   shows. */
+.uikit-admin-sign-in--with-image .uikit-admin-sign-in__brand::after {
+  position: absolute;
+  content: "";
+  background: rgb(4, 12, 24, 0.72);
+  inset: 0;
 }
 
 .uikit-admin-sign-in__brand-inner {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
   max-width: 28rem;
 }
 
 .uikit-admin-sign-in__site {
-  display: inline-flex;
+  display: flex;
   align-items: center;
+  min-height: 44px;
   text-decoration: none;
   color: #fff;
   font-size: 20px;
@@ -31,13 +146,33 @@
   gap: 12px;
 }
 
-.uikit-admin-sign-in__site:hover {
+.uikit-admin-sign-in__site:hover,
+.uikit-admin-sign-in__site:focus {
   text-decoration: underline;
   color: #fff;
 }
 
+/* On the brand color the focus ring is white, at 7:1. */
+.uikit-admin-sign-in__brand :focus-visible {
+  outline-color: #fff;
+}
+
+.uikit-admin-sign-in--center .uikit-admin-sign-in__brand :focus-visible {
+  outline-color: var(--uikit-admin-focus, #1f7ad4);
+}
+
+.uikit-admin-sign-in__name {
+  display: -webkit-box;
+  overflow: hidden;
+  min-width: 0;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow-wrap: anywhere;
+}
+
 .uikit-admin-sign-in__mark {
   display: flex;
+  flex: none;
   align-items: center;
   justify-content: center;
   width: 44px;
@@ -48,6 +183,18 @@
   font-size: 20px;
 }
 
+/* A logo is drawn for the header of a site, most often on white: it sits on
+   a white tile, on the brand color as on the page. A site with a white logo
+   gives the tile its brand color with the UI Skins token. */
+.uikit-admin-sign-in__logo-tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: var(--uikit-admin-radius, 8px);
+  background: var(--uikit-admin-sign-in-logo-background, #fff);
+}
+
 .uikit-admin-sign-in__logo {
   max-width: 160px;
   max-height: 48px;
@@ -55,17 +202,27 @@
 
 .uikit-admin-sign-in__message {
   margin: 16px 0 0;
-  color: rgb(255, 255, 255, 0.86);
-  font-size: 17px;
+  color: #fff;
+  font-size: 18px;
   line-height: 1.5;
 }
+
+.uikit-admin-sign-in__credit {
+  margin: 24px 0 0;
+  color: #fff;
+  font-size: 13px;
+}
+
+/* ------------------------------------------------------------------- Card -- */
 
 .uikit-admin-sign-in__main {
   display: flex;
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 32px 16px;
+  min-width: 0;
+  padding-block: 32px;
+  padding-inline: 16px;
 }
 
 .uikit-admin-sign-in__main:focus {
@@ -85,14 +242,32 @@
 
 .uikit-admin-sign-in__title h1 {
   margin: 0 0 20px;
-  font-size: 24px;
+  color: var(--uikit-admin-emphasis, #0d1117);
+  font-size: 26px;
   font-weight: 650;
+  line-height: 1.2;
+}
+
+.uikit-admin-sign-in__messages .uk-alert {
+  margin-block: 0 20px;
+  font-size: 15px;
+}
+
+/* The fields, their labels and the button read at 16px: a phone does not
+   zoom into a field of that size. */
+.uikit-admin-sign-in .uikit-admin-sign-in__form :is(.uk-input, .uk-select, .uk-button, .uk-form-label, .uk-form-label label, .uikit-admin-form-item__choice > label) {
+  font-size: 16px;
 }
 
 .uikit-admin-sign-in__form .uk-input,
+.uikit-admin-sign-in__form .uk-select,
 .uikit-admin-sign-in__form .form-actions .uk-button {
   width: 100%;
   max-width: none;
+}
+
+.uikit-admin-sign-in__form .uikit-admin-form-item__description {
+  font-size: 14px;
 }
 
 .uikit-admin-sign-in__form .form-actions {
@@ -101,63 +276,195 @@
   padding: 0;
   border: 0;
   background: none;
+  backdrop-filter: none;
 }
 
-.uikit-admin-sign-in__tabs {
-  margin-top: 20px;
-  padding-top: 16px;
-  border-top: 1px solid var(--uikit-admin-border, #dfe3e8);
-  font-size: 14px;
+.uikit-admin-sign-in__forgot {
+  display: flex;
+  justify-content: flex-end;
+  margin-block: -12px 8px;
 }
 
-.uikit-admin-sign-in__tabs .uk-tab::before {
+.uikit-admin-sign-in__forgot a,
+.uikit-admin-sign-in__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--uikit-admin-accent, #08508a);
+  font-size: 15px;
+}
+
+/* A row of links with no link left, like on the log in screen of a site
+   where only administrators create accounts, prints no divider. */
+.uikit-admin-sign-in__links:not(:has(a)) {
   display: none;
 }
 
-.uikit-admin-sign-in__tabs .uk-tab,
-.uikit-admin-sign-in__tabs .uk-tab > * {
-  margin-left: 0;
-  padding-left: 0;
+.uikit-admin-sign-in__links {
+  margin-top: 20px;
+  padding-top: 8px;
+  border-top: 1px solid var(--uikit-admin-border, #dfe3e8);
 }
 
-.uikit-admin-sign-in__tabs .uk-tab > * > a {
+.uikit-admin-sign-in__links nav,
+.uikit-admin-sign-in__links ul {
+  margin: 0;
+  padding: 0;
+}
+
+.uikit-admin-sign-in__links ul {
+  display: flex;
+  flex-wrap: wrap;
+  list-style: none;
+  gap: 0 20px;
+}
+
+.uikit-admin-sign-in__links .uk-tab::before {
+  display: none;
+}
+
+.uikit-admin-sign-in__links .uk-tab > * {
+  padding: 0;
+}
+
+.uikit-admin-sign-in .uikit-admin-sign-in__links .uk-tab > * > a {
   padding: 0;
   text-transform: none;
   color: var(--uikit-admin-accent, #08508a);
   border: 0;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.uikit-admin-sign-in__help {
+  margin-top: 12px;
+  color: var(--uikit-admin-text-muted, #454d57);
   font-size: 14px;
 }
 
-.uikit-admin-sign-in__tabs ul {
-  display: flex;
-  flex-wrap: wrap;
+/* -------------------------------------------------- Show the password --- */
+
+/* The button of the View Password module sits inside the field, at its end,
+   44px square, with an icon in the color of the text. */
+.uikit-admin-sign-in .uk-form-controls:has(> .shwpd) {
+  position: relative;
+}
+
+.uikit-admin-sign-in .uk-form-controls:has(> .shwpd) > .uk-input {
+  padding-inline-end: 48px;
+}
+
+.uikit-admin-sign-in button.shwpd {
+  position: absolute;
+  display: block;
+  width: 44px;
+  height: 44px;
   margin: 0;
   padding: 0;
-  list-style: none;
-  gap: 8px 16px;
+  cursor: pointer;
+  color: var(--uikit-admin-text-muted, #454d57);
+  border: 0;
+  background: currentColor;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  mask: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M2%2012s3.6-7%2010-7%2010%207%2010%207-3.6%207-10%207S2%2012%202%2012z%22%2F%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%223%22%2F%3E%3C%2Fsvg%3E") center / 22px no-repeat;
 }
 
-.uikit-admin-sign-in__tabs li:has([aria-current="page"]) {
-  display: none;
+.uikit-admin-sign-in button.shwpd.eye-open {
+  mask-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%222%22%3E%3Cpath%20d%3D%22M3%203l18%2018M10.6%205.1A10%2010%200%200112%205c6.4%200%2010%207%2010%207a17%2017%200%2001-3.2%204.2M6.6%206.6C3.8%208.4%202%2012%202%2012s3.6%207%2010%207a9.6%209.6%200%20005.4-1.6M9.9%209.9a3%203%200%20004.2%204.2%22%2F%3E%3C%2Fsvg%3E");
 }
 
-/* Centered: the form alone, the site name above it. */
-.uikit-admin-sign-in--center {
+.uikit-admin-sign-in button.shwpd:hover {
+  color: var(--uikit-admin-text, #1b1f24);
+}
+
+/* A focus ring drawn around the button: the mask would clip an outline. */
+.uikit-admin-sign-in .uk-form-controls:has(> .shwpd:focus-visible)::after {
+  position: absolute;
+  width: 44px;
+  height: 44px;
+  content: "";
+  pointer-events: none;
+  border-radius: var(--uikit-admin-radius-control, 6px);
+  outline: var(--uikit-admin-focus-width, 2px) solid var(--uikit-admin-focus, #1f7ad4);
+  outline-offset: -4px;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+}
+
+/* ------------------------------------------------------ Password strength -- */
+
+.uikit-admin-sign-in .password-strength,
+.uikit-admin-sign-in .password-confirm-message {
+  margin-top: 8px;
+  font-size: 14px;
+}
+
+.uikit-admin-sign-in .password-strength__meter {
+  overflow: hidden;
+  width: 100%;
+  height: 8px;
+  border: 1px solid var(--uikit-admin-border-control, #7d8794);
+  border-radius: var(--uikit-admin-radius-pill, 999px);
+  background: var(--uikit-admin-muted, #eef0f3);
+}
+
+.uikit-admin-sign-in .password-strength__indicator {
+  height: 100%;
+  background: var(--uikit-admin-text-muted, #454d57);
+}
+
+.uikit-admin-sign-in .password-strength__indicator.is-weak {
+  background: var(--uikit-admin-danger, #9e1231);
+}
+
+.uikit-admin-sign-in .password-strength__indicator.is-fair {
+  background: var(--uikit-admin-warning, #8a5a12);
+}
+
+.uikit-admin-sign-in .password-strength__indicator:is(.is-good, .is-strong) {
+  background: var(--uikit-admin-success, #13795a);
+}
+
+.uikit-admin-sign-in .password-suggestions {
+  margin-block: 8px;
+  padding: 12px 16px;
+  border: 1px solid var(--uikit-admin-border, #dfe3e8);
+  border-radius: var(--uikit-admin-radius-control, 6px);
+  font-size: 14px;
+}
+
+/* -------------------------------------------------------------- Layouts --- */
+
+/* Centered and spotlight: the site name above the form. */
+.uikit-admin-sign-in--center .uikit-admin-sign-in__body,
+.uikit-admin-sign-in--spotlight .uikit-admin-sign-in__body {
   align-content: center;
   justify-items: center;
 }
 
-.uikit-admin-sign-in--center .uikit-admin-sign-in__brand {
+.uikit-admin-sign-in--center .uikit-admin-sign-in__brand,
+.uikit-admin-sign-in--spotlight .uikit-admin-sign-in__brand {
   justify-content: center;
-  padding: 0 16px 8px;
+  padding-block: 32px 8px;
+  padding-inline: 16px;
   text-align: center;
-  color: inherit;
   background: none;
 }
 
+.uikit-admin-sign-in--center .uikit-admin-sign-in__image,
+.uikit-admin-sign-in--spotlight .uikit-admin-sign-in__image,
+.uikit-admin-sign-in--center .uikit-admin-sign-in__credit,
+.uikit-admin-sign-in--spotlight .uikit-admin-sign-in__credit,
+.uikit-admin-sign-in--center.uikit-admin-sign-in--with-image .uikit-admin-sign-in__brand::after,
+.uikit-admin-sign-in--spotlight.uikit-admin-sign-in--with-image .uikit-admin-sign-in__brand::after {
+  display: none;
+}
+
 .uikit-admin-sign-in--center .uikit-admin-sign-in__site,
-.uikit-admin-sign-in--center .uikit-admin-sign-in__site:hover {
-  color: var(--uikit-admin-text, #1b1f24);
+.uikit-admin-sign-in--center .uikit-admin-sign-in__site:is(:hover, :focus) {
+  justify-content: center;
+  color: var(--uikit-admin-emphasis, #0d1117);
 }
 
 .uikit-admin-sign-in--center .uikit-admin-sign-in__mark {
@@ -165,18 +472,25 @@
   background: var(--uikit-admin-accent, #08508a);
 }
 
-.uikit-admin-sign-in--center .uikit-admin-sign-in__message {
-  color: var(--uikit-admin-text-muted, #454d57);
+.uikit-admin-sign-in--center .uikit-admin-sign-in__logo-tile {
+  box-shadow: 0 0 0 1px var(--uikit-admin-border, #dfe3e8);
 }
 
-.uikit-admin-sign-in--center .uikit-admin-sign-in__main {
+.uikit-admin-sign-in--center .uikit-admin-sign-in__message {
+  color: var(--uikit-admin-text-muted, #454d57);
+  font-size: 16px;
+}
+
+.uikit-admin-sign-in--center .uikit-admin-sign-in__main,
+.uikit-admin-sign-in--spotlight .uikit-admin-sign-in__main {
   width: 100%;
   padding-top: 8px;
 }
 
-/* Start and end: the form on one side, the brand panel on the other. */
+/* Start and end: the form on one side of the screen, the brand panel on the
+   other. */
 @media (min-width: 960px) {
-  .uikit-admin-sign-in--start {
+  .uikit-admin-sign-in--start .uikit-admin-sign-in__body {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
   }
 
@@ -184,7 +498,7 @@
     order: -1;
   }
 
-  .uikit-admin-sign-in--end {
+  .uikit-admin-sign-in--end .uikit-admin-sign-in__body {
     grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
   }
 
@@ -195,9 +509,12 @@
 }
 
 /* Top and bottom: a brand band above or under the form. */
-.uikit-admin-sign-in--top,
-.uikit-admin-sign-in--bottom {
+.uikit-admin-sign-in--top .uikit-admin-sign-in__body {
   grid-template-rows: auto 1fr;
+}
+
+.uikit-admin-sign-in--bottom .uikit-admin-sign-in__body {
+  grid-template-rows: 1fr auto;
 }
 
 .uikit-admin-sign-in--top .uikit-admin-sign-in__brand,
@@ -208,13 +525,18 @@
   text-align: center;
 }
 
+.uikit-admin-sign-in--top .uikit-admin-sign-in__brand {
+  padding-bottom: 104px;
+}
+
+.uikit-admin-sign-in--top .uikit-admin-sign-in__site,
+.uikit-admin-sign-in--bottom .uikit-admin-sign-in__site {
+  justify-content: center;
+}
+
 .uikit-admin-sign-in--top .uikit-admin-sign-in__main {
   align-items: flex-start;
   margin-top: -72px;
-}
-
-.uikit-admin-sign-in--bottom {
-  grid-template-rows: 1fr auto;
 }
 
 .uikit-admin-sign-in--bottom .uikit-admin-sign-in__main {
@@ -224,60 +546,80 @@
 }
 
 .uikit-admin-sign-in--bottom .uikit-admin-sign-in__brand {
-  position: relative;
-  z-index: 0;
   padding-top: 112px;
 }
 
-.uikit-admin-sign-in--top .uikit-admin-sign-in__card,
-.uikit-admin-sign-in--bottom .uikit-admin-sign-in__card {
+.uikit-admin-sign-in--top .uikit-admin-sign-in__main,
+.uikit-admin-sign-in--bottom .uikit-admin-sign-in__main {
   position: relative;
   z-index: 1;
 }
 
-/* Spotlight: a frosted card floating over the accent, with soft lights. */
-.uikit-admin-sign-in--spotlight {
+/* Spotlight: a frosted card floating over the brand color, with soft
+   lights. */
+.uikit-admin-sign-in--spotlight .uikit-admin-sign-in__body {
   position: relative;
   overflow: hidden;
-  align-content: center;
-  justify-items: center;
-  background: radial-gradient(circle at 18% 22%, rgb(255, 255, 255, 0.22), transparent 38%), radial-gradient(circle at 82% 78%, rgb(99, 164, 255, 0.45), transparent 42%), linear-gradient(135deg, var(--uikit-admin-accent, #08508a), #0a2540 70%);
-}
-
-.uikit-admin-sign-in--spotlight .uikit-admin-sign-in__brand {
-  justify-content: center;
-  padding: 0 16px 8px;
-  text-align: center;
-  background: none;
-}
-
-.uikit-admin-sign-in--spotlight .uikit-admin-sign-in__main {
-  width: 100%;
-  padding-top: 8px;
+  background: radial-gradient(circle at 18% 22%, rgb(255, 255, 255, 0.18), transparent 38%), radial-gradient(circle at 82% 78%, rgb(99, 164, 255, 0.4), transparent 42%), linear-gradient(135deg, var(--uikit-admin-sign-in-brand-start), var(--uikit-admin-sign-in-brand-end) 70%);
 }
 
 .uikit-admin-sign-in--spotlight .uikit-admin-sign-in__card {
   border-color: rgb(255, 255, 255, 0.5);
-  background: rgb(255, 255, 255, 0.92);
+  background: rgb(255, 255, 255, 0.94);
   box-shadow: 0 24px 60px rgb(4, 14, 32, 0.45);
   backdrop-filter: blur(12px);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .uikit-admin-sign-in--spotlight .uikit-admin-sign-in__card {
-    border-color: rgb(255, 255, 255, 0.14);
-    background: rgb(28, 33, 40, 0.92);
-  }
-}
-
 :root[data-theme="dark"] .uikit-admin-sign-in--spotlight .uikit-admin-sign-in__card {
   border-color: rgb(255, 255, 255, 0.14);
-  background: rgb(28, 33, 40, 0.92);
+  background: rgb(28, 33, 40, 0.94);
 }
+
+/* ---------------------------------------------------------------- Phones -- */
 
 @media (max-width: 959px) {
   .uikit-admin-sign-in--start .uikit-admin-sign-in__brand,
   .uikit-admin-sign-in--end .uikit-admin-sign-in__brand {
     padding: 24px 16px;
+  }
+}
+
+/* Under 640px the brand panel of start and end is the logo row only, and the
+   card takes the width of the screen. */
+@media (max-width: 639px) {
+  .uikit-admin-sign-in--start .uikit-admin-sign-in__brand,
+  .uikit-admin-sign-in--end .uikit-admin-sign-in__brand {
+    padding-block: 12px;
+  }
+
+  .uikit-admin-sign-in--start :is(.uikit-admin-sign-in__message, .uikit-admin-sign-in__credit),
+  .uikit-admin-sign-in--end :is(.uikit-admin-sign-in__message, .uikit-admin-sign-in__credit) {
+    display: none;
+  }
+
+  .uikit-admin-sign-in--top .uikit-admin-sign-in__brand,
+  .uikit-admin-sign-in--bottom .uikit-admin-sign-in__brand {
+    min-height: 0;
+  }
+
+  .uikit-admin-sign-in__main {
+    padding-block: 20px;
+    padding-inline: 12px;
+  }
+
+  .uikit-admin-sign-in__card {
+    padding: 24px 20px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .uikit-admin-sign-in {
+    --uikit-admin-sign-in-brand-start: #12355c;
+    --uikit-admin-sign-in-brand-end: #0a1626;
+  }
+
+  :root:not([data-theme="light"]) .uikit-admin-sign-in--spotlight .uikit-admin-sign-in__card {
+    border-color: rgb(255, 255, 255, 0.14);
+    background: rgb(28, 33, 40, 0.94);
   }
 }

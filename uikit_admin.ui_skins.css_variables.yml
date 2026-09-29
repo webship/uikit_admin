@@ -521,6 +521,18 @@ uikit-admin-measure:
     ":root": "32em"
 
 ################################################################################
+# Sign-in screens.
+################################################################################
+
+uikit-admin-sign-in-logo-background:
+  category: "Sign-in screens"
+  label: "Background of the logo"
+  description: "The tile behind the logo of the sign-in screens. White suits a dark logo; a site with a white logo sets its brand color."
+  type: "color"
+  default_values:
+    ":root": "#ffffff"
+
+################################################################################
 # Focus.
 ################################################################################
 

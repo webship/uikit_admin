@@ -148,3 +148,28 @@ function uikit_admin_post_update_font_family(): void {
     $config->set('font_family', 'atkinson')->save();
   }
 }
+
+/**
+ * Set the new options of the sign-in screens on existing sites.
+ */
+function uikit_admin_post_update_sign_in_options(): void {
+  $config = \Drupal::configFactory()->getEditable('uikit_admin.settings');
+  if ($config->isNew()) {
+    return;
+  }
+  $defaults = [
+    'sign_in_header' => FALSE,
+    'sign_in_footer' => FALSE,
+    'sign_in_logo' => 'site',
+    'sign_in_image' => '',
+    'sign_in_image_credit' => '',
+    'sign_in_help' => '',
+    'sign_in_page_layout' => '',
+  ];
+  foreach ($defaults as $key => $value) {
+    if ($config->get($key) === NULL) {
+      $config->set($key, $value);
+    }
+  }
+  $config->save();
+}

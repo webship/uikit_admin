@@ -29,6 +29,7 @@ Otheme
 pagers
 runuser
 SFMono
+shwpd
 sourceediting
 subnav
 tabledrag

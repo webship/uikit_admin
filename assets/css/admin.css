@@ -884,7 +884,7 @@ em,
   display: inline-block;
   margin-left: 0.25em;
   content: "*";
-  color: var(--uk-global-danger-background);
+  color: var(--uikit-admin-alert-danger);
   font-weight: 700;
 }
 
@@ -910,8 +910,10 @@ em,
 .uk-textarea.error,
 .form-item--error .uk-input,
 .form-item--error .uk-select,
-.form-item--error .uk-textarea {
-  border-color: var(--uk-global-danger-background);
+.form-item--error .uk-textarea,
+.uk-form-danger:is(.uk-input, .uk-select, .uk-textarea) {
+  color: var(--uikit-admin-text);
+  border-color: var(--uikit-admin-alert-danger);
 }
 
 /* A number never needs the whole row. */

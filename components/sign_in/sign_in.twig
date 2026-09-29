@@ -1,36 +1,83 @@
 {#
 /**
  * @file
- * The sign-in screens: a brand panel and the form in a card.
+ * The sign-in screens: a brand panel and the form in a card, with an
+ * optional slim header and footer.
+ *
+ * The optional parts are rendered first and printed only when they hold
+ * output: an empty links row would leave a divider under the form.
  */
 #}
 {% set layout = layout|default('center') %}
+{% set screen = screen|default('login') %}
+{% set links_out = links|render %}
+{% if links_out|trim is empty %}
+  {% set links_out = tabs|render %}
+{% endif %}
+{% set help_out = help|render %}
+{% set brand_out = brand|render %}
+{% set messages_out = messages|render %}
+{% set classes = [
+  'uikit-admin-sign-in',
+  'uikit-admin-sign-in--' ~ layout,
+  'uikit-admin-sign-in--' ~ screen,
+] %}
+{% if show_header %}
+  {% set classes = classes|merge(['uikit-admin-sign-in--with-header']) %}
+{% endif %}
+{% if image %}
+  {% set classes = classes|merge(['uikit-admin-sign-in--with-image']) %}
+{% endif %}
 {% set initial = site_name|default('D')|first|upper %}
-<div class="uikit-admin-sign-in uikit-admin-sign-in--{{ layout }}">
-  <header class="uikit-admin-sign-in__brand" role="banner">
-    <div class="uikit-admin-sign-in__brand-inner">
-      <a class="uikit-admin-sign-in__site" href="{{ path('<front>') }}">
-        {% if logo %}
-          <img class="uikit-admin-sign-in__logo" src="{{ logo }}" alt="" />
+<div{{ attributes.addClass(classes) }}>
+  {% if show_header %}
+    <header class="uikit-admin-sign-in__header">{{ header }}</header>
+  {% endif %}
+  <div class="uikit-admin-sign-in__body">
+    <div class="uikit-admin-sign-in__brand">
+      {% if image %}
+        <img class="uikit-admin-sign-in__image" src="{{ image }}" alt="" loading="lazy" />
+      {% endif %}
+      <div class="uikit-admin-sign-in__brand-inner">
+        {% if brand_out|trim is not empty %}
+          {{ brand_out }}
         {% else %}
-          <span class="uikit-admin-sign-in__mark" aria-hidden="true">{{ initial }}</span>
+          {% if not show_header %}
+            <a class="uikit-admin-sign-in__site" href="{{ path('<front>') }}">
+              {% if logo %}
+                <span class="uikit-admin-sign-in__logo-tile"><img class="uikit-admin-sign-in__logo" src="{{ logo }}" alt="{{ logo_alt|default('') }}" /></span>
+              {% elseif show_mark ?? true %}
+                <span class="uikit-admin-sign-in__mark" aria-hidden="true">{{ initial }}</span>
+              {% endif %}
+              <span class="uikit-admin-sign-in__name">{{ site_name|default('Drupal') }}</span>
+            </a>
+          {% endif %}
+          {% if message %}
+            <p class="uikit-admin-sign-in__message">{{ message }}</p>
+          {% endif %}
+          {% if image and image_credit %}
+            <p class="uikit-admin-sign-in__credit">{{ image_credit }}</p>
+          {% endif %}
         {% endif %}
-        <span class="uikit-admin-sign-in__name">{{ site_name|default('Drupal') }}</span>
-      </a>
-      {% if message %}
-        <p class="uikit-admin-sign-in__message">{{ message }}</p>
-      {% endif %}
+      </div>
     </div>
-  </header>
-  <main id="main-content" class="uikit-admin-sign-in__main" tabindex="-1">
-    <div class="uikit-admin-sign-in__card">
-      <div class="uikit-admin-sign-in__title">{{ title }}</div>
-      {{ messages }}
-      <div class="uikit-admin-sign-in__form">{{ content }}</div>
-      {% set tabs_markup = tabs|render %}
-      {% if tabs_markup|trim %}
-        <div class="uikit-admin-sign-in__tabs">{{ tabs_markup }}</div>
-      {% endif %}
-    </div>
-  </main>
+    <main id="main-content" class="uikit-admin-sign-in__main" tabindex="-1">
+      <div class="uikit-admin-sign-in__card">
+        <div class="uikit-admin-sign-in__title">{{ title }}</div>
+        {% if messages_out|trim is not empty %}
+          <div class="uikit-admin-sign-in__messages">{{ messages_out }}</div>
+        {% endif %}
+        <div class="uikit-admin-sign-in__form">{{ content }}</div>
+        {% if links_out|trim is not empty %}
+          <div class="uikit-admin-sign-in__links">{{ links_out }}</div>
+        {% endif %}
+        {% if help_out|trim is not empty %}
+          <div class="uikit-admin-sign-in__help">{{ help_out }}</div>
+        {% endif %}
+      </div>
+    </main>
+  </div>
+  {% if show_footer %}
+    <footer class="uikit-admin-sign-in__footer">{{ footer }}</footer>
+  {% endif %}
 </div>

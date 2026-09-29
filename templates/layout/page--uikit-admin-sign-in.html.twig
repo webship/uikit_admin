@@ -1,18 +1,63 @@
 {#
 /**
  * @file
- * The sign-in screens: log in, reset the password, register.
+ * The sign-in screens: log in, create an account, reset the password, set a
+ * new password, log out, and an access denied page on one of them.
  *
- * @see \Drupal\uikit_admin\Hook\PreprocessHooks::themeSuggestionsPageAlter()
+ * The header and the footer are the site's, never the rail or the top bar of
+ * the back office: the branding and one level of the main menu, and the
+ * footer menu.
+ *
+ * @see \Drupal\uikit_admin\Hook\PreprocessHooks::preprocessPage()
  */
 #}
+{% set header %}
+  <div class="uikit-admin-sign-in__bar">
+    <a class="uikit-admin-sign-in__bar-site" href="{{ path('<front>') }}">
+      {% if sign_in_logo %}<span class="uikit-admin-sign-in__logo-tile"><img src="{{ sign_in_logo }}" alt="" /></span>{% endif %}
+      <span>{{ site_name|default('Drupal') }}</span>
+    </a>
+    {% if sign_in_header_links %}
+      <nav aria-label="{{ 'Main'|t }}">
+        <ul class="uikit-admin-sign-in__menu">
+          {% for item in sign_in_header_links %}
+            <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+{% endset %}
+{% set footer %}
+  <div class="uikit-admin-sign-in__bar">
+    <span>{{ site_name|default('Drupal') }}</span>
+    {% if sign_in_footer_links %}
+      <nav aria-label="{{ 'Footer'|t }}">
+        <ul class="uikit-admin-sign-in__menu">
+          {% for item in sign_in_footer_links %}
+            <li><a href="{{ item.url }}">{{ item.title }}</a></li>
+          {% endfor %}
+        </ul>
+      </nav>
+    {% endif %}
+  </div>
+{% endset %}
 {{ include('uikit_admin:sign_in', {
   layout: sign_in_layout|default('center'),
+  screen: sign_in_screen|default('login'),
   site_name: site_name|default('Drupal'),
   message: sign_in_message|default(''),
   logo: sign_in_logo|default(''),
+  show_mark: sign_in_show_mark ?? true,
+  image: sign_in_image|default(''),
+  image_credit: sign_in_image_credit|default(''),
+  show_header: sign_in_header ?? false,
+  show_footer: sign_in_footer ?? false,
+  header: header,
+  footer: footer,
   title: page.header,
-  messages: page.highlighted,
-  tabs: page.pre_content,
+  messages: page.messages,
+  links: page.pre_content,
+  help: sign_in_help|default(''),
   content: page.content,
 }, with_context: false) }}
