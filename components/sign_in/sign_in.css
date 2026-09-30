@@ -215,6 +215,16 @@
   max-height: 48px;
 }
 
+/* A logo that stands alone, without the site name next to it, is larger. */
+.uikit-admin-sign-in__logo-tile--alone {
+  padding: 10px 16px;
+}
+
+.uikit-admin-sign-in__logo-tile--alone .uikit-admin-sign-in__logo {
+  max-width: 240px;
+  max-height: 64px;
+}
+
 .uikit-admin-sign-in__message {
   margin: 16px 0 0;
   color: #fff;

@@ -190,6 +190,15 @@ class PreprocessHooks {
         $variables['sign_in_logo'] = $this->logoOf($default ?: 'uikit_admin', $default === 'uikit_admin');
     }
 
+    // What the brand shows: the logo and the name, the logo alone, or the
+    // name alone. Without a logo the name always shows.
+    $brand = $setting('sign_in_brand') ?: 'logo_name';
+    if ($brand === 'name') {
+      $variables['sign_in_logo'] = '';
+      $variables['sign_in_show_mark'] = FALSE;
+    }
+    $variables['sign_in_name'] = $brand !== 'logo' || $variables['sign_in_logo'] === '';
+
     // An image behind the brand panel: a path of the site, a stream wrapper
     // URI or an address on the web.
     $image = \trim((string) ($setting('sign_in_image') ?? ''));

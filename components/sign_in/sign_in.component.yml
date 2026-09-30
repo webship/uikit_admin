@@ -82,6 +82,11 @@ props:
       title: 'Logo text alternative'
       description: 'The text alternative of the logo. Empty when the site name is printed next to it.'
       type: string
+    show_name:
+      title: 'Show the site name'
+      description: 'Print the site name next to the logo. False for a logo that already carries the name: the name is then the text alternative of the logo.'
+      type: boolean
+      default: true
     show_mark:
       title: 'Show a letter mark'
       description: 'Print the first letter of the site name in a square when there is no logo.'

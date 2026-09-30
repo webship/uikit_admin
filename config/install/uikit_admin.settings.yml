@@ -11,6 +11,7 @@ sign_in_message: ''
 sign_in_header: false
 sign_in_footer: false
 sign_in_logo: site
+sign_in_brand: logo_name
 sign_in_image: ''
 sign_in_image_credit: ''
 sign_in_help: ''

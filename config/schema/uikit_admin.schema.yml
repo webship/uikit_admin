@@ -88,6 +88,16 @@ uikit_admin.settings:
           - site
           - theme
           - none
+    sign_in_brand:
+      type: string
+      label: 'What the brand of the sign-in screens shows'
+      description: 'logo_name: the logo and the site name. logo: the logo alone, for a logo that already carries the name; the name is then its text alternative. name: the site name alone.'
+      constraints:
+        Choice:
+          choices:
+            - logo_name
+            - logo
+            - name
     sign_in_image:
       type: string
       label: 'Sign-in image'

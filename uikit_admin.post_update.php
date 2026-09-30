@@ -173,3 +173,13 @@ function uikit_admin_post_update_sign_in_options(): void {
   }
   $config->save();
 }
+
+/**
+ * Keep the logo and the site name on the sign-in screens of existing sites.
+ */
+function uikit_admin_post_update_sign_in_brand(): void {
+  $config = \Drupal::configFactory()->getEditable('uikit_admin.settings');
+  if (!$config->isNew() && $config->get('sign_in_brand') === NULL) {
+    $config->set('sign_in_brand', 'logo_name')->save();
+  }
+}

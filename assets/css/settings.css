@@ -290,3 +290,45 @@ fieldset.uikit-admin-picker .uikit-admin-form-item__choice > label {
   z-index: 9;
   bottom: 0;
 }
+
+/* Sign-in brand: a logo mark, the name as a bar, or both. */
+[class*="uikit-admin-picker__thumb--brand-"] {
+  background: #f3f4f6;
+}
+
+[class*="uikit-admin-picker__thumb--brand-"] > span:nth-child(1) {
+  width: 22%;
+  height: 34px;
+  border: 3px solid #08508a;
+  border-radius: 8px;
+  background: #fff;
+  inset: calc(50% - 17px) auto auto 18%;
+}
+
+[class*="uikit-admin-picker__thumb--brand-"] > span:nth-child(2) {
+  width: 38%;
+  height: 10px;
+  border-radius: 5px;
+  background: #1f2328;
+  inset: calc(50% - 5px) auto auto 46%;
+}
+
+[class*="uikit-admin-picker__thumb--brand-"] > span:nth-child(3) {
+  display: none;
+}
+
+.uikit-admin-picker__thumb--brand-logo > span:nth-child(1) {
+  width: 40%;
+  height: 44px;
+  inset: calc(50% - 22px) auto auto 30%;
+}
+
+.uikit-admin-picker__thumb--brand-logo > span:nth-child(2),
+.uikit-admin-picker__thumb--brand-name > span:nth-child(1) {
+  display: none;
+}
+
+.uikit-admin-picker__thumb--brand-name > span:nth-child(2) {
+  width: 56%;
+  inset: calc(50% - 5px) auto auto 22%;
+}

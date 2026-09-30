@@ -257,6 +257,17 @@ class ThemeHooks {
         'none' => $this->t('No logo: the site name only'),
       ],
     ];
+    $form['uikit_admin_sign_in']['sign_in_brand'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Brand'),
+      '#default_value' => $setting('sign_in_brand') ?: 'logo_name',
+      '#options' => [
+        'logo_name' => $this->pickerLabel('brand-logo-name', $this->t('Logo and name'), $this->t('The logo, and the site name next to it.')),
+        'logo' => $this->pickerLabel('brand-logo', $this->t('Logo only'), $this->t('For a logo that already carries the name. The name stays its text alternative.')),
+        'name' => $this->pickerLabel('brand-name', $this->t('Name only'), $this->t('The site name, with no logo.')),
+      ],
+      '#attributes' => ['class' => ['uikit-admin-picker', 'uikit-admin-picker--thumbs']],
+    ];
     $form['uikit_admin_sign_in']['sign_in_image'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Image of the brand panel'),

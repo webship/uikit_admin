@@ -91,6 +91,9 @@ composer:
 # The screens of the back office and their accessibility.
 webship-js-test:
   extends: .drupal-node-base
+  # The suite runs more than 220 scenarios in a browser: past the default
+  # 30 minutes of a job.
+  timeout: 60m
   script:
     - ./node_modules/.bin/cucumber-js --config cucumber.js --tags "not @wip"
   artifacts:

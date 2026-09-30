@@ -47,6 +47,15 @@ Feature: The options of the sign-in screens
       | bottom    | 320   |
       | spotlight | 390   |
 
+  Scenario: A logo that carries the name stands alone
+    Given UIkit Admin shows the sign-in screens with the "center" layout
+      And the sign-in setting "sign_in_logo" is "theme"
+      And the sign-in setting "sign_in_brand" is "logo"
+      And I am an anonymous user
+     When I go to "/user/login"
+     Then ".uikit-admin-sign-in__logo-tile--alone" should be visible
+      And the element ".uikit-admin-sign-in__name" should not exist
+
   Scenario: The logo, the image, its credit and the help line
     Given UIkit Admin shows the sign-in screens with the "end" layout
       And the sign-in setting "sign_in_logo" is "none"

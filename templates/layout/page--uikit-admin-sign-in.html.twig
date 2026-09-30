@@ -14,8 +14,8 @@
 {% set header %}
   <div class="uikit-admin-sign-in__bar">
     <a class="uikit-admin-sign-in__bar-site" href="{{ path('<front>') }}">
-      {% if sign_in_logo %}<span class="uikit-admin-sign-in__logo-tile"><img src="{{ sign_in_logo }}" alt="" /></span>{% endif %}
-      <span>{{ site_name|default('Drupal') }}</span>
+      {% if sign_in_logo %}<span class="uikit-admin-sign-in__logo-tile"><img src="{{ sign_in_logo }}" alt="{{ sign_in_name ?? true ? '' : site_name|default('Drupal') }}" /></span>{% endif %}
+      {% if sign_in_name ?? true %}<span>{{ site_name|default('Drupal') }}</span>{% endif %}
     </a>
     {% if sign_in_header_links %}
       <nav aria-label="{{ 'Main'|t }}">
@@ -48,6 +48,7 @@
   site_name: site_name|default('Drupal'),
   message: sign_in_message|default(''),
   logo: sign_in_logo|default(''),
+  show_name: sign_in_name ?? true,
   show_mark: sign_in_show_mark ?? true,
   image: sign_in_image|default(''),
   image_credit: sign_in_image_credit|default(''),

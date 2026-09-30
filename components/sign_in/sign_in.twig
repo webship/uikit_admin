@@ -29,6 +29,8 @@
   {% set classes = classes|merge(['uikit-admin-sign-in--with-image']) %}
 {% endif %}
 {% set initial = site_name|default('D')|first|upper %}
+{# The name shows unless a logo stands alone. #}
+{% set with_name = (show_name ?? true) or not logo %}
 <div{{ attributes.addClass(classes) }}>
   {% if show_header %}
     <header class="uikit-admin-sign-in__header">{{ header }}</header>
@@ -45,11 +47,13 @@
           {% if not show_header %}
             <a class="uikit-admin-sign-in__site" href="{{ path('<front>') }}">
               {% if logo %}
-                <span class="uikit-admin-sign-in__logo-tile"><img class="uikit-admin-sign-in__logo" src="{{ logo }}" alt="{{ logo_alt|default('') }}" /></span>
+                <span class="uikit-admin-sign-in__logo-tile{{ with_name ? '' : ' uikit-admin-sign-in__logo-tile--alone' }}"><img class="uikit-admin-sign-in__logo" src="{{ logo }}" alt="{{ logo_alt|default(with_name ? '' : site_name|default('Drupal')) }}" /></span>
               {% elseif show_mark ?? true %}
                 <span class="uikit-admin-sign-in__mark" aria-hidden="true">{{ initial }}</span>
               {% endif %}
-              <span class="uikit-admin-sign-in__name">{{ site_name|default('Drupal') }}</span>
+              {% if with_name %}
+                <span class="uikit-admin-sign-in__name">{{ site_name|default('Drupal') }}</span>
+              {% endif %}
             </a>
           {% endif %}
           {% if message %}
