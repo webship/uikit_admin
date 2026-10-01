@@ -24,25 +24,28 @@ uikit_admin.settings:
       description: 'auto follows the operating system of the person, light and dark force one mode for everyone.'
       constraints:
         Choice:
-          - auto
-          - light
-          - dark
+          choices:
+            - auto
+            - light
+            - dark
     density:
       type: string
       label: 'Density'
       description: 'How much room the rows, the panels and the fields take: comfortable, or compact for the people who work in the back office all day.'
       constraints:
         Choice:
-          - comfortable
-          - compact
+          choices:
+            - comfortable
+            - compact
     font_family:
       type: string
       label: 'Font'
       description: 'atkinson: the fonts of the theme, Atkinson Hyperlegible Next and Mono, served from the theme. system: the fonts of the operating system of the person.'
       constraints:
         Choice:
-          - atkinson
-          - system
+          choices:
+            - atkinson
+            - system
     sticky_actions:
       type: boolean
       label: 'Keep the buttons of a form in reach'
@@ -58,12 +61,13 @@ uikit_admin.settings:
       constraints:
         # @see \Drupal\uikit_admin\Hook\PreprocessHooks::SIGN_IN_LAYOUTS
         Choice:
-          - center
-          - start
-          - end
-          - top
-          - bottom
-          - spotlight
+          choices:
+            - center
+            - start
+            - end
+            - top
+            - bottom
+            - spotlight
     sign_in_message:
       type: label
       label: 'Sign-in message'
@@ -85,9 +89,10 @@ uikit_admin.settings:
       description: 'site: the logo of the default theme of the site. theme: the logo of UIkit Admin. none: the site name only.'
       constraints:
         Choice:
-          - site
-          - theme
-          - none
+          choices:
+            - site
+            - theme
+            - none
     sign_in_brand:
       type: string
       label: 'What the brand of the sign-in screens shows'
