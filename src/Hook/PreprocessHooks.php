@@ -103,11 +103,12 @@ class PreprocessHooks {
    * Implements hook_theme_suggestions_HOOK_alter() for page.
    *
    * The sign-in screens have a page of their own, without the rail and the
-   * top bar.
+   * top bar. A Display Builder page layout keeps its own page template: it
+   * draws the whole page, regions included.
    */
   #[Hook('theme_suggestions_page_alter')]
   public function themeSuggestionsPageAlter(array &$suggestions, array $variables): void {
-    if ($this->isSignIn()) {
+    if ($this->isSignIn() && !\in_array('page__display_builder_page_layout', $suggestions, TRUE)) {
       $suggestions[] = 'page__uikit_admin_sign_in';
     }
   }
@@ -567,7 +568,7 @@ class PreprocessHooks {
     $items = [];
     foreach ($variables['links'] ?? [] as $item) {
       if (isset($item['link'])) {
-        $items[] = ['link' => $item['link']];
+        $items[] = ['link' => $this->labelInName($item['link'])];
       }
       elseif (!empty($item['text'])) {
         // A link without a URL prints as text, the way core prints it.
@@ -575,6 +576,26 @@ class PreprocessHooks {
       }
     }
     $variables['operations'] = $items;
+  }
+
+  /**
+   * Keep the visible text of an operation link in its accessible name.
+   *
+   * Core labels "Configure" on the block layout "Edit <block>" (WCAG 2.5.3).
+   */
+  protected function labelInName(array $link): array {
+    $title = trim(strip_tags((string) ($link['#title'] ?? '')));
+    $url_attributes = isset($link['#url']) && \is_object($link['#url']) && method_exists($link['#url'], 'getOption')
+      ? ($link['#url']->getOption('attributes') ?: [])
+      : [];
+    $label = (string) ($link['#options']['attributes']['aria-label'] ?? $url_attributes['aria-label'] ?? '');
+    if ($title !== '' && $label !== '' && mb_stripos($label, $title) === FALSE) {
+      $link['#options']['attributes']['aria-label'] = (string) $this->t('@title (@label)', [
+        '@title' => $title,
+        '@label' => $label,
+      ]);
+    }
+    return $link;
   }
 
   /**
