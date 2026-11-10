@@ -4,7 +4,7 @@ group: Page
 slots:
   title:
     title: Title
-    description: 'The title of the screen, like "Log in". The page title block prints it as the h1 of the page.'
+    description: 'The title of the screen, like "Log in", as the h1 of the page: the slot holds the heading itself. The page title block prints one. In a Display Builder page layout, put the page title source in the Heading component, level 1: the source prints the title text only.'
   messages:
     title: Messages
     description: 'The status messages, printed in the card above the form: a wrong password, a sent link, an expired link.'

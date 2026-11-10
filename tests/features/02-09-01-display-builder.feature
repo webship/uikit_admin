@@ -26,6 +26,7 @@ Feature: Display Builder with UIkit Admin
       And the page should pass an accessibility audit at level "AAA"
       And the element "#edit-name" should be visible
       And the page should have exactly one h1
+      And ".uikit-admin-sign-in__title h1" should contain text "Log in"
 
   Scenario: The screens print their tables and indexes through the components
     Given I am logged in as the Drupal administrator

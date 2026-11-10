@@ -4,6 +4,10 @@
  * The sign-in screens: a brand panel and the form in a card, with an
  * optional slim header and footer.
  *
+ * The title slot holds the h1 of the page itself. The component does not wrap
+ * it: the page title block prints its own h1, and a Display Builder page
+ * layout puts the page title source in the Heading component, level 1.
+ *
  * The optional parts are rendered first and printed only when they hold
  * output: an empty links row would leave a divider under the form.
  */

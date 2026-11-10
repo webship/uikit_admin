@@ -163,6 +163,12 @@ adds, as optional configuration:
   with `config: import: uikit_admin: [...]`, since a recipe does not install optional
   configuration.
 
+The page title source of Display Builder prints the title text only (since 1.0.0-beta10): a page
+layout puts it in the *Heading* component, level 1, as `uikit_admin_sign_in` does. Placed straight
+in a slot, the title is plain text and the page has no h1. A post update does it for the
+`uikit_admin_sign_in` layout of an existing site, and the theme conflicts with the Display Builder
+releases before 1.0.0-beta10, which print an h1 of their own.
+
 The media library of core (the grid, its dialog and the widget of a content form) has the look of
 the theme: cards that fill the row, the box on the picture, the media types on the side.
 
