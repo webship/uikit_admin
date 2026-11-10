@@ -13,7 +13,7 @@ include:
 
 variables:
   # Build and test with Drupal 11.4 and PHP 8.4; the theme also allows 12.
-  DRUPAL_CORE: "11.4.8"
+  DRUPAL_CORE: "11.4.x-dev"
   _TARGET_PHP: "8.4"
   YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
   # Also test with the next major Drupal version and the newest PHP.
@@ -24,7 +24,7 @@ variables:
 # (https://www.drupal.org/i/3625969), which 11.4.6 does not.
 composer:
   variables:
-    DRUPAL_CORE: "11.4.8"
+    DRUPAL_CORE: "11.4.x-dev"
 
 .drupal-node-base:
   extends: .testing-job-base
@@ -99,6 +99,7 @@ webship-js-test:
   # site, share the feature files out between them (see cucumber.js).
   parallel: 3
   script:
+    - ./node_modules/.bin/cucumber-js --config cucumber.js --dry-run
     - ./node_modules/.bin/cucumber-js --config cucumber.js --tags "not @wip"
   artifacts:
     when: always

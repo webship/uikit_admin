@@ -13,13 +13,16 @@
     "test": "node ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js",
     "test:a11y": "node ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --tags @a11y",
     "test:chromium": "BROWSER=chromium node ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js",
-    "build:uikit": "node scripts/build-uikit.js"
+    "build:uikit": "node scripts/build-uikit.js",
+    "test:dry": "node ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --dry-run"
   },
   "dependencies": {
     "webship-js": "^2.0.6"
   },
   "devDependencies": {
+    "@webship-js/drupal-core-steps": "^2.1.0",
     "less": "^4.4.0",
-    "uikit": "3.25.22"
+    "uikit": "3.25.22",
+    "webship-js": "^2.0.6"
   }
 }
