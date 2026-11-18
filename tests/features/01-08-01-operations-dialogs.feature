@@ -40,12 +40,9 @@ Feature: Operations and dialogs
      Then the current path should end with "/admin/structure/views/view/content"
       And no error should have been logged
 
-  # Left out (--tags "not @view-display-overview"): the Manage links of the
-  # view display overview of Drupal 11.4 have a render array as their title,
-  # and the theme's labelInName() casts it to a string: "Array to string
-  # conversion" warnings on the page. It runs again once the theme reads that
-  # title.
-  @view-display-overview
+  # The Manage links of the view display overview of Drupal 11.4 have a render
+  # array as their title: the theme leaves it as it is, with no "Array to
+  # string conversion" warning on the page.
   Scenario: The operations read their title, not "Array"
     Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/structure/types/manage/page/display"

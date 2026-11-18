@@ -74,7 +74,7 @@ export LAUNCH_URL=https://website.ddev.site
 export NODE_EXTRA_CA_CERTS="$(mkcert -CAROOT)/rootCA.pem"
 export DRUSH="ddev drush" DRUPAL_PROJECT_DIR=~/website
 export SLOW_MO=0
-yarn test --tags "not @wip and not @standard-site and not @theme-optional-config and not @view-display-overview"
+yarn test --tags "not @wip and not @standard-site and not @theme-optional-config"
 ```
 
 The fixture steps make content and change settings with Drush, and put them
@@ -92,13 +92,12 @@ each for a reason its feature states:
 
 - `@standard-site`: what a Standard site has and a Webship site does not: Olivero and its block regions, a site without Content Moderation or UI Skins, "page not found" in the log (Redirect 404 keeps them out); CI runs them (7 scenarios).
 - `@theme-optional-config`: a site template installs the theme from a recipe, without its optional configuration (the Display Builder profiles and the sign-in page layout); a site that installs the theme itself runs them, CI too (2 scenarios).
-- `@view-display-overview`: a defect of the theme: the Manage links of the view display overview of Drupal 11.4 have a render array as their title, which the theme casts to a string ("Array to string conversion"); left out in CI too until the theme reads that title (1 scenario).
 
 ### 4. What green looks like
 
 ```
-209 scenarios (209 passed)
-2483 steps (2483 passed)
+210 scenarios (210 passed)
+2489 steps (2489 passed)
 ```
 
 The HTML report is written to `tests/reports/cucumber_report.html`. A failed

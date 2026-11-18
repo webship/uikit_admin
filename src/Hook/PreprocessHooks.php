@@ -584,7 +584,14 @@ class PreprocessHooks {
    * Core labels "Configure" on the block layout "Edit <block>" (WCAG 2.5.3).
    */
   protected function labelInName(array $link): array {
-    $title = trim(strip_tags((string) ($link['#title'] ?? '')));
+    // Only a title that prints as text is compared with the label. A render
+    // array title, like the one of the Manage links of the view display
+    // overview of Field UI, is left as it is.
+    $title = $link['#title'] ?? '';
+    if (!\is_string($title) && !$title instanceof \Stringable) {
+      return $link;
+    }
+    $title = trim(strip_tags((string) $title));
     $url_attributes = isset($link['#url']) && \is_object($link['#url']) && method_exists($link['#url'], 'getOption')
       ? ($link['#url']->getOption('attributes') ?: [])
       : [];

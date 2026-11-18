@@ -121,9 +121,7 @@ webship-js-test:
   parallel: 3
   script:
     - ./node_modules/.bin/cucumber-js --config cucumber.js --dry-run
-    # @view-display-overview: left out until the theme reads the render array
-    # title of the view display overview's links (see the feature).
-    - ./node_modules/.bin/cucumber-js --config cucumber.js --tags "not @wip and not @view-display-overview"
+    - ./node_modules/.bin/cucumber-js --config cucumber.js --tags "not @wip"
   artifacts:
     when: always
     paths:
