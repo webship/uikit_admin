@@ -2301,6 +2301,30 @@ Then(
 );
 
 /**
+ * Checks a configuration against its schema, the way Config Inspector and the
+ * strict schema check of the Drupal tests do.
+ *
+ * Example: Then the configuration "display_builder.profile.uikit_admin" should match its schema
+ */
+Then(
+  /^the configuration "([a-z0-9_.]+)" should match its schema$/,
+  { timeout: 60000 },
+  function (name) {
+    const result = JSON.parse(
+      drushPhp(
+        `$check = new class { use \\Drupal\\Core\\Config\\Schema\\SchemaCheckTrait; public function run(string $n): array|bool { return $this->checkConfigSchema(\\Drupal::service("config.typed"), $n, \\Drupal::config($n)->getRawData()); } }; print json_encode($check->run("${name}"));`,
+      ),
+    );
+    assert.notStrictEqual(result, false, `${name} has no schema.`);
+    assert.strictEqual(
+      result,
+      true,
+      `${name} does not match its schema: ${JSON.stringify(result)}`,
+    );
+  },
+);
+
+/**
  * Example: Then the component library of the profile "uikit_admin" should leave out "ui_suite_uikit, webtheme"
  */
 Then(
@@ -2312,11 +2336,16 @@ Then(
         `print json_encode(\\Drupal::config("display_builder.profile.${profile}")->get("islands.component_library"));`,
       ),
     );
+    // Display Builder keeps the ids it leaves out as a list.
+    assert.ok(
+      Array.isArray(library.exclude_id),
+      `The ids the profile "${profile}" leaves out are not a list: ${JSON.stringify(library.exclude_id)}`,
+    );
     list.split(',').forEach((item) => {
       const name = item.trim();
       if (components) {
         assert.ok(
-          library.exclude_id.split(/\r?\n/).includes(name),
+          library.exclude_id.includes(name),
           `${name} is not left out.`,
         );
       } else {

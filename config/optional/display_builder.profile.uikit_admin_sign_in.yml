@@ -17,7 +17,18 @@ islands:
       navigation: navigation
       ui_suite_uikit: ui_suite_uikit
       webtheme: webtheme
-    exclude_id: "uikit_admin:admin_page\r\nuikit_admin:admin_sidebar\r\nuikit_admin:admin_topbar\r\nuikit_admin:command_palette\r\nuikit_admin:form_element\r\nuikit_admin:form_layout\r\nuikit_admin:navbar\r\nuikit_admin:navbar_nav\r\nuikit_admin:navbar_item\r\nuikit_admin:navbar_toggle\r\nuikit_admin:offcanvas\r\n"
+    exclude_id:
+      - 'uikit_admin:admin_page'
+      - 'uikit_admin:admin_sidebar'
+      - 'uikit_admin:admin_topbar'
+      - 'uikit_admin:command_palette'
+      - 'uikit_admin:form_element'
+      - 'uikit_admin:form_layout'
+      - 'uikit_admin:navbar'
+      - 'uikit_admin:navbar_nav'
+      - 'uikit_admin:navbar_item'
+      - 'uikit_admin:navbar_toggle'
+      - 'uikit_admin:offcanvas'
     component_status:
       experimental: '0'
       deprecated: '0'
@@ -30,7 +41,10 @@ islands:
     exclude:
       htmx: htmx
       shortcut: shortcut
-    exclude_id: "system_menu_block:admin\r\nsystem_menu_block:devel\r\nsystem_clear_cache_block\r\n"
+    exclude_id:
+      - 'system_menu_block:admin'
+      - 'system_menu_block:devel'
+      - system_clear_cache_block
     preview: true
   preset_library:
     status: true

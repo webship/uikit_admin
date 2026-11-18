@@ -17,6 +17,8 @@ Feature: Display Builder with UIkit Admin
       And the configuration "display_builder_page_layout.page_layout.uikit_admin_sign_in" should have "status" set to "false"
       And the component library of the profile "uikit_admin" should leave out "ui_suite_uikit, webtheme"
       And the component library of the profile "uikit_admin" should leave out the components "uikit_admin:admin_page, uikit_admin:sign_in"
+      And the configuration "display_builder.profile.uikit_admin" should match its schema
+      And the configuration "display_builder.profile.uikit_admin_sign_in" should match its schema
 
   @sign-in @theme-optional-config
   Scenario: The sign-in page layout draws the log in screen once it is chosen
