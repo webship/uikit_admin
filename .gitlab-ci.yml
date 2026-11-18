@@ -12,9 +12,9 @@ include:
       - "/includes/include.drupalci.workflows.yml"
 
 variables:
-  # Build and test with Drupal 11.4 and PHP 8.4; the theme also allows 12.
+  # Build and test with Drupal 11.4 and PHP 8.5; the theme also allows 12.
   DRUPAL_CORE: "11.4.x-dev"
-  _TARGET_PHP: "8.4"
+  _TARGET_PHP: "8.5"
   YARN_ENABLE_IMMUTABLE_INSTALLS: "false"
   # Also test with the next major Drupal version and the newest PHP.
   OPT_IN_TEST_NEXT_MAJOR: 1
