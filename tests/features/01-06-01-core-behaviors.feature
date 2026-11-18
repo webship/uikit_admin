@@ -5,7 +5,7 @@ Feature: The behaviors of core on the forms of the theme
   So that every form of the back office gives feedback and fills itself in
 
   Scenario: The suite catches the JavaScript errors of a page
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And a script of the page throws "qa-uikit-admin-probe"
      Then the JavaScript error "qa-uikit-admin-probe" should have been caught
@@ -13,7 +13,7 @@ Feature: The behaviors of core on the forms of the theme
       And no error should have been logged
 
   Scenario: A status message shows its text
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/config/development/performance"
       And I submit the form with the button "#edit-clear"
      Then the status messages should read "Caches cleared."
@@ -22,11 +22,14 @@ Feature: The behaviors of core on the forms of the theme
 
   @cleanup
   Scenario: An error message shows its text and marks the field
-    Given the user "qa-taken" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/people/create"
+    # A site can hide the password while "Notify user of new account" is
+    # checked, and check it by default (Web Security does): the scenario
+    # gives the account a password.
+      And I uncheck the checkbox "#edit-notify"
       And I fill in "#edit-mail" with "uikit-admin-duplicate@example.com" by attr
-      And I fill in "#edit-name" with "qa-taken" by attr
+      And I fill in "#edit-name" with "content_editor_user" by attr
       And I fill in "#edit-pass-pass1" with "Correct.Horse.42" by attr
       And I fill in "#edit-pass-pass2" with "Correct.Horse.42" by attr
       And I submit the form with the button "#edit-submit"
@@ -36,14 +39,14 @@ Feature: The behaviors of core on the forms of the theme
       And no error should have been logged
 
   Scenario: The form elements keep the wrapper classes of core
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/people/roles/add"
      Then the element ".js-form-item.form-item.js-form-type-textfield.js-form-item-label" should exist
       And the style "content" of the pseudo element "::after" of "label.form-required" should be "\"*\""
       And no error should have been logged
 
   Scenario: A machine name is generated from the name
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/people/roles/add"
       And I fill in "#edit-label" with "UIkit Reviewer" by attr
      Then the element "#edit-id" should have the value "uikit_reviewer"
@@ -52,8 +55,12 @@ Feature: The behaviors of core on the forms of the theme
       And no error should have been logged
 
   Scenario: The password confirmation tells if the passwords match
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/people/create"
+    # A site can hide the password while "Notify user of new account" is
+    # checked, and check it by default (Web Security does): the scenario
+    # gives the account a password.
+      And I uncheck the checkbox "#edit-notify"
       And I fill in "#edit-pass-pass1" with "Correct.Horse.42" by attr
       And I fill in "#edit-pass-pass2" with "Correct.Horse.4" by attr
      Then ".password-confirm-message" should contain text "no"
@@ -63,7 +70,7 @@ Feature: The behaviors of core on the forms of the theme
       And no error should have been logged
 
   Scenario: The states of a field hide only the field
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/structure/types/manage/page/fields/node.page.body"
       And I select "-1" from "field_storage[subform][cardinality]"
      Then the element "select[name='field_storage[subform][cardinality]']" should be visible
@@ -71,7 +78,7 @@ Feature: The behaviors of core on the forms of the theme
       And no error should have been logged
 
   Scenario: The vertical tab summaries follow the checkboxes
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/structure/types/manage/page"
       And I click on the element ".vertical-tabs__menu-item a[href='#edit-workflow']"
      Then ".vertical-tabs__menu-item a[href='#edit-workflow'] .vertical-tabs__menu-item-summary" should contain text "Published"
@@ -80,7 +87,7 @@ Feature: The behaviors of core on the forms of the theme
       And no error should have been logged
 
   Scenario: The meta of a content form sums itself up
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/node/add/page"
       And I fill in "#edit-title-0-value" with "UIkit summary check" by attr
       And I click on the element "#edit-menu summary"

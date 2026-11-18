@@ -4,6 +4,11 @@ Feature: Display Builder with UIkit Admin
   I want a Display Builder profile made for the back office and a page layout for the sign-in screens
   So that I build with the components of this theme, never with the ones of a front theme
 
+  # Left out on a site installed from a site template (--tags "not @theme-optional-config"):
+  # a recipe installs the theme without its optional configuration, the Display
+  # Builder profiles and the sign-in page layout. A site that installs the theme
+  # itself has them (CI).
+  @theme-optional-config
   Scenario: The profiles and the sign-in page layout come with Display Builder
     Given the modules "display_builder, display_builder_page_layout" are installed
      Then the configuration "display_builder.profile.uikit_admin" should exist
@@ -13,7 +18,7 @@ Feature: Display Builder with UIkit Admin
       And the component library of the profile "uikit_admin" should leave out "ui_suite_uikit, webtheme"
       And the component library of the profile "uikit_admin" should leave out the components "uikit_admin:admin_page, uikit_admin:sign_in"
 
-  @sign-in
+  @sign-in @theme-optional-config
   Scenario: The sign-in page layout draws the log in screen once it is chosen
     Given the modules "display_builder, display_builder_page_layout" are installed
       And the configuration "uikit_admin.settings" is put back after the scenario
@@ -29,7 +34,7 @@ Feature: Display Builder with UIkit Admin
       And ".uikit-admin-sign-in__title h1" should contain text "Log in"
 
   Scenario: The screens print their tables and indexes through the components
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/people/roles"
      Then the element ".uikit-admin-table-scroll > table.uk-table.uk-table-divider[data-component-id='uikit_admin:table']" should exist
       And the element ".uikit-admin-table-scroll > table > thead > tr > th" should exist

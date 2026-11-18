@@ -4,8 +4,12 @@ Feature: Blocks
   I want to place, move and remove blocks and manage content blocks with UIkit Admin
   So that the block layout and the block library keep working
 
+  # The block scenarios place blocks in the regions of Olivero, the front-end
+  # theme of a Standard site (CI); a site without it leaves them out
+  # (--tags "not @standard-site").
+  @standard-site
   Scenario: Place a block through the dialogs and configure it
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/structure/block"
      Then the element "[class*='uikit-admin-tabs'] a[href$='/admin/structure/block/list/claro']" should exist
       And the element "a[href*='/admin/structure/block/demo/olivero']" should exist
@@ -30,8 +34,9 @@ Feature: Blocks
      Then I should see "qa-Powered"
       And no error should have been logged
 
+  @standard-site
   Scenario: Move, disable, enable and remove a block
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/structure/block/add/system_powered_by_block/olivero?region=footer_top"
       And I fill in "settings[label]" with "qa-Moved"
       And I press the button "Edit machine name"
@@ -59,7 +64,7 @@ Feature: Blocks
       And no error should have been logged
 
   Scenario: Add, edit and delete a content block and a block type
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content/block"
       And I mark the current page
       And I click on the element "[class*='uikit-admin-tabs'] a[href$='/admin/content']"

@@ -5,7 +5,7 @@ Feature: Views
   So that the wizard, the Views UI dialogs and the listing keep working
 
   Scenario: Create a view with a page and a block through the wizard
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/structure/views"
       And I click on the element "a[href$='/admin/structure/views/add']"
       And I wait until the page is loaded
@@ -29,7 +29,7 @@ Feature: Views
       And no error should have been logged
 
   Scenario: Edit a view in the Views UI dialogs
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/structure/views/add"
       And I fill in "View name" with "qa-UIkit edited"
       And I check "Create a page"
@@ -95,7 +95,7 @@ Feature: Views
       And no error should have been logged
 
   Scenario: Disable, enable, duplicate and delete a view
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/structure/views/add"
       And I fill in "View name" with "qa-UIkit managed"
       And I press the button "Save and edit"
@@ -129,7 +129,7 @@ Feature: Views
       And no error should have been logged
 
   Scenario: Change the Views UI settings and clear the Views cache
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/structure/views"
       And I click on the element "[class*='uikit-admin-tabs'] a[href$='/admin/structure/views/settings']"
       And I wait until the page is loaded

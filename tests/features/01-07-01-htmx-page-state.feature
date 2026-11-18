@@ -5,7 +5,7 @@ Feature: The HTMX navigation keeps the pages whole
   So that its forms, its links and its blocks work and a reload stays styled
 
   Scenario: A form reached through HTMX posts to a clean URL
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/config"
       And I mark the current page
       And I click on the element "a[href$='/admin/config/system/site-information']"
@@ -19,7 +19,7 @@ Feature: The HTMX navigation keeps the pages whole
       And no error should have been logged
 
   Scenario: The exposed filters keep the links of the listing clean
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I mark the current page
       And I fill in "Title" with "a"
@@ -29,7 +29,7 @@ Feature: The HTMX navigation keeps the pages whole
       And no error should have been logged
 
   Scenario: The Reset of the filters loads the listing without loading its scripts twice
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I fill in "Title" with "a"
       And I click on the element "#edit-submit-content"
@@ -42,8 +42,8 @@ Feature: The HTMX navigation keeps the pages whole
       And no error should have been logged
 
   Scenario: A page swapped on a cold cache keeps its breadcrumb, tabs and actions
-    Given the caches are cleared
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the caches are cleared
      When I go to "/admin/people"
       And I mark the current page
       And I click on the element ".uikit-admin-tabs a[href$='/admin/people/permissions']"
@@ -55,7 +55,7 @@ Feature: The HTMX navigation keeps the pages whole
       And no error should have been logged
 
   Scenario: The Drupal AJAX links open their dialog, not a new page
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/structure/types/manage/page/fields"
       And I mark the current page
       And I click on the element "a.use-ajax[href$='/fields/add-field']"
@@ -64,7 +64,7 @@ Feature: The HTMX navigation keeps the pages whole
       And no error should have been logged
 
   Scenario: Back reloads the page, and the palette still opens
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I mark the current page
       And I click on the element ".uikit-admin-rail a[href$='/admin/people']"

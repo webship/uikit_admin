@@ -5,8 +5,8 @@ Feature: Accessibility of the administration screens
   So that I can run the site
 
   Scenario Outline: <name> passes the accessibility checks
-    Given the content type "page" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the content type "page" exists
      When I go to "<path>"
      Then the page should have a title
       And the page should declare a language
@@ -39,14 +39,14 @@ Feature: Accessibility of the administration screens
       | /node/add/page                          | a content form              |
 
   Scenario: The keyboard reaches the content of an administration screen
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I press the key "Tab"
      Then the focused element should match "a, button, input, [tabindex]"
       And the page should have a skip link
 
   Scenario: The palette is reachable and labelled
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I press the key "Control+k"
      Then the element "[role='dialog'][aria-modal='true']" should exist

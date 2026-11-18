@@ -16,13 +16,10 @@
     "build:uikit": "node scripts/build-uikit.js",
     "test:dry": "node ./node_modules/@cucumber/cucumber/bin/cucumber.js --config cucumber.js --dry-run"
   },
-  "dependencies": {
-    "webship-js": "^2.0.6"
-  },
   "devDependencies": {
-    "@webship-js/drupal-core-steps": "^2.1.0",
+    "@webship-js/drupal-core-steps": "^2.2.3",
     "less": "^4.4.0",
     "uikit": "3.25.22",
-    "webship-js": "^2.0.6"
+    "webship-js": "^2.0.12"
   }
 }

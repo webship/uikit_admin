@@ -9,6 +9,7 @@ Feature: The states of the sign-in screens
      When I go to "/user/login"
       And I fill in "name" with "qa-nobody"
       And I fill in "pass" with "not the password"
+      And I wait out the form time limit
       And I press the button "Log in"
      Then the element ".uikit-admin-sign-in__messages .uk-alert-danger" should be visible
       And I should see "Unrecognized username or password"
@@ -22,6 +23,7 @@ Feature: The states of the sign-in screens
      When I go to "/user/password"
      Then the element ".uikit-admin-sign-in--password" should exist
      When I fill in "name" with "qa-nobody@example.com"
+      And I wait out the form time limit
       And I press the button "Send reset link"
      Then the current path should end with "/user/login"
       And the element ".uikit-admin-sign-in__messages .uk-alert" should be visible
@@ -34,9 +36,8 @@ Feature: The states of the sign-in screens
 
   @cleanup
   Scenario: The log out confirmation is a sign-in screen
-    Given UIkit Admin shows the sign-in screens with the "spotlight" layout
-      And the user "qa-signin-editor" with the role "content_editor" exists
-      And I am logged in as the user "qa-signin-editor"
+    Given I am a logged in user with the "Content editor" user
+      And UIkit Admin shows the sign-in screens with the "spotlight" layout
      When I go to "/user/logout/confirm"
      Then the element ".uikit-admin-sign-in--logout" should exist
       And the element ".uikit-admin-rail" should not exist
@@ -45,6 +46,10 @@ Feature: The states of the sign-in screens
     Given UIkit Admin shows the sign-in screens with the "center" layout
       And the configuration "user.settings" is put back after the scenario
       And the configuration "user.settings" has "register" set to "admin_only"
+    # A site can show a page of its own for a denied page (a Webship site
+    # shows its log in page): the scenario looks at the theme's screen.
+      And the configuration "system.site" is put back after the scenario
+      And the configuration "system.site" has "page.403" set to ""
      When I go to "/user/register"
      Then the element ".uikit-admin-sign-in--denied" should exist
       And the element ".uikit-admin-rail" should not exist

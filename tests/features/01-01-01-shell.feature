@@ -4,7 +4,7 @@ Feature: The shell of the back office
   So that I always know where I am and can reach anything
 
   Scenario: The rail carries the administration menu
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
      Then the element "nav.uikit-admin-rail" should exist
       And the element ".uikit-admin-rail__item.is-active" should exist
@@ -12,22 +12,22 @@ Feature: The shell of the back office
       And I should see "Structure"
 
   Scenario: The bar carries the page and its actions
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
      Then the element ".uikit-admin-topbar" should exist
       And the element ".uikit-admin-topbar__title h1" should exist
       And the element ".uikit-admin-topbar__search" should exist
 
   Scenario: The palette opens with the keyboard and filters
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I press the key "Control+k"
      Then the element ".uikit-admin-palette__dialog" should be visible
      When I type "permissions" in the palette
-     Then I should see "Permissions"
+     Then ".uikit-admin-palette__dialog" should contain text "Permissions"
 
   Scenario: The rail collapses and stays collapsed
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I click on the element "[data-uikit-admin-rail-toggle]"
      Then the element "html.uikit-admin-rail-collapsed" should exist
@@ -35,7 +35,7 @@ Feature: The shell of the back office
      Then the element "html.uikit-admin-rail-collapsed" should exist
 
   Scenario: The rail offers a visible way to log out
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
      Then the element ".uikit-admin-rail__logout" should be visible
       And I should see "Log out"
@@ -43,14 +43,14 @@ Feature: The shell of the back office
      Then I should see "Log in"
 
   Scenario: The icons of the rail, the top bar and the palette stay the ones of the release
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
      Then the icons of the shell should be the ones of the last release
      When I go to "/admin/config"
      Then the icons of the shell should be the ones of the last release
 
   Scenario: The drawer of a phone keeps the labels of the rail
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
       And I set the viewport to 390 by 800
      When I go to "/admin/content"
       And I click on the element "[data-uikit-admin-rail-open]"
@@ -60,8 +60,7 @@ Feature: The shell of the back office
 
   @cleanup
   Scenario: The rail shows only the places a person may open
-    Given the user "qa-rail-editor" with the role "content_editor" exists
-      And I am logged in as the user "qa-rail-editor"
+    Given I am a logged in user with the "Content editor" user
      When I go to "/admin/content"
      Then the element "nav.uikit-admin-rail" should exist
       And I should not see "Inaccessible"
@@ -69,10 +68,10 @@ Feature: The shell of the back office
       And the icons of the shell should be the ones of the last release
 
   Scenario: The palette reaches the content and the media
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I press the key "Control+k"
       And I type "add content" in the palette
-     Then I should see "Add content"
+     Then ".uikit-admin-palette__dialog" should contain text "Add content"
      When I type "media" in the palette
-     Then I should see "Media"
+     Then ".uikit-admin-palette__dialog" should contain text "Media"

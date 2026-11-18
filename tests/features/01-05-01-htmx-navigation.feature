@@ -4,7 +4,7 @@ Feature: HTMX navigation
   So that the back office answers quickly and the rail stays in place
 
   Scenario: A rail link swaps the page and keeps the document
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
      Then the element "[data-off-canvas-main-canvas]" should have the attribute "hx-boost" set to "true"
      When I mark the current page
@@ -14,7 +14,7 @@ Feature: HTMX navigation
       And the element ".uikit-admin-rail a.is-active[href$='/admin/people']" should exist
 
   Scenario: A link to the front end loads it in full, in its own theme
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I mark the current page
       And I click on the element ".uikit-admin-rail a.uikit-admin-rail__site"
@@ -22,7 +22,7 @@ Feature: HTMX navigation
       And the element ".uikit-admin-shell" should not exist
 
   Scenario: The exposed filters go through HTMX
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I mark the current page
       And I fill in "Title" with "about"
@@ -31,7 +31,7 @@ Feature: HTMX navigation
       And the element "#edit-title" should exist
 
   Scenario: The palette works on a swapped page
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I mark the current page
       And I click on the element ".uikit-admin-rail a[href$='/admin/people']"
@@ -40,7 +40,7 @@ Feature: HTMX navigation
      Then the element ".uikit-admin-palette__dialog" should be visible
 
   Scenario: Forms that post and the builder screens keep full page loads
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/config/system/site-information"
      Then the element "form#system-site-information-settings" should have the attribute "hx-boost" set to "false"
       And the URL "/admin/structure/block" should be excluded from the HTMX navigation
@@ -50,12 +50,12 @@ Feature: HTMX navigation
       And the URL "/admin/people" should not be excluded from the HTMX navigation
 
   Scenario: UIkit loads from the theme, not from a CDN
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
      Then the page should load nothing from another host
 
   Scenario: The sort links of a bulk listing go through HTMX
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I mark the current page
       And I click on the element "thead a[href*='order=title']"

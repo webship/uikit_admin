@@ -7,7 +7,7 @@ Feature: The administration screens meet WCAG 2.2 AAA
   So that I can read and use every screen
 
   Scenario Outline: <path> passes the AAA check in the <scheme> scheme at <width> pixels
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
       And the color scheme is "<scheme>"
       And I set the viewport to <width> by 900
      When I go to "<path>"
@@ -46,8 +46,8 @@ Feature: The administration screens meet WCAG 2.2 AAA
       | /admin/modules                        | dark   | 320   |
 
   Scenario Outline: A content form passes the AAA check in the <scheme> scheme at <width> pixels
-    Given the content type "page" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the content type "page" exists
       And the color scheme is "<scheme>"
       And I set the viewport to <width> by 900
      When I go to a content form with a body
@@ -61,13 +61,13 @@ Feature: The administration screens meet WCAG 2.2 AAA
       | light  | 320   |
 
   Scenario: The administration screens pass the full AAA check
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
      Then the page should pass the full accessibility check at level "AAA"
 
   Scenario Outline: The keyboard focus shows a solid ring in the <scheme> scheme
-    Given the content type "page" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the content type "page" exists
       And the color scheme is "<scheme>"
      When I go to "/admin/content"
      Then the first 30 tab stops should have a 2px solid focus ring
@@ -80,8 +80,8 @@ Feature: The administration screens meet WCAG 2.2 AAA
       | dark   |
 
   Scenario: The rail, the top bar and the buttons offer 44 pixel targets
-    Given the content type "page" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the content type "page" exists
       And I set the viewport to 1280 by 900
      When I go to "/admin/content"
      Then every visible ".uikit-admin-rail a, .uikit-admin-rail button" should offer a target of at least 44 by 44 pixels
@@ -91,21 +91,23 @@ Feature: The administration screens meet WCAG 2.2 AAA
      Then every visible ".uikit-admin-main .uk-button, .uikit-admin-main input[type='submit']" should offer a target of at least 44 by 44 pixels
 
   Scenario: The top bar of a phone offers 44 pixel targets
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
       And I set the viewport to 390 by 800
      When I go to "/admin/content"
      Then every visible ".uikit-admin-topbar a, .uikit-admin-topbar button, .uikit-admin-topbar input" should offer a target of at least 44 by 44 pixels
 
   Scenario Outline: The buttons keep a 7 to 1 contrast under the pointer in the <scheme> scheme
-    Given the "page" content item "qa-UIkit hover" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the "page" content item "qa-UIkit hover" exists
       And the color scheme is "<scheme>"
      When I go to "/admin/content?title=qa-UIkit+hover"
       And I click on the element ".uikit-admin-operations a"
       And I wait until the page is loaded
      Then the hovered element ".uk-button-danger" should have a contrast of at least 7 to 1
       And the hovered element ".uk-button-primary" should have a contrast of at least 7 to 1
-      And the hovered element ".uk-button-default" should have a contrast of at least 7 to 1
+    # A default button can sit in a closed group of the form (the "Add URL
+    # redirect" link of Redirect): the check hovers a visible one.
+      And the hovered element ".uk-button-default:visible" should have a contrast of at least 7 to 1
     Given the page shows a specimen of the class "uk-icon-button"
      Then the hovered element ".uk-icon-button" should have a contrast of at least 7 to 1
     Given the page shows a specimen of the class "uk-button uk-button-secondary"

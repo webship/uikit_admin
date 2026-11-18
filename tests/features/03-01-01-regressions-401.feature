@@ -6,9 +6,9 @@ Feature: The fixes of UIkit Admin 4.0.1
 
   @ui_patterns
   Scenario: Empty slots render nothing when UI Patterns is installed
-    Given the module "ui_patterns" is installed
+    Given I am a logged in user with the "Webmaster" user
+      And the module "ui_patterns" is installed
       And the content type "page" exists
-      And I am logged in as the Drupal administrator
      When I go to "/admin/content"
      Then no "aside" element should be empty
       And no "footer.uikit-admin-footer" element should be empty
@@ -26,8 +26,8 @@ Feature: The fixes of UIkit Admin 4.0.1
 
   @ui_patterns
   Scenario: The batch page, which has no regions, renders with UI Patterns
-    Given the modules "update, ui_patterns" are installed
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the modules "update, ui_patterns" are installed
      When I go to "/admin/reports/updates"
       And I click on the element "a[href*='/admin/reports/updates/check']"
       And I wait up to 180 seconds until the path is "/admin/reports/updates"
@@ -36,7 +36,7 @@ Feature: The fixes of UIkit Admin 4.0.1
       And no "[role='alert']" element should be empty
 
   Scenario Outline: The table of <name> scrolls inside its region on a phone
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
       And I set the viewport to <width> by 800
      When I go to "<path>"
      Then the element "table" should exist
@@ -56,7 +56,7 @@ Feature: The fixes of UIkit Admin 4.0.1
       | /admin/modules              | the module list   | 320   |
 
   Scenario: The top bar fits a phone
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
       And I set the viewport to 390 by 800
      When I go to "/admin/content"
      Then every visible ".uikit-admin-topbar__rail-toggle" should offer a target of at least 44 by 44 pixels
@@ -65,7 +65,7 @@ Feature: The fixes of UIkit Admin 4.0.1
       And the page should not scroll sideways
 
   Scenario: The closed rail of a phone stays out of the tab order
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
       And I set the viewport to 390 by 800
      When I go to "/admin/content"
      Then the focus should not reach ".uikit-admin-rail" within 12 presses of Tab
@@ -77,8 +77,8 @@ Feature: The fixes of UIkit Admin 4.0.1
       And the element ".uikit-admin-rail" should have the attribute "inert" set to ""
 
   Scenario Outline: The skip link shows above the rail on <path>
-    Given the content type "page" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the content type "page" exists
       And I set the viewport to 1280 by 700
      When I go to "<path>"
       And I press the key "Tab"
@@ -91,7 +91,7 @@ Feature: The fixes of UIkit Admin 4.0.1
       | /admin/people/permissions |
 
   Scenario: A server message shows in the content, not in the top bar
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/config/development/performance"
       And I submit the form with the button "#edit-clear"
      Then the status messages should read "Caches cleared."
@@ -99,7 +99,7 @@ Feature: The fixes of UIkit Admin 4.0.1
       And the element ".uikit-admin-header .uk-alert" should not exist
 
   Scenario: A message of a script is a UIkit alert in the content
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And a script adds the "warning" message "A script warning."
      Then the element ".uikit-admin-main [data-drupal-message-type='warning'].uk-alert-warning" should exist
@@ -110,8 +110,8 @@ Feature: The fixes of UIkit Admin 4.0.1
      Then the element "[data-drupal-message-type='error']" should have the attribute "role" set to "alert"
 
   Scenario: The toolbar of the rich text editor sticks under the top bar
-    Given the content type "page" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the content type "page" exists
       And I set the viewport to 1280 by 700
      When I go to a content form with a body
       And I fill the rich text editor "[data-drupal-selector='edit-body-0-value']" with 60 paragraphs
@@ -121,9 +121,9 @@ Feature: The fixes of UIkit Admin 4.0.1
 
   @settings
   Scenario: The setting keeps the buttons of a form in reach, or not
-    Given the content type "page" exists
+    Given I am a logged in user with the "Webmaster" user
+      And the content type "page" exists
       And the UIkit Admin setting "sticky_actions" is "1"
-      And I am logged in as the Drupal administrator
       And I set the viewport to 1280 by 700
      When I go to a content form with a body
      Then the element "html" should have the attribute "data-uikit-admin-sticky-actions" set to "on"

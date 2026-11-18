@@ -5,7 +5,7 @@ Feature: Content
   So that every content screen of the back office keeps working
 
   Scenario: A content type gets an image and tags through Field UI
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/structure/types/add"
       And I fill in "Name" with "qa-Fields"
      Then the element "#edit-type" should have the value "qa_fields"
@@ -55,8 +55,7 @@ Feature: Content
       And no error should have been logged
 
   Scenario: Add a basic page with CKEditor 5, a menu link, an alias and an author
-    Given the user "qa-author" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I click on the element ".uikit-admin-actions a[href$='/node/add'], a[href$='/node/add']"
       And I wait until the URL contains "/node/add"
@@ -85,22 +84,23 @@ Feature: Content
       And I check "Provide a menu link"
      Then the element "#edit-menu-title" should have the value "qa-UIkit page one"
      When I click on the element "#edit-path-0 summary"
+      And I turn off the automatic URL alias of the form
       And I fill in "#edit-path-0-alias" with "/qa-uikit-page-one" by attr
      Then "#edit-path-0 summary" should contain text "/qa-uikit-page-one"
      When I click on the element "#edit-author summary"
-      And I pick "qa-author" from the autocomplete "#edit-uid-0-target-id"
+      And I pick "content_editor_user" from the autocomplete "#edit-uid-0-target-id"
       And I press the button "Save"
      Then the status messages should read "qa-UIkit page one has been created."
       And the current path should end with "/qa-uikit-page-one"
       And I should see "qa heading"
       And the element "a[href='https://www.drupal.org']" should exist
      When I go to "/admin/content"
-     Then I should see "qa-author" in the "qa-UIkit page one" row
+     Then I should see "content_editor_user" in the "qa-UIkit page one" row
       And no error should have been logged
 
   Scenario: Add an article with an image, a summary, tags and a preview
-    Given the article content type "qa_article" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the article content type "qa_article" exists
      When I go to "/node/add/qa_article"
       And I fill in "Title" with "qa-UIkit article"
       And I type "The body of the article." in the rich text editor "#edit-body-0-value"
@@ -128,8 +128,8 @@ Feature: Content
       And no error should have been logged
 
   Scenario: Edit content, revert a revision and delete one
-    Given the "page" content item "qa-UIkit revisions" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the "page" content item "qa-UIkit revisions" exists
      When I go to "/admin/content"
       And I fill in "Title" with "qa-UIkit revisions"
       And I click on the element "#edit-submit-content"
@@ -158,8 +158,8 @@ Feature: Content
       And no error should have been logged
 
   Scenario: Delete a content item from its dialog
-    Given the "page" content item "qa-UIkit delete me" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the "page" content item "qa-UIkit delete me" exists
      When I go to "/admin/content"
       And I fill in "Title" with "qa-UIkit delete me"
       And I click on the element "#edit-submit-content"
@@ -173,11 +173,11 @@ Feature: Content
       And no error should have been logged
 
   Scenario: Filter, sort and empty the content overview
-    Given the "page" content item "qa-filter alpha" exists
+    Given I am a logged in user with the "Webmaster" user
+      And the "page" content item "qa-filter alpha" exists
       And the "page" content item "qa-filter beta" exists
       And the unpublished "page" content item "qa-filter draft" exists
       And the "page" content item "qa-other item" exists
-      And I am logged in as the Drupal administrator
      When I go to "/admin/content"
       And I fill in "Title" with "qa-filter"
       And I select "Published" from "status"
@@ -200,9 +200,9 @@ Feature: Content
       And no error should have been logged
 
   Scenario: Run the bulk actions of the content overview
-    Given the "page" content item "qa-bulk one" exists
+    Given I am a logged in user with the "Webmaster" user
+      And the "page" content item "qa-bulk one" exists
       And the "page" content item "qa-bulk two" exists
-      And I am logged in as the Drupal administrator
      When I go to "/admin/content"
       And I press the button "Apply to selected items"
      Then the status messages should read "No content selected."
@@ -244,10 +244,10 @@ Feature: Content
 
   @comments
   Scenario: Post comments and moderate them in bulk
-    Given the article content type "qa_article" exists
+    Given I am a logged in user with the "Webmaster" user
+      And the article content type "qa_article" exists
       And comments are open on the content type "qa_article"
       And the "qa_article" content item "qa-UIkit commented" exists
-      And I am logged in as the Drupal administrator
      When I go to "/admin/content"
       And I fill in "Title" with "qa-UIkit commented"
       And I click on the element "#edit-submit-content"

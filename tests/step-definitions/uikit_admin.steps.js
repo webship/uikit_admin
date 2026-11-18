@@ -51,43 +51,6 @@ function drushPhp(code) {
 }
 
 /**
- * Signs in as user 1 with a one-time link, so no password is needed.
- *
- * Example: Given I am logged in as the Drupal administrator
- */
-Given(
-  /^(I am |we are )?logged in as the Drupal administrator$/,
-  { timeout: 60000 },
-  async function (pronoun) {
-    const user = process.env.DRUPAL_ADMIN_USER;
-    const password = process.env.DRUPAL_ADMIN_PASSWORD;
-
-    // A name and a password sign in through the form, so every scenario of a
-    // run may sign in again. Without them, a one-time link from Drush does it.
-    if (user && password) {
-      await this.page.goto(`${this.launchUrl}/user/login`);
-      await this.page.fill('#edit-name', user);
-      await this.page.fill('#edit-pass', password);
-      await Promise.all([
-        this.page.waitForURL((url) => !url.pathname.endsWith('/user/login'), {
-          timeout: 30000,
-        }),
-        this.page.click('#edit-submit'),
-      ]);
-      return;
-    }
-
-    const link =
-      process.env.DRUPAL_LOGIN_URL ||
-      drush('user:login --no-browser').split('\n').pop();
-    await this.page.goto(`${this.launchUrl}${new URL(link).pathname}`);
-    await this.page.waitForURL((url) => /\/user\/\d+/.test(url.pathname), {
-      timeout: 30000,
-    });
-  },
-);
-
-/**
  * Throws an uncaught error on the page, to prove that the listeners of
  * webship-js catch it, so "there should be no JavaScript errors" fails on one.
  *
@@ -763,6 +726,11 @@ Then(/^the current path should end with "([^"]*)"$/, async function (path) {
  */
 const watchedConfig = [
   'system.site',
+  'system.maintenance',
+  'dblog.settings',
+  'user.mail',
+  'filter.format.basic_html',
+  'editor.editor.basic_html',
   'system.theme',
   'system.performance',
   'system.logging',
@@ -836,7 +804,7 @@ function cleanUpSite(contentOnly = false) {
       "block_content" => "info",
       "taxonomy_term" => "name",
       "menu_link_content" => "title",
-      "user" => "name",
+      "file" => "filename",
       "path_alias" => "alias",
     ];
     foreach ($content as $type => $field) {
@@ -905,6 +873,27 @@ BeforeAll({ timeout: 180000 }, function () {
 
 After({ tags: '@cleanup', timeout: 180000 }, function (scope) {
   cleanUpSite(scope.result?.status === Status.PASSED);
+});
+
+/**
+ * The people scenarios add a role to the authenticated test account, block
+ * it and unblock it, and put it back as they go: this is the safety net for
+ * a scenario that failed half way. The account is the site build's
+ * (cucumber.js worldParameters.users); the suite never creates or deletes one.
+ */
+After({ tags: '@people', timeout: 60000 }, function () {
+  const account = this.parameters.users['Authenticated user'];
+  if (!account || !/^[a-zA-Z0-9_.@-]+$/.test(account.username)) {
+    return;
+  }
+  drush(`user:unblock ${account.username}`);
+  drushPhp(`
+    $account = user_load_by_name("${account.username}");
+    if ($account && $account->hasRole("content_editor")) {
+      $account->removeRole("content_editor");
+      $account->save();
+    }
+  `);
 });
 
 /**
@@ -1037,24 +1026,6 @@ Given(
     `);
   },
 );
-
-/**
- * Makes a user account with Drush, for the screens that edit one.
- *
- * Example: Given the user "qa-editor" exists
- */
-Given(/^the user "([^"]*)" exists$/, { timeout: 60000 }, function (name) {
-  drushPhp(`
-    if (!user_load_by_name("${name}")) {
-      \\Drupal\\user\\Entity\\User::create([
-        "name" => "${name}",
-        "mail" => "${name}@example.com",
-        "pass" => "Correct.Horse.42",
-        "status" => 1,
-      ])->save();
-    }
-  `);
-});
 
 /**
  * The modules a scenario installed, uninstalled after it.
@@ -1461,6 +1432,45 @@ When(
       .locator('.ui-dialog-buttonpane .button--primary:visible')
       .first()
       .click();
+  },
+);
+
+/**
+ * Turns off the automatic URL alias of a content form, on a site with
+ * Pathauto, so that the URL alias field takes a value; a site without
+ * Pathauto has no such box, and nothing changes.
+ *
+ * Example: When I turn off the automatic URL alias of the form
+ */
+When(
+  /^(I |we )*turn off the automatic URL alias of the form$/,
+  async function (pronoun) {
+    const automatic = this.page.locator('input[name="path[0][pathauto]"]');
+    if (await automatic.count()) {
+      await automatic.first().uncheck();
+    }
+  },
+);
+
+/**
+ * Turns off "Display author and date information" in the content type form.
+ * A site with Manage Display has no such setting there (it moves to Manage
+ * display), and nothing changes.
+ *
+ * Example: When I turn off the author and date display of the content type
+ */
+When(
+  /^(I |we )*turn off the author and date display of the content type$/,
+  async function (pronoun) {
+    const submitted = this.page.locator('input[name="display_submitted"]');
+    if (!(await submitted.count())) {
+      return;
+    }
+    await this.page
+      .locator(".vertical-tabs__menu-item a[href='#edit-display']")
+      .first()
+      .click();
+    await submitted.first().uncheck();
   },
 );
 
@@ -2157,54 +2167,6 @@ Then(
       contrast >= Number(ratio),
       `${selector}: ${contrast.toFixed(2)} to 1 when hovered.`,
     );
-  },
-);
-
-/**
- * Makes an account with one role and the permissions the back office needs
- * to show it the administration theme. The name starts with "qa-", so the
- * cleanup deletes it.
- *
- * Example: Given the user "qa-editor" with the role "content_editor" exists
- */
-Given(
-  /^the user "(qa-[^"]*)" with the role "([a-z0-9_]+)" exists$/,
-  { timeout: 60000 },
-  function (name, role) {
-    drushPhp(`
-      if (!\\Drupal\\user\\Entity\\Role::load("${role}")) {
-        \\Drupal\\user\\Entity\\Role::create(["id" => "${role}", "label" => "${role}"])->save();
-      }
-      $role = \\Drupal\\user\\Entity\\Role::load("${role}");
-      foreach (["access administration pages", "view the administration theme", "access content overview"] as $permission) {
-        $role->grantPermission($permission);
-      }
-      $role->save();
-      if (!user_load_by_name("${name}")) {
-        $account = \\Drupal\\user\\Entity\\User::create(["name" => "${name}", "mail" => "${name}@example.com", "status" => 1]);
-        $account->addRole("${role}");
-        $account->save();
-      }
-    `);
-  },
-);
-
-/**
- * Signs in as an account with a one-time link from Drush.
- *
- * Example: Given I am logged in as the user "qa-editor"
- */
-Given(
-  /^(I am |we are )?logged in as the user "([^"]*)"$/,
-  { timeout: 60000 },
-  async function (pronoun, name) {
-    const link = drush(`user:login --name=${name} --no-browser`)
-      .split('\n')
-      .pop();
-    await this.page.goto(`${this.launchUrl}${new URL(link).pathname}`);
-    await this.page.waitForURL((url) => /\/user\/\d+/.test(url.pathname), {
-      timeout: 30000,
-    });
   },
 );
 

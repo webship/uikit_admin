@@ -5,7 +5,7 @@ Feature: Reports and moving around the back office
   So that I can read the state of the site and reach any screen quickly
 
   Scenario: Read the status report and run cron from it
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/reports/status"
      Then the element "a.uikit-admin-status-counter[href='#checked']" should exist
       And the element "#checked" should exist
@@ -16,9 +16,13 @@ Feature: Reports and moving around the back office
       And the current path should end with "/admin/reports/status"
       And no error should have been logged
 
+  # Needs a site that logs "page not found" (a Standard site, CI): Redirect
+  # 404 on a Webship site keeps them out of the log (suppress_404), so a site
+  # like that leaves the scenario out (--tags "not @standard-site").
+  @standard-site
   Scenario: Filter the recent log messages, read one and clear them
-    Given I am on "/qa-no-such-page"
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And I am on "/qa-no-such-page"
      When I go to "/admin/reports/dblog"
       And I select "page not found" from ".js-form-item-type select"
       And I click on the element "input[id^='edit-submit']"
@@ -45,7 +49,7 @@ Feature: Reports and moving around the back office
       And no error should have been logged
 
   Scenario: Read the field list and the Views plugins
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/reports/fields"
      Then I should see "body"
       And the element "a[href*='/admin/structure/types/manage/']" should exist
@@ -56,13 +60,16 @@ Feature: Reports and moving around the back office
      Then I should see "Used in"
       And no error should have been logged
 
+  # The update check asks drupal.org about every project of the site: a few
+  # on a Standard site, more than a hundred on a Webship site, which takes
+  # minutes.
   Scenario: Check the available updates and change their settings
-    Given the module "update" is installed
+    Given I am a logged in user with the "Webmaster" user
+      And the module "update" is installed
       And the configuration "update.settings" is put back after the scenario
-      And I am logged in as the Drupal administrator
      When I go to "/admin/reports/updates"
       And I click on the element "a[href*='/admin/reports/updates/check']"
-      And I wait until the URL contains "/admin/reports/updates"
+      And I wait up to 180 seconds until the path is "/admin/reports/updates"
      Then the status messages should read "available update data"
       And the page should have its styles and its scripts
      When I click on the element "[class*='uikit-admin-tabs'] a[href$='/admin/reports/updates/settings']"
@@ -74,7 +81,7 @@ Feature: Reports and moving around the back office
      Then the radio button with value "7" should be selected
 
   Scenario: Reach screens from the command palette
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I press the key "Control+k"
      Then the element ".uikit-admin-palette__dialog" should be visible
@@ -97,7 +104,7 @@ Feature: Reports and moving around the back office
       And no error should have been logged
 
   Scenario: Walk the rail with HTMX, go back and forward
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/content"
       And I mark the current page
       And I click on the element ".uikit-admin-rail a[href$='/admin/structure']"
@@ -124,8 +131,8 @@ Feature: Reports and moving around the back office
       And no error should have been logged
 
   Scenario: The rail loads full pages when the HTMX navigation is off
-    Given the configuration "uikit_admin.settings" is put back after the scenario
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the configuration "uikit_admin.settings" is put back after the scenario
      When I go to "/admin/appearance/settings/uikit_admin"
       And I uncheck "htmx_navigation"
       And I press the button "Save configuration"

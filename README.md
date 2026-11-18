@@ -265,4 +265,7 @@ The sign-in routes are `user.login`, `user.pass`, `user.register`, `user.reset`,
 
 The webship-js suite in `tests/` walks the back office in a browser, with
 WCAG 2.2 AAA checks in the light and the dark color scheme
-(`tests/features/03-02-01-wcag-aaa.feature`).
+(`tests/features/03-02-01-wcag-aaa.feature`). It logs in with the login steps
+of `@webship-js/drupal-core-steps`, as the accounts the site build creates;
+`tests/README.md` has the full install, from a DDEV site to a green run, and
+the test accounts.

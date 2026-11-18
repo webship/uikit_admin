@@ -4,9 +4,13 @@ Feature: Configuration
   I want to configure the site, its themes and its modules with UIkit Admin
   So that every configuration screen of the back office keeps working
 
+  # Needs a Standard site (CI): Olivero is its front-end theme, and Content
+  # Moderation is not installed there. A site without them leaves these two
+  # scenarios out (--tags "not @standard-site").
+  @standard-site
   Scenario: Install, set as default and uninstall a theme
-    Given the configuration "system.theme" is put back after the scenario
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the configuration "system.theme" is put back after the scenario
      When I go to "/admin/appearance"
       And I click on the element "a[href*='/admin/appearance/install?theme=stark']"
      Then the status messages should read "The Stark theme has been installed."
@@ -24,8 +28,8 @@ Feature: Configuration
       And no error should have been logged
 
   Scenario: Change the settings of UIkit Admin
-    Given the configuration "uikit_admin.settings" is put back after the scenario
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the configuration "uikit_admin.settings" is put back after the scenario
      When I go to "/admin/appearance"
       And I click on the element "[class*='uikit-admin-tabs'] a[href$='/admin/appearance/settings']"
       And I wait until the page is loaded
@@ -44,8 +48,9 @@ Feature: Configuration
       And the element "input[name='sign_in_message'][value='qa sign-in message']" should exist
       And no error should have been logged
 
+  @standard-site
   Scenario: Install and uninstall modules
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
      When I go to "/admin/modules"
       And I type "Telephone" into the element "input.table-filter-text"
      Then the element "input[name='modules[telephone][enable]']" should be visible
@@ -76,9 +81,10 @@ Feature: Configuration
       And no error should have been logged
 
   Scenario: Change the site information, run cron and use the maintenance mode
-    Given the configuration "system.site" is put back after the scenario
+    Given I am a logged in user with the "Webmaster" user
+      And the configuration "system.site" is put back after the scenario
       And the configuration "automated_cron.settings" is put back after the scenario
-      And I am logged in as the Drupal administrator
+      And the configuration "system.maintenance" is put back after the scenario
      When I go to "/admin/config"
       And I mark the current page
       And I click on the element "a[href$='/admin/config/system/site-information']"
@@ -115,9 +121,10 @@ Feature: Configuration
       And no error should have been logged
 
   Scenario: Change the performance, development and logging settings
-    Given the configuration "system.performance" is put back after the scenario
+    Given I am a logged in user with the "Webmaster" user
+      And the configuration "system.performance" is put back after the scenario
       And the configuration "system.logging" is put back after the scenario
-      And I am logged in as the Drupal administrator
+      And the configuration "dblog.settings" is put back after the scenario
      When I go to "/admin/config/development/performance"
       And I press the button "Clear all caches"
      Then the status messages should read "Caches cleared."
@@ -144,9 +151,9 @@ Feature: Configuration
       And no error should have been logged
 
   Scenario: Change the file and image settings and build an image style
-    Given the configuration "system.file" is put back after the scenario
+    Given I am a logged in user with the "Webmaster" user
+      And the configuration "system.file" is put back after the scenario
       And the configuration "system.image.gd" is put back after the scenario
-      And I am logged in as the Drupal administrator
      When I go to "/admin/config/media/file-system"
       And I select "86400" from "temporary_maximum_age"
       And I press the button "Save configuration"
@@ -184,7 +191,9 @@ Feature: Configuration
       And no error should have been logged
 
   Scenario: Order the text formats, change a toolbar and add a text format
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the configuration "filter.format.basic_html" is put back after the scenario
+      And the configuration "editor.editor.basic_html" is put back after the scenario
      When I go to "/admin/config/content/formats"
       And I press the button "Show row weights"
       And I press the button "Save"
@@ -216,8 +225,8 @@ Feature: Configuration
       And no error should have been logged
 
   Scenario: Change the regional settings and manage a date format
-    Given the configuration "system.date" is put back after the scenario
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the configuration "system.date" is put back after the scenario
      When I go to "/admin/config/regional/settings"
       And I select "Saturday" from "date_first_day"
       And I press the button "Save configuration"
@@ -245,8 +254,8 @@ Feature: Configuration
       And no error should have been logged
 
   Scenario: Add, filter, edit and delete a URL alias
-    Given the "page" content item "qa-Aliased" exists
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the "page" content item "qa-Aliased" exists
      When I go to "/admin/config/search/path"
       And I click on the element "a[href$='/admin/config/search/path/add']"
       And I wait until the page is loaded

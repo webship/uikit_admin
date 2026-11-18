@@ -5,7 +5,7 @@ Feature: The settings page of the theme
   So that I see what a choice does before I save it
 
   Scenario: The settings sit in sections with visual pickers and a sticky Save
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
       And I set the viewport to 1280 by 800
      When I go to "/admin/appearance/settings/uikit_admin"
      Then the element "form.uikit-admin-settings" should exist
@@ -24,8 +24,8 @@ Feature: The settings page of the theme
       And no error should have been logged
 
   Scenario: A choice made with the pictures is saved
-    Given the configuration "uikit_admin.settings" is put back after the scenario
-      And I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
+      And the configuration "uikit_admin.settings" is put back after the scenario
      When I go to "/admin/appearance/settings/uikit_admin"
       And I click on the element ".uikit-admin-picker__thumb--density-compact"
       And I click on the element ".uikit-admin-picker__thumb--sign-in-end"
@@ -38,7 +38,7 @@ Feature: The settings page of the theme
       And no error should have been logged
 
   Scenario Outline: The settings page passes the AAA check in the <scheme> scheme
-    Given I am logged in as the Drupal administrator
+    Given I am a logged in user with the "Webmaster" user
       And the color scheme is "<scheme>"
      When I go to "/admin/appearance/settings/uikit_admin"
      Then the page should pass an accessibility audit at level "AAA"
